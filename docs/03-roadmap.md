@@ -4,7 +4,7 @@ Each phase ends with a verification gate. A phase is not done until its rows in 
 
 | Phase | Scope | Exit gate |
 |---|---|---|
-| 0. Tooling | Install PHP 8.3 + Composer; Superpowers plugin; `wordpress/agent-skills` WP plugin-dev skill (reviewed first); Playground CLI; staging site or tunnel; GitHub Actions skeleton | `php -v`, `composer -V`, Playground boots WP 7.1 with Elementor + WooCommerce — **gate passed 2026-11-04**; Superpowers + staging still open |
+| 0. Tooling | Install PHP 8.3 + Composer; Superpowers plugin; `wordpress/agent-skills` WP plugin-dev skill (reviewed first); Playground CLI; staging site or tunnel; GitHub Actions skeleton | `php -v`, `composer -V`, Playground boots WP 7.1 with Elementor + WooCommerce — **done 2026-11-04** (staging = `npm run tunnel`, Cloudflare quick tunnel; named tunnel before Phase 3 OAuth tests) |
 | 1. Research | Done — `01-research-report.md` | Approved |
 | 2. Architecture | Done — `02-architecture.md` | D1–D6 approved 2026-11-04 |
 | 3. Foundation | Bootstrap, lifecycle + migrations, output guard, scoped adapter, tool registry + executor, OAuth AS (metadata, CIMD, DCR, PKCE, rotation, revoke), audit log, snapshots, rate limit, **GitHub updater + release workflow** | claude.ai, Desktop and Claude Code connect to staging, list tools, call `kuduy-site-info`; refresh + revoke work; update from a test release `v0.1.1` installs |

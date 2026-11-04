@@ -17,4 +17,8 @@
 - Claude skills installed to `~/.claude/skills`: `wp-plugin-development` + `wp-project-triage` from `WordPress/agent-skills` @ `eff3785` (reviewed: Markdown plus read-only fs scanners, no network). Also caveman and ponytail.
 - Playground: `@wp-playground/cli` 3.1.62 pinned in `package.json`; blueprint `tests/playground/blueprint.json`. `npm run playground` → http://127.0.0.1:9400. Verified in wp-admin: **WordPress 7.1.4, Elementor 4.3.6 active, WooCommerce 11.2.1 active**. Note: the CLI banner says "WordPress latest" even though the blueprint asks for 7.1; check the admin footer, not the banner.
 - `.github/workflows/ci.yml` skeleton: PHP 8.1–8.4 matrix, `php -l`, composer validate/install once `composer.json` exists.
-- Open: Superpowers plugin (user runs `/plugin`), public HTTPS staging site or tunnel (user decision).
+- Superpowers 7.0.2 (`obra/superpowers`) installed, user scope, from `obra/superpowers-marketplace` (not yet in the local copy of the official marketplace).
+- Staging: cloudflared 2026.10.7 (winget). `npm run tunnel` (`scripts/tunnel.mjs`) opens a Cloudflare quick tunnel and boots Playground with `--site-url` set to it, auto-login off, a random admin password written to gitignored `.tunnel-admin.txt`, and a mu-plugin trusting `X-Forwarded-Proto` so WP sees HTTPS. Tested: home 200 via tunnel with WP 7.1.4 / Woo 11.2.1 / Elementor 4.3.6 generator tags and zero `127.0.0.1` links; `/wp-admin/` → 302 to login; REST `url` is the tunnel; generated password logs in with a `secure` cookie; default `password` rejected.
+- Playground scripts now pass `--wp=7.1 --php=8.3`: the CLI defaults `--wp` to `latest`, which ignores the blueprint's preference.
+- Known limit: the quick-tunnel URL changes every run. Move to a named tunnel on our domain before Phase 3's OAuth client tests. On Windows, killing the npm parent can orphan `cloudflared`/`node`; stop with Ctrl+C.
+- **Phase 0 complete.**
