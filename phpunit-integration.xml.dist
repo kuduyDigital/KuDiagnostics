@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Runs inside Playground (WordPress already loaded) via scripts/test-integration.mjs. -->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="false"
+         failOnWarning="true"
+         failOnRisky="true"
+         cacheDirectory="/tmp/phpunit-cache">
+  <testsuites>
+    <testsuite name="integration">
+      <directory>tests/integration</directory>
+    </testsuite>
+  </testsuites>
+</phpunit>

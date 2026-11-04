@@ -1,0 +1,9 @@
+{
+  "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+  "steps": [
+    {
+      "step": "runPHP",
+      "code": "<?php require '/wordpress/wp-load.php'; require_once ABSPATH . 'wp-admin/includes/plugin.php'; file_put_contents( '/kuduy-out/env.txt', 'WordPress ' . get_bloginfo( 'version' ) . ', PHP ' . PHP_VERSION ); $_SERVER['argv'] = array( 'phpunit', '--configuration', '/wordpress/wp-content/plugins/kuduy-mcp/phpunit-integration.xml.dist', '--log-junit', '/kuduy-out/junit.xml' ); chdir( '/wordpress/wp-content/plugins/kuduy-mcp' ); require '/wordpress/wp-content/plugins/kuduy-mcp/vendor/autoload.php'; ( new PHPUnit\\TextUI\\Application() )->run( $_SERVER['argv'] );"
+    }
+  ]
+}

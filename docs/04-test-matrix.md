@@ -6,7 +6,7 @@ Legend: **U** unit (PHPUnit, no WP), **I** integration (WP test suite / Playgrou
 
 | # | Feature | Tests | Type |
 |---|---|---|---|
-| F1 | Activation / deactivation / uninstall | tables created/upgraded; cron cleared on deactivate; uninstall drops tables + options only when `KUDUY_MCP_DELETE_DATA_ON_UNINSTALL` | I |
+| F1 | Activation / deactivation / uninstall | tables created/upgraded; cron cleared on deactivate; uninstall drops tables + options only when `KUDUY_MCP_DELETE_DATA_ON_UNINSTALL` | I — **pass 2026-11-04** (`tests/integration/LifecycleTest.php`, WP 6.9.11/PHP 8.1.34 and WP 7.1.4/PHP 8.3.36) except "cron cleared on deactivate": not run, no cron hooks until audit retention (Phase 3 step 4) |
 | F2 | Output guard | stray `echo` from another plugin on `init` does not break JSON | I |
 | F3 | `server/discover` (2026-07-28) | returns supported versions + capabilities | I |
 | F4 | Legacy `initialize` (2025-11-25) | handshake + session + `tools/list` | I |

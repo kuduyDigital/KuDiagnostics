@@ -9,8 +9,8 @@ permissions:
   contents: read
 
 jobs:
-  php:
-    name: PHP ${{ matrix.php }}
+  lint:
+    name: PHP ${{ matrix.php }} syntax
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -18,23 +18,52 @@ jobs:
         php: ['8.1', '8.2', '8.3', '8.4']
     steps:
       - uses: actions/checkout@v4
-
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          tools: composer:v2
           coverage: none
-
       - name: Lint PHP files
         run: |
           find . -name '*.php' -not -path './vendor/*' -not -path './node_modules/*' -print0 \
             | xargs -0 -r -n1 php -l
 
-      # shortcut: steps below skip until composer.json exists (Phase 3 adds it, plus PHPUnit/PHPStan/WPCS jobs).
-      - name: Validate composer.json
-        if: hashFiles('composer.json') != ''
-        run: composer validate --strict
+  static:
+    name: PHPCS + PHPStan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer:v2
+          coverage: none
+      - run: composer validate --strict
+      - run: composer install --no-interaction --no-progress --prefer-dist
+      - run: composer test:static
 
-      - name: Install dependencies
-        if: hashFiles('composer.json') != ''
-        run: composer install --no-interaction --no-progress --prefer-dist
+  integration:
+    name: WP ${{ matrix.wp }} / PHP ${{ matrix.php }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { wp: '6.9', php: '8.1' }
+          - { wp: '7.1', php: '8.3' }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer:v2
+          coverage: none
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: composer install --no-interaction --no-progress --prefer-dist
+      - run: npm ci --no-fund --no-audit
+      - run: npm run test:integration
+        env:
+          KUDUY_WP: ${{ matrix.wp }}
+          KUDUY_PHP: ${{ matrix.php }}

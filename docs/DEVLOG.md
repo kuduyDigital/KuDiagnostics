@@ -28,3 +28,13 @@
 - Re-verified in a fresh PATH: PHP 8.3.36, Composer 2.11.1, cloudflared 2026.10.7, Node 24.18.0, 11 skills, Superpowers enabled.
 - `01-research-report.md` §1–2: added dated corrections (machine facts and skill install method differed from the original report). Architecture title no longer says "proposal"; §14 notes that only the environment, not the plugin, is verified.
 - Deferred on purpose, each tied to its phase: UNVERIFIED items (MCP client versions → Phase 3 E2E; Elementor Kit/atomic storage → Phase 5; SEO/Woo/ACF APIs → Phases 6–7; `update_plugins_{host}` signature → Phase 3; Tasks extension → later), emailed recovery link (§10, Phase 8 decision).
+
+## 2026-11-04 — Phase 3 step 1: plugin skeleton, lifecycle, migrations
+
+- Plan: `docs/plans/phase-3-01-skeleton.md`. Repo root is the plugin root (`kuduy-mcp.php`, `Update URI` header, `Requires PHP 8.1`, `Requires at least 6.9`).
+- `Lifecycle\Migrations` (DB v1: the 5 tables from architecture §5 via `dbDelta`), run on activation and on `plugins_loaded` when the stored version is older (auto-update path). `Lifecycle\Uninstaller` drops tables + 3 options only with `KUDUY_MCP_DELETE_DATA_ON_UNINSTALL`.
+- Dev tools (Composer, platform PHP 8.1): PHPUnit 10.5.66, PHPStan 2.3.5 (level 6) + phpstan-wordpress 2.0.4, WPCS 3.4.1. `composer test:static` clean.
+- Integration tests run PHPUnit inside Playground WordPress (`npm run test:integration`, env `KUDUY_WP`/`KUDUY_PHP`); pass/fail comes from the JUnit report, versions actually used are printed. Red first (classes missing), then 4/4 green on WP 6.9.11/PHP 8.1.34 and WP 7.1.4/PHP 8.3.36, no PHP warnings.
+- Gotchas found: (1) a blueprint's `preferredVersions` — or its defaults, latest PHP/WP — **override** `--wp`/`--php`; the wrapper writes the requested versions into a generated blueprint. (2) `composer.bat` under cmd/PowerShell eats `^` in constraints (`^10.5` became `10.5`); use quotes in Git Bash or `php composer.phar`. (3) PHPUnit's launcher has a shebang line, so the runner calls `PHPUnit\TextUI\Application` directly.
+- CI: syntax lint on PHP 8.1–8.4, static job, integration matrix (WP 6.9/PHP 8.1, WP 7.1/PHP 8.3).
+- Deferred: deactivation hook (no cron yet), unit test suite (no pure logic yet).
