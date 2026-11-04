@@ -17,6 +17,8 @@ Everything below was checked against a primary source in this session (cloned re
 | Node 26.7 / npm 11.19 | present | Enables WordPress Playground CLI (WASM PHP + WordPress, no Docker) |
 | git 2.55, gh 2.101 | present | Repo inspection works |
 
+> **Update 2026-11-04, after Phase 0** (re-checked on the dev machine): project dir is `D:\NewIdea\KuDiagnostics` (git repo, pushed). PHP 8.3.36 and Composer 2.11.1 installed. Node is **24.18.0** (not 26.7) with npm 11.7.0; `gh` is **not** installed (GitHub REST via `curl` works for public reads). Playground CLI 3.1.62 pinned in `package.json`. Public HTTPS via Cloudflare quick tunnel (`npm run tunnel`). WP-CLI and Docker still missing; WP-CLI is first needed for Phase 8 recovery tests.
+
 **Conclusion:** before Phase 3 we need (a) PHP 8.3 + Composer installed locally (for example `winget install PHP.PHP.8.3` and Composer-Setup), and (b) a WordPress runtime: WordPress Playground CLI locally, plus a **publicly reachable HTTPS staging site** (or a tunnel) because claude.ai connects from Anthropic's servers (egress `160.79.104.0/21`), not from this machine.
 
 ## 2. Claude Code skills and tooling
@@ -29,6 +31,8 @@ Everything below was checked against a primary source in this session (cloned re
 | `wp-plugin-development` skill | Present inside the WSP repo; its `skills-lock.json` says it comes from **`wordpress/agent-skills`** (official WordPress org) | Recommend installing from the official `wordpress/agent-skills` source rather than copying from WSP. Its `scripts/detect_plugins.mjs` makes no network or process calls. |
 | Context7 | **Not available** in this session (no Context7 tools found) | Fallback: official docs + reading upstream source via `gh api` (used throughout this report). |
 | PHP static tools (PHPCS + WPCS, PHPStan + WP stubs, PHPUnit) | Not installable until PHP/Composer exist | Planned as Composer dev dependencies. |
+
+> **Update 2026-11-04, after Phase 0:** `claude plugin list` showed no caveman plugin, so caveman was installed as skills (`caveman`, `ultracave`, `megacave` from `JuliusBrussee/caveman`), as were the six ponytail skills from upstream HEAD, all in `~/.claude/skills`, with no hooks. Superpowers **7.0.2** installed from `obra/superpowers-marketplace` (user scope, enabled). `wp-plugin-development` + `wp-project-triage` installed from `WordPress/agent-skills` @ `eff3785` (reviewed).
 
 ## 3. Reference A — WSP WordPress MCP (`bilalnaseer/wsp-wordpress-mcp`)
 

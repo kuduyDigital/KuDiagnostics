@@ -1,4 +1,4 @@
-# KUDUY MCP — Phase 2 Architecture (proposal)
+# KUDUY MCP — Phase 2 Architecture
 
 Status: **approved 2026-11-04** (decisions D1–D6 accepted).
 
@@ -201,6 +201,8 @@ Long operations (bulk SEO, bulk image alt text, CSS regeneration of many pages, 
 - Code exec / WP-CLI: only with D4 constant + `kuduy:code` scope; time-limited; full audit of code text.
 
 ## 14. Compatibility matrix (target — nothing verified yet)
+
+Phase 0 only proved the **test environment** boots (Playground: PHP 8.3 + WP 7.1.4 + Elementor 4.3.6 + WooCommerce 11.2.1, all active). The plugin itself is untested on everything below until Phase 3+.
 
 | Component | Versions to test | Status |
 |---|---|---|

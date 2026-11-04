@@ -22,3 +22,9 @@
 - Playground scripts now pass `--wp=7.1 --php=8.3`: the CLI defaults `--wp` to `latest`, which ignores the blueprint's preference.
 - Known limit: the quick-tunnel URL changes every run. Move to a named tunnel on our domain before Phase 3's OAuth client tests. On Windows, killing the npm parent can orphan `cloudflared`/`node`; stop with Ctrl+C.
 - **Phase 0 complete.**
+
+## 2026-11-04 — Phases 0–2 close-out audit
+
+- Re-verified in a fresh PATH: PHP 8.3.36, Composer 2.11.1, cloudflared 2026.10.7, Node 24.18.0, 11 skills, Superpowers enabled.
+- `01-research-report.md` §1–2: added dated corrections (machine facts and skill install method differed from the original report). Architecture title no longer says "proposal"; §14 notes that only the environment, not the plugin, is verified.
+- Deferred on purpose, each tied to its phase: UNVERIFIED items (MCP client versions → Phase 3 E2E; Elementor Kit/atomic storage → Phase 5; SEO/Woo/ACF APIs → Phases 6–7; `update_plugins_{host}` signature → Phase 3; Tasks extension → later), emailed recovery link (§10, Phase 8 decision).
