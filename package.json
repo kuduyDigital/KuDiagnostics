@@ -1,0 +1,12 @@
+{
+  "name": "kuduy-mcp-dev",
+  "private": true,
+  "description": "Dev tooling only. Nothing here ships in the plugin ZIP.",
+  "scripts": {
+    "playground": "wp-playground-cli server --blueprint=tests/playground/blueprint.json --port=9400",
+    "playground:check": "wp-playground-cli run-blueprint --blueprint=tests/playground/blueprint.json"
+  },
+  "devDependencies": {
+    "@wp-playground/cli": "3.1.62"
+  }
+}
