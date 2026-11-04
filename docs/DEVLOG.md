@@ -48,3 +48,13 @@
 - Tests: 15 new integration tests, red first (route missing), then 19/19 green on WP 6.9.11/PHP 8.1.34 and WP 7.1.4/PHP 8.3.36. `npm run smoke:mcp` (real HTTP, Elementor + Woo active, noisy mu-plugin): 9/9 — found and fixed core's `Allow` header listing GET/DELETE on our 405.
 - Design notes: legacy method errors stay HTTP 200 (legacy clients read 404 as "session expired"); tool exceptions return a generic `isError` message and log class/file/line only.
 - Auth for now: any WordPress login (cookie or Application Password). OAuth (step 3) replaces it and adds `WWW-Authenticate`.
+
+## 2026-11-05 — Phase 3 step 3: own OAuth 2.1 authorization server (D2 changed)
+
+- **D2 changed (user decision):** `league/oauth2-server` 9.4 requires PHP 8.2 (D3 = 8.1) and has no RFC 8707 `resource`, CIMD, revocation endpoint or family revoke; we wrote a minimal AS. Plan: `docs/plans/phase-3-03-oauth.md`. Rules from the MCP 2026-07-28 authorization pages (fetched today).
+- New `src/OAuth/`: `Urls`, `Scopes`, `Clients` (DCR + CIMD), `Tokens`, `TokenAuth`, `Authorize` (consent at `wp-login.php?action=kuduy-mcp-authorize`), `Endpoints` (PRM, AS metadata, token, register, revoke, root `/.well-known/`). Server/RestController emit 401/403 challenges and filter tools by scope.
+- Design: issuer is a REST path, so the third discovery URL clients try (`{issuer}/.well-known/openid-configuration`) works on hosts that block `/.well-known/`. Opaque `kmcp_at_`/`kmcp_rt_` tokens, SHA-256 only; family id = code hash prefix (no schema change).
+- Tests: 20 new integration tests, red first, then 39/39 green on WP 6.9.11/PHP 8.1.34 and WP 7.1.4/PHP 8.3.36. `npm run smoke:mcp` now runs Claude's whole sign-in over real HTTP (401 → PRM → AS metadata on both paths → DCR → logged-out redirect → real `wp-login.php` login → consent → code → token → bearer `tools/call` → rotation → reuse revokes all): 24/24.
+- Found while testing: (1) the smoke test's noisy mu-plugin broke core's own `wp-login.php` (headers already sent) — limited to non-login pages; (2) WordPress stubs claim `WP_REST_Request::get_json_params()` always returns an array, but it returns null for non-JSON bodies — corrected with a PHPStan stub instead of trusting it. PHPCS: excluded `Squiz…IncorrectTypeHint` (rejects `list<string>` docs; PHPStan checks types).
+- Needs pretty permalinks (admin notice otherwise). Deferred: admin screen to list/revoke connections, expired-row cleanup cron (step 4).
+- Not yet verified: real Claude clients (O11) — needs the tunnel and you signing in.

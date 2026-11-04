@@ -7,6 +7,8 @@
 
 namespace Kuduy\Mcp\Mcp;
 
+use Kuduy\Mcp\OAuth\Scopes;
+use Kuduy\Mcp\OAuth\TokenAuth;
 use Kuduy\Mcp\Plugin;
 
 /**
@@ -190,8 +192,23 @@ final class Server {
 		if ( null === $tool || ( true !== $tool->is_available() && ! self::list_unavailable() ) ) {
 			return self::fail( $id, -32602, 'Unknown tool: ' . ( is_string( $name ) ? $name : '' ), $modern ? 400 : 200 );
 		}
+		if ( ! self::scope_allows( $tool ) ) {
+			$out            = self::fail( $id, -32001, 'Insufficient scope: this tool needs ' . $tool->scope(), 403 );
+			$out['headers'] = array( 'WWW-Authenticate' => TokenAuth::challenge( 'insufficient_scope', $tool->scope() ) );
+			return $out;
+		}
 		$result = Executor::call( $tool, $params['arguments'] ?? null );
 		return self::ok( $id, $modern ? self::modern_result( $result, false ) : $result );
+	}
+
+	/**
+	 * OAuth scope check; cookie/Application Password users are limited by capabilities only.
+	 *
+	 * @param Tool $tool Tool.
+	 */
+	private static function scope_allows( Tool $tool ): bool {
+		$granted = TokenAuth::scopes();
+		return null === $granted || Scopes::allows( $granted, $tool->scope() );
 	}
 
 	/**
@@ -202,7 +219,7 @@ final class Server {
 	private static function list_tools(): array {
 		$tools = array();
 		foreach ( ToolRegistry::create()->all() as $tool ) {
-			if ( ( true !== $tool->is_available() && ! self::list_unavailable() ) || ! current_user_can( $tool->capability( array() ) ) ) {
+			if ( ( true !== $tool->is_available() && ! self::list_unavailable() ) || ! self::scope_allows( $tool ) || ! current_user_can( $tool->capability( array() ) ) ) {
 				continue;
 			}
 			$schema = $tool->input_schema();
@@ -227,13 +244,19 @@ final class Server {
 	}
 
 	/**
-	 * Error response when nobody is logged in, else null. OAuth (step 3) adds WWW-Authenticate.
+	 * 401 with an OAuth challenge when the request is not authenticated, else null.
 	 *
 	 * @param mixed $id Request id.
-	 * @return array{status:int, body:array<string, mixed>}|null
+	 * @return array{status:int, body:array<string, mixed>, headers:array<string, string>}|null
 	 */
 	private function authed( mixed $id ): ?array {
-		return is_user_logged_in() ? null : self::fail( $id, -32001, 'Authentication required', 401 );
+		$error = TokenAuth::error();
+		if ( null === $error && is_user_logged_in() ) {
+			return null;
+		}
+		$out            = self::fail( $id, -32001, null === $error ? 'Authentication required' : 'Invalid or expired access token', 401 );
+		$out['headers'] = array( 'WWW-Authenticate' => TokenAuth::challenge( $error ) );
+		return $out;
 	}
 
 	/**

@@ -142,9 +142,13 @@ final class RestController {
 	/**
 	 * Server output to REST response.
 	 *
-	 * @param array{status:int, body:array<string, mixed>|null} $out Server output.
+	 * @param array{status:int, body:array<string, mixed>|null, headers?:array<string, string>} $out Server output.
 	 */
 	private static function respond( array $out ): \WP_REST_Response {
-		return new \WP_REST_Response( $out['body'], $out['status'] );
+		$response = new \WP_REST_Response( $out['body'], $out['status'] );
+		foreach ( $out['headers'] ?? array() as $name => $value ) {
+			$response->header( $name, $value );
+		}
+		return $response;
 	}
 }

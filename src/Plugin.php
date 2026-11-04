@@ -10,6 +10,9 @@ namespace Kuduy\Mcp;
 use Kuduy\Mcp\Http\OutputGuard;
 use Kuduy\Mcp\Lifecycle\Migrations;
 use Kuduy\Mcp\Mcp\RestController;
+use Kuduy\Mcp\OAuth\Authorize;
+use Kuduy\Mcp\OAuth\Endpoints;
+use Kuduy\Mcp\OAuth\TokenAuth;
 
 /**
  * Plugin entry point.
@@ -40,13 +43,31 @@ final class Plugin {
 		}
 		self::$hooked = true;
 
-		if ( did_action( 'rest_api_init' ) ) {
-			RestController::register();
-		} else {
-			add_action( 'rest_api_init', array( RestController::class, 'register' ) );
+		foreach ( array( array( RestController::class, 'register' ), array( Endpoints::class, 'register' ) ) as $routes ) {
+			if ( did_action( 'rest_api_init' ) ) {
+				$routes();
+			} else {
+				add_action( 'rest_api_init', $routes );
+			}
 		}
 		add_filter( 'rest_request_after_callbacks', array( RestController::class, 'after_callbacks' ), 10, 3 );
 		add_filter( 'rest_post_dispatch', array( RestController::class, 'allow_header' ), 20, 3 );
 		add_filter( 'rest_pre_serve_request', array( OutputGuard::class, 'before_serve' ), 0, 3 );
+
+		// After core's cookie (10) and Application Password (20) checks: a bad bearer token wins and yields no user.
+		add_filter( 'determine_current_user', array( TokenAuth::class, 'determine_current_user' ), 30 );
+		add_action( 'login_form_kuduy-mcp-authorize', array( Authorize::class, 'route' ) );
+		add_action( 'init', array( Endpoints::class, 'well_known' ), 0 );
+		add_action( 'admin_notices', array( self::class, 'permalink_notice' ) );
+	}
+
+	/**
+	 * OAuth issuer URLs need pretty permalinks (an issuer with ?rest_route= is not valid).
+	 */
+	public static function permalink_notice(): void {
+		if ( '' !== (string) get_option( 'permalink_structure' ) || ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+		echo '<div class="notice notice-error"><p>' . esc_html__( 'KUDUY MCP needs pretty permalinks so Claude can sign in. Go to Settings → Permalinks and choose any option except "Plain".', 'kuduy-mcp' ) . '</p></div>';
 	}
 }

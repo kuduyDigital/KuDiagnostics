@@ -22,16 +22,16 @@ Legend: **U** unit (PHPUnit, no WP), **I** integration (WP test suite / Playgrou
 
 | # | Feature | Tests | Type |
 |---|---|---|---|
-| O1 | 401 challenge | `WWW-Authenticate` has `resource_metadata` + `scope` | I |
-| O2 | Metadata | RFC 9728 + 8414 at `.well-known` and alias paths; `resource` equals MCP URL exactly | I |
-| O3 | CIMD | Claude Code metadata URL fetched, cached, redirect URIs enforced; SSRF guard (HTTPS only, no private IPs, size/time caps) | U, I |
-| O4 | DCR | register returns client; invalid redirect rejected | I |
-| O5 | Authorize | S256 required; plain rejected; consent shows redirect host; login redirect; `iss` returned | I, M |
-| O6 | Loopback | `localhost` and `127.0.0.1` matched on any port | U |
-| O7 | Token | code single-use; verifier mismatch → `invalid_grant`; `resource`/audience bound | I |
-| O8 | Refresh | rotation; reuse of old refresh revokes family | I |
-| O9 | Revoke | RFC 7009; revoked token → 401 | I |
-| O10 | Scopes | token without `kuduy:write` calling a write tool → 403 `insufficient_scope` | I |
+| O1 | 401 challenge | `WWW-Authenticate` has `resource_metadata` + `scope` | I — **pass 2026-11-05** (also real HTTP) |
+| O2 | Metadata | RFC 9728 + 8414 at `.well-known` and alias paths; `resource` equals MCP URL exactly | I — **pass 2026-11-05** (root `.well-known` + REST `{issuer}/.well-known/openid-configuration` over real HTTP) |
+| O3 | CIMD | Claude Code metadata URL fetched, cached, redirect URIs enforced; SSRF guard (HTTPS only, no private IPs, size/time caps) | I — **pass 2026-11-05** with a mocked fetch (`wp_safe_remote_get`, no redirects, 64 KB, 5 s, `client_id` must equal URL). Real Claude Code URL: in O11 |
+| O4 | DCR | register returns client; invalid redirect rejected | I — **pass 2026-11-05** |
+| O5 | Authorize | S256 required; plain rejected; consent shows redirect host; login redirect; `iss` returned | I, M — **pass 2026-11-05** (I + real `wp-login.php` login and consent form over HTTP; visual check still manual) |
+| O6 | Loopback | `localhost` and `127.0.0.1` matched on any port | I — **pass 2026-11-05** |
+| O7 | Token | code single-use; verifier mismatch → `invalid_grant`; `resource`/audience bound | I — **pass 2026-11-05** (code reuse also revokes its tokens; raw tokens never stored) |
+| O8 | Refresh | rotation; reuse of old refresh revokes family | I — **pass 2026-11-05** (also real HTTP) |
+| O9 | Revoke | RFC 7009; revoked token → 401 | I — **pass 2026-11-05** |
+| O10 | Scopes | token without `kuduy:write` calling a write tool → 403 `insufficient_scope` | I — **pass 2026-11-05** (hierarchy write ⊃ read; consent limited by caps) |
 | O11 | Real clients | connect + call from claude.ai, Desktop, Claude Code | E |
 
 ## Permissions

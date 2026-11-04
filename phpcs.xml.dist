@@ -15,6 +15,8 @@
   <rule ref="WordPress">
     <!-- PSR-4 class files (src/Lifecycle/Migrations.php), not class-migrations.php. -->
     <exclude name="WordPress.Files.FileName"/>
+    <!-- Rejects generic doc types (list<string>, array{...}); PHPStan checks these more strictly. -->
+    <exclude name="Squiz.Commenting.FunctionComment.IncorrectTypeHint"/>
   </rule>
 
   <rule ref="WordPress.WP.I18n">

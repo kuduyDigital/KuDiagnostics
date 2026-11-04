@@ -23,11 +23,12 @@ const blueprint = {
     {
       step: 'writeFile',
       path: '/wordpress/wp-content/mu-plugins/noise.php',
-      data: "<?php add_action( 'init', function () { echo 'NOISE-FROM-ANOTHER-PLUGIN'; trigger_error( 'smoke notice', E_USER_NOTICE ); } );\n",
+      // Not on wp-login.php: stray output there breaks core's own login (headers already sent), unrelated to MCP.
+      data: "<?php add_action( 'init', function () { if ( str_contains( $_SERVER['REQUEST_URI'] ?? '', 'wp-login.php' ) ) { return; } echo 'NOISE-FROM-ANOTHER-PLUGIN'; trigger_error( 'smoke notice', E_USER_NOTICE ); } );\n",
     },
     {
       step: 'runPHP',
-      code: "<?php require '/wordpress/wp-load.php'; [ $pass ] = WP_Application_Passwords::create_new_application_password( 1, array( 'name' => 'smoke' ) ); file_put_contents( '/smoke-out/auth.txt', 'admin:' . $pass );",
+      code: "<?php require '/wordpress/wp-load.php'; [ $pass ] = WP_Application_Passwords::create_new_application_password( 1, array( 'name' => 'smoke' ) ); file_put_contents( '/smoke-out/auth.txt', 'admin:' . $pass ); $pw = wp_generate_password( 24, false ); wp_set_password( $pw, 1 ); file_put_contents( '/smoke-out/login.txt', $pw ); update_option( 'permalink_structure', '/%postname%/' );",
     },
   ],
 };
@@ -91,6 +92,84 @@ try {
   res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{"jsonrpc":' });
   [body, text] = await json(res);
   check('invalid JSON: 400 -32700', res.status === 400 && body?.error?.code === -32700, `${res.status} ${text.slice(0, 200)}`);
+
+  // ---- OAuth: the sign-in Claude performs, over real HTTP ----
+  res = await modern('tools/list');
+  const challenge = res.headers.get('www-authenticate') ?? '';
+  const prmUrl = challenge.match(/resource_metadata="([^"]+)"/)?.[1];
+  check('401 carries WWW-Authenticate resource_metadata + scope', res.status === 401 && !!prmUrl && /scope="kuduy:read kuduy:write"/.test(challenge), challenge);
+
+  const prm = await (await fetch(prmUrl)).json();
+  const issuer = prm.authorization_servers?.[0];
+  check('PRM names this resource and its issuer', prm.resource === url && typeof issuer === 'string', JSON.stringify(prm));
+
+  const issuerPath = new URL(issuer).pathname;
+  const wk = await fetch(`${BASE}/.well-known/oauth-authorization-server${issuerPath}`);
+  const asm = wk.status === 200 ? await wk.json() : {};
+  check('AS metadata at /.well-known (RFC 8414 path insertion)', asm.issuer === issuer, `${wk.status}`);
+  const oidc = await (await fetch(`${issuer}/.well-known/openid-configuration`)).json();
+  check('AS metadata at REST fallback {issuer}/.well-known/openid-configuration', oidc.issuer === issuer && oidc.code_challenge_methods_supported?.[0] === 'S256', JSON.stringify(oidc).slice(0, 200));
+  const wkPrm = await fetch(`${BASE}/.well-known/oauth-protected-resource${new URL(url).pathname}`);
+  check('PRM at /.well-known/oauth-protected-resource{path}', wkPrm.status === 200 && (await wkPrm.json()).resource === url, String(wkPrm.status));
+
+  const redirectUri = 'http://127.0.0.1:53682/callback';
+  res = await fetch(oidc.registration_endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ client_name: 'Smoke Client', redirect_uris: ['http://127.0.0.1/callback'] }) });
+  const client = await res.json();
+  check('DCR registers a public client', res.status === 201 && client.token_endpoint_auth_method === 'none', JSON.stringify(client));
+
+  const b64url = (buf) => Buffer.from(buf).toString('base64url');
+  const { createHash, randomBytes } = await import('node:crypto');
+  const verifier = b64url(randomBytes(32));
+  const authUrl = new URL(oidc.authorization_endpoint);
+  Object.entries({ response_type: 'code', client_id: client.client_id, redirect_uri: redirectUri, code_challenge: b64url(createHash('sha256').update(verifier).digest()), code_challenge_method: 'S256', state: 'smoke-state', scope: 'kuduy:read kuduy:write offline_access', resource: url })
+    .forEach(([k, v]) => authUrl.searchParams.set(k, v));
+
+  const jar = new Map([['wordpress_test_cookie', 'WP%20Cookie%20check']]);
+  const cookies = () => [...jar].map(([k, v]) => `${k}=${v}`).join('; ');
+  const keep = (r) => r.headers.getSetCookie().forEach((c) => { const [kv] = c.split(';'); const i = kv.indexOf('='); jar.set(kv.slice(0, i), kv.slice(i + 1)); });
+
+  const excerpt = (t) => (t.match(/<div id="login_error"[\s\S]*?<\/div>/)?.[0] ?? t.match(/<title>[\s\S]*?<\/title>/)?.[0] ?? t.slice(0, 300)).replace(/\s+/g, ' ');
+  res = await fetch(authUrl, { redirect: 'manual' });
+  check('authorize while logged out redirects to wp-login.php', res.status === 302 && (res.headers.get('location') ?? '').includes('wp-login.php'), `${res.status} ${res.headers.get('location')} ${excerpt(await res.text())} url=${authUrl.href.slice(0, 120)}`);
+
+  res = await fetch(`${BASE}/wp-login.php`, { method: 'POST', redirect: 'manual', headers: { 'Content-Type': 'application/x-www-form-urlencoded', Cookie: cookies() }, body: new URLSearchParams({ log: 'admin', pwd: readFileSync(join(out, 'login.txt'), 'utf8'), testcookie: '1', redirect_to: authUrl.href }) });
+  keep(res);
+  check('real wp-login.php login', res.status === 302 && [...jar.keys()].some((k) => k.startsWith('wordpress_logged_in_')), `${res.status} ${excerpt(await res.text())}`);
+
+  res = await fetch(authUrl, { headers: { Cookie: cookies() } });
+  const html = await res.text();
+  const nonce = html.match(/name="_kuduy_nonce" value="([^"]+)"/)?.[1];
+  check('consent page: names client + return host, anti-framing headers', res.status === 200 && html.includes('Smoke Client') && html.includes('127.0.0.1') && res.headers.get('x-frame-options') === 'DENY' && /frame-ancestors 'none'/.test(res.headers.get('content-security-policy') ?? '') && !!nonce, `${res.status} xfo=${res.headers.get('x-frame-options')}`);
+
+  const form = new URLSearchParams();
+  for (const [, name, value] of html.matchAll(/<input type="hidden" name="([^"]+)" value="([^"]*)"/g)) form.set(name, value.replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#039;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>'));
+  form.append('scopes[]', 'kuduy:read');
+  form.append('scopes[]', 'kuduy:write');
+  form.set('_kuduy_nonce', nonce ?? '');
+  form.set('decision', 'approve');
+  res = await fetch(oidc.authorization_endpoint, { method: 'POST', redirect: 'manual', headers: { 'Content-Type': 'application/x-www-form-urlencoded', Cookie: cookies() }, body: form });
+  const back = new URL(res.headers.get('location') ?? 'http://invalid/');
+  check('approve redirects to client with code, state, iss', res.status === 302 && back.origin + back.pathname === redirectUri && !!back.searchParams.get('code') && back.searchParams.get('state') === 'smoke-state' && back.searchParams.get('iss') === issuer, `${res.status} ${back.href}`);
+
+  const tokenReq = (params) => fetch(oidc.token_endpoint, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams(params) });
+  res = await tokenReq({ grant_type: 'authorization_code', code: back.searchParams.get('code') ?? '', redirect_uri: redirectUri, client_id: client.client_id, code_verifier: verifier, resource: url });
+  const t1 = await res.json();
+  check('token endpoint issues rotating tokens, no-store', res.status === 200 && t1.access_token?.startsWith('kmcp_at_') && t1.refresh_token?.startsWith('kmcp_rt_') && res.headers.get('cache-control') === 'no-store', JSON.stringify(t1).slice(0, 200));
+
+  res = await modern('tools/call', { name: 'kuduy-site-info' }, { Authorization: `Bearer ${t1.access_token}` });
+  [body] = await json(res);
+  check('MCP tools/call with OAuth bearer', res.status === 200 && body?.result?.isError === false && body.result.structuredContent?.user?.id === 1, `${res.status}`);
+
+  res = await tokenReq({ grant_type: 'refresh_token', refresh_token: t1.refresh_token, client_id: client.client_id, resource: url });
+  const t2 = await res.json();
+  check('refresh rotates', res.status === 200 && t2.refresh_token && t2.refresh_token !== t1.refresh_token, JSON.stringify(t2).slice(0, 200));
+  res = await tokenReq({ grant_type: 'refresh_token', refresh_token: t1.refresh_token, client_id: client.client_id });
+  const reuse = await res.json();
+  res = await tokenReq({ grant_type: 'refresh_token', refresh_token: t2.refresh_token, client_id: client.client_id });
+  const after = await res.json();
+  check('refresh reuse -> invalid_grant and whole connection revoked', reuse.error === 'invalid_grant' && after.error === 'invalid_grant', `${reuse.error} / ${after.error}`);
+  res = await modern('tools/list', {}, { Authorization: `Bearer ${t2.access_token}` });
+  check('revoked access token -> 401 invalid_token', res.status === 401 && /error="invalid_token"/.test(res.headers.get('www-authenticate') ?? ''), `${res.status} ${res.headers.get('www-authenticate')}`);
 } catch (e) {
   check('smoke run', false, e.message);
 } finally {
