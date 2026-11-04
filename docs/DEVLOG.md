@@ -38,3 +38,13 @@
 - Gotchas found: (1) a blueprint's `preferredVersions` — or its defaults, latest PHP/WP — **override** `--wp`/`--php`; the wrapper writes the requested versions into a generated blueprint. (2) `composer.bat` under cmd/PowerShell eats `^` in constraints (`^10.5` became `10.5`); use quotes in Git Bash or `php composer.phar`. (3) PHPUnit's launcher has a shebang line, so the runner calls `PHPUnit\TextUI\Application` directly.
 - CI: syntax lint on PHP 8.1–8.4, static job, integration matrix (WP 6.9/PHP 8.1, WP 7.1/PHP 8.3).
 - Deferred: deactivation hook (no cron yet), unit test suite (no pure logic yet).
+- CI run 41868976135: all jobs green on GitHub.
+
+## 2026-11-04 — Phase 3 step 2: own MCP layer (D1 changed)
+
+- **D1 changed (user decision):** `wordpress/mcp-adapter` v0.7.0 deprecates bundling ("will be removed in a future version"); a bundled copy calls `_deprecated_function`, defines global `WP_MCP_VERSION` and shares hook names even when prefixed; the canonical plugin is not on wordpress.org. We now run our own thin dual-era layer. Core Abilities registration deferred (it would bypass OAuth scopes). Architecture §2 updated.
+- Wire rules taken from `schema/2026-07-28/schema.ts`, `schema/2025-11-25/schema.ts`, and the spec pages `streamable-http` + `versioning` (fetched today). Plan: `docs/plans/phase-3-02-mcp-layer.md`.
+- New: `Mcp\{Tool, ToolError, ToolRegistry, Executor, Server, RestController}`, `Http\OutputGuard`, `Modules\Core\SiteInfo` (`kuduy-site-info`). Validation reuses core `rest_validate_value_from_schema()`.
+- Tests: 15 new integration tests, red first (route missing), then 19/19 green on WP 6.9.11/PHP 8.1.34 and WP 7.1.4/PHP 8.3.36. `npm run smoke:mcp` (real HTTP, Elementor + Woo active, noisy mu-plugin): 9/9 — found and fixed core's `Allow` header listing GET/DELETE on our 405.
+- Design notes: legacy method errors stay HTTP 200 (legacy clients read 404 as "session expired"); tool exceptions return a generic `isError` message and log class/file/line only.
+- Auth for now: any WordPress login (cookie or Application Password). OAuth (step 3) replaces it and adds `WWW-Authenticate`.

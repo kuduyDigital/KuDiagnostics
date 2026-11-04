@@ -67,3 +67,21 @@ jobs:
         env:
           KUDUY_WP: ${{ matrix.wp }}
           KUDUY_PHP: ${{ matrix.php }}
+
+  smoke:
+    name: MCP over real HTTP
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer:v2
+          coverage: none
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: composer install --no-interaction --no-progress --prefer-dist
+      - run: npm ci --no-fund --no-audit
+      - run: npm run smoke:mcp

@@ -7,13 +7,13 @@ Legend: **U** unit (PHPUnit, no WP), **I** integration (WP test suite / Playgrou
 | # | Feature | Tests | Type |
 |---|---|---|---|
 | F1 | Activation / deactivation / uninstall | tables created/upgraded; cron cleared on deactivate; uninstall drops tables + options only when `KUDUY_MCP_DELETE_DATA_ON_UNINSTALL` | I — **pass 2026-11-04** (`tests/integration/LifecycleTest.php`, WP 6.9.11/PHP 8.1.34 and WP 7.1.4/PHP 8.3.36) except "cron cleared on deactivate": not run, no cron hooks until audit retention (Phase 3 step 4) |
-| F2 | Output guard | stray `echo` from another plugin on `init` does not break JSON | I |
-| F3 | `server/discover` (2026-07-28) | returns supported versions + capabilities | I |
-| F4 | Legacy `initialize` (2025-11-25) | handshake + session + `tools/list` | I |
-| F5 | Header validation | missing `Mcp-Method` / mismatched `Mcp-Name` → 400 `-32020`; bad version → 400 `-32022` | I |
-| F6 | Origin validation | foreign Origin → 403 | I |
-| F7 | `tools/list` | names valid, schemas valid JSON Schema, unavailable integrations hidden | U, I |
-| F8 | `tools/call` | input validation errors are tool errors, fatals become JSON-RPC errors | I |
+| F2 | Output guard | stray `echo` from another plugin on `init` does not break JSON | I — **pass 2026-11-04** (`npm run smoke:mcp`, real HTTP, mu-plugin echoes + `E_USER_NOTICE` with `WP_DEBUG_DISPLAY`) |
+| F3 | `server/discover` (2026-07-28) | returns supported versions + capabilities | I — **pass 2026-11-04** |
+| F4 | Legacy `initialize` (2025-11-25) | handshake + `tools/list` (no `Mcp-Session-Id`: sessions are optional in 2025-11-25) | I — **pass 2026-11-04** (also over real HTTP) |
+| F5 | Header validation | missing `Mcp-Method` / mismatched `Mcp-Name` → 400 `-32020`; bad version → 400 `-32022` | I — **pass 2026-11-04** (incl. base64 `Mcp-Name`) |
+| F6 | Origin validation | foreign Origin → 403 | I — **pass 2026-11-04** |
+| F7 | `tools/list` | names valid, schemas valid JSON Schema, unavailable integrations hidden | U, I — **pass 2026-11-04** (I only; filtered by capability) |
+| F8 | `tools/call` | input validation errors and exceptions are tool errors (`isError: true`, per MCP); exception internals never returned | I — **pass 2026-11-04** |
 | F9 | Audit log | every call logged; secrets redacted; retention purge | U, I |
 | F10 | Snapshots | destructive tool writes snapshot; restore works | I |
 | F11 | Rate limit | burst over limit → 429 with retry hint | I |
