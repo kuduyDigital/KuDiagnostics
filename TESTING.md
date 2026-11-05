@@ -1,6 +1,46 @@
-# KUDUY MCP — Feature Test Matrix
+# KUDUY MCP — Testing
 
-Legend: **U** unit (PHPUnit, no WP), **I** integration (WP test suite / Playground), **E** end-to-end with a real Claude client against staging, **M** manual check. Status for every row starts at `not run`.
+A PHP function existing is not proof that a feature works. A row is `pass` only with a passing automated test or recorded manual evidence, with the date and versions. Rows without a result have **not been run**.
+
+## 1. Strategy
+
+| Layer | Tool | What it proves | Where |
+|---|---|---|---|
+| Syntax | `php -l` on PHP 8.1, 8.2, 8.3, 8.4 | Code parses on every supported PHP | CI |
+| Coding standards | PHPCS with WordPress Coding Standards 3.4.1 | Escaping, sanitizing, nonces, prepared SQL, i18n | Local + CI |
+| Static analysis | PHPStan 2.3.5 level 6 + phpstan-wordpress | Types and WordPress API misuse | Local + CI |
+| Integration | PHPUnit 10.5 **inside WordPress Playground** (`scripts/test-integration.mjs`) | Real WordPress: REST dispatch, OAuth, DB tables, cron, updater hooks. Pass/fail read from the JUnit report; the WP/PHP versions actually used are printed | Local + CI: WP 6.9 / PHP 8.1 and WP 7.1 / PHP 8.3 |
+| Real HTTP smoke | `scripts/smoke-mcp.mjs` | The endpoint over real HTTP with Elementor + WooCommerce active and a noisy mu-plugin; the whole OAuth sign-in with a real `wp-login.php` login | Local + CI |
+| Release | `scripts/build-release.php` + `scripts/check-release.mjs` | The ZIP installs as an upload, activates, creates tables and routes, ships no dev files | CI on every push and before every release |
+| Real update | `scripts/check-update.mjs <from> <to>` | Install an older GitHub release, let core find and install the newer one, data kept | Manual |
+| Security probe | Throwaway local site + scripted HTTP requests (kept out of the repo) | Confirms or rules out exploit paths found in reviews | Manual, per audit |
+| End to end | Real Claude clients against a public HTTPS staging site | claude.ai, Desktop, Claude Code sign in and call tools | Manual (O11) |
+
+Process: test first (red), then code (green); every new security fix gets a regression test; manual checks are written down here with the date.
+
+## 2. Commands
+
+See `CLAUDE.md` → Commands. Integration: `KUDUY_WP=<6.9|7.1> KUDUY_PHP=<8.1|8.3> node scripts/test-integration.mjs`. Smoke: `node scripts/smoke-mcp.mjs`.
+
+## 3. Latest results (2026-11-05, commit `0ce48a0`)
+
+| Check | Result |
+|---|---|
+| PHPCS (WPCS) | 0 errors, 0 warnings |
+| PHPStan level 6 | No errors |
+| `composer audit` | No advisories |
+| `npm audit` | 3 moderate in `@wp-playground/cli` dependencies (dev only, not shipped) |
+| Integration, WordPress 6.9.11 / PHP 8.1.34 | **67 / 67 pass** |
+| Integration, WordPress 7.1.4 / PHP 8.3.36 | **67 / 67 pass** |
+| Smoke over real HTTP (WP 7.1.4 / PHP 8.3, Elementor 4.3.6 + WooCommerce 11.2.1 active) | **26 / 26 pass** (on `3591d92`) |
+| Security probe (read-only token on core routes, `rest_route` override, PATH_INFO, unticked consent, unauthenticated `initialize`, root AS metadata) | All refused / as expected on 0.1.2 |
+| GitHub CI on `3591d92` | All 9 jobs green; release workflow for `v0.1.2` green |
+| Real update v0.1.0 → v0.1.1 | Pass (2026-11-05) |
+| Real Claude clients (O11) | **Not yet run successfully** |
+
+## 4. Feature test matrix
+
+Legend: **U** unit, **I** integration (Playground), **E** end-to-end with a real Claude client, **M** manual check. Feature status per row lives in `FEATURES.md`.
 
 ## Foundation
 
@@ -17,6 +57,7 @@ Legend: **U** unit (PHPUnit, no WP), **I** integration (WP test suite / Playgrou
 | F9 | Audit log | every call logged; secrets redacted; retention purge | I — **pass 2026-11-05** (`SafetyTest`: ok/denied/error rows, redacted args and results, 90-day purge) |
 | F10 | Snapshots | destructive tool writes snapshot; restore works | I — **pass 2026-11-05** (restores once; others cannot restore) |
 | F11 | Rate limit | burst over limit → 429 with retry hint | I — **pass 2026-11-05** (`Retry-After`) |
+| F12 | Undo needs the original grant | write-scope token cannot restore an admin-scope tool's snapshot; admin-scope token can | I — **pass 2026-11-05** (0.1.2) |
 
 ## OAuth
 
@@ -32,10 +73,12 @@ Legend: **U** unit (PHPUnit, no WP), **I** integration (WP test suite / Playgrou
 | O8 | Refresh | rotation; reuse of old refresh revokes family | I — **pass 2026-11-05** (also real HTTP) |
 | O9 | Revoke | RFC 7009; revoked token → 401 | I — **pass 2026-11-05** |
 | O10 | Scopes | token without `kuduy:write` calling a write tool → 403 `insufficient_scope` | I — **pass 2026-11-05** (hierarchy write ⊃ read; consent limited by caps) |
-| O11 | Real clients | connect + call from claude.ai, Desktop, Claude Code | E |
+| O11 | Real clients | connect + call from claude.ai, Desktop, Claude Code; refresh after 1 h; revoke | E — **open**. Hostinger staging (v0.1.1) checked from outside 2026-11-05: 401 + challenge, PRM, AS metadata, DCR reachable. claude.ai showed "No sign-in · Detected" then "Couldn't reach" → fixed in 0.1.2 (O14). Re-test on 0.1.2 pending |
 | O12 | Token bound to the MCP route | token refused on core routes, with `rest_route` in query or body, and on PATH_INFO tails; plain-permalink `?rest_route=/kuduy-mcp/v1/mcp` still works | I, M — **pass 2026-11-05** (0.1.2; exploit probe over real HTTP: all 401) |
 | O13 | Consent with nothing ticked | approve with every box unticked → `access_denied`, no code | I — **pass 2026-11-05** (0.1.2) |
 | O14 | Sign-in detection | unauthenticated `initialize` → 401 + challenge, so claude.ai detects OAuth | I — **pass 2026-11-05** (0.1.2, also real HTTP); claude.ai check in O11 |
+| O15 | Registration cap | unused DCR clients capped; at cap the oldest unused (> 1 h) is evicted, else 429; not per IP | I — **pass 2026-11-05** (0.1.2) |
+| O16 | No anonymous outbound fetch | logged-out authorize request with a CIMD `client_id` → login redirect, zero HTTP requests | I — **pass 2026-11-05** (0.1.2) |
 
 ## Permissions
 
@@ -122,3 +165,4 @@ Legend: **U** unit (PHPUnit, no WP), **I** integration (WP test suite / Playgrou
 | G2 | Checksum mismatch aborts install | I — **pass 2026-11-05** |
 | G3 | Update from release ZIP keeps data and settings | I, E — release ZIP install + activation **pass 2026-11-05** (`npm run check:release`, WP 6.9/PHP 8.1 and WP 7.1/PHP 8.1); real update v0.1.0 → v0.1.1 from GitHub Releases **pass 2026-11-05** (`npm run check:update`: core offered it, checksum verified, `Plugin_Upgrader` installed, settings + rows kept). Note: after this programmatic upgrade core left the plugin inactive (reactivated by the script); Plugins-screen and auto-update paths still to observe |
 | G4 | GitHub API failure / rate limit → no error spam, cached result | I — **pass 2026-11-05** (12 h cache, ETag/304, 1 h retry after failure) |
+| G5 | "Check again" on Dashboard → Updates re-reads GitHub; opening the screen alone uses the cache | I — **pass 2026-11-05** |
