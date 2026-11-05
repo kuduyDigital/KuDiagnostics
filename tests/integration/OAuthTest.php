@@ -228,17 +228,18 @@ final class OAuthTest extends TestCase {
 	 * Approve the consent screen.
 	 *
 	 * @param array<string, mixed> $q      Authorization params.
-	 * @param list<string>|null    $scopes Ticked scopes (null = every box, as the form is rendered).
+	 * @param list<string>|null    $scopes Ticked scopes (null = the requested ones, ticked as the form is rendered).
 	 * @param string               $choice approve|deny.
 	 * @return array<string, mixed> Handler result.
 	 */
 	private static function consent( array $q, ?array $scopes = null, string $choice = 'approve' ): array {
-		$post = array_merge(
+		$requested = Scopes::parse( is_string( $q['scope'] ?? null ) ? $q['scope'] : '' );
+		$post      = array_merge(
 			$q,
 			array(
 				'decision'     => $choice,
 				'_kuduy_nonce' => wp_create_nonce( 'kuduy-mcp-authorize' ),
-				'scopes'       => $scopes ?? Scopes::supported(),
+				'scopes'       => $scopes ?? ( $requested ? $requested : Scopes::DEFAULT ),
 			)
 		);
 		if ( array() === $post['scopes'] ) {
@@ -766,6 +767,29 @@ final class OAuthTest extends TestCase {
 		self::as_bearer( $t['access_token'] );
 		$this->assertSame( 200, $this->mcp( 'tools/call', 'kuduy-site-info' )->get_status(), 'kuduy:write implies kuduy:read' );
 		$this->assertSame( 200, $this->mcp( 'tools/call', 'test-write' )->get_status() );
+	}
+
+	public function test_admins_may_opt_in_to_admin_scope_the_client_did_not_request(): void {
+		[ , $challenge ] = self::pkce();
+		$client          = $this->register_client();
+
+		$page = Authorize::handle( 'GET', self::query( $client, $challenge ), array() );
+		$this->assertMatchesRegularExpression( '/value="kuduy:write" checked/', $page['html'] );
+		$this->assertMatchesRegularExpression( '/value="kuduy:admin">/', $page['html'], 'admin offered, unticked' );
+
+		$t = $this->tokens( $client );
+		$this->assertSame( 'kuduy:read kuduy:write', $t['scope'], 'left as rendered: no admin' );
+
+		$t = $this->tokens( $client, array( 'kuduy:read', 'kuduy:write', 'kuduy:admin' ) );
+		$this->assertSame( 'kuduy:read kuduy:write kuduy:admin', $t['scope'], 'ticked: admin granted' );
+		$this->assertStringNotContainsString( 'kuduy:code', $t['scope'], 'code is never offered unasked' );
+
+		$editor = self::user( 'editor' );
+		wp_set_current_user( $editor );
+		$page = Authorize::handle( 'GET', self::query( $client, $challenge ), array() );
+		$this->assertStringNotContainsString( 'kuduy:admin', $page['html'], 'not offered without manage_options' );
+		$t = $this->tokens( $client, array( 'kuduy:read', 'kuduy:write', 'kuduy:admin' ) );
+		$this->assertSame( 'kuduy:read kuduy:write', $t['scope'], 'a forged admin box is ignored' );
 	}
 
 	public function test_oauth_and_tokens_require_https_outside_local_sites(): void {

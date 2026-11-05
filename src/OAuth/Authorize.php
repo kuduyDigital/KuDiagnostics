@@ -103,12 +103,14 @@ final class Authorize {
 		if ( ! $offered ) {
 			return $fail( 'access_denied', 'Your WordPress account cannot grant the requested access.' );
 		}
+		// Clients such as claude.ai never ask for admin; site admins may still opt in (unticked by default).
+		$optional = array_values( array_diff( Scopes::for_user( array( Scopes::ADMIN ), $user ), $offered ) );
 
 		if ( 'POST' !== $method ) {
 			return array(
 				'type'   => 'page',
 				'status' => 200,
-				'html'   => self::consent( $client, $redirect, $offered, $user, array_intersect_key( $in, array_flip( self::PARAMS ) ) ),
+				'html'   => self::consent( $client, $redirect, $offered, $optional, $user, array_intersect_key( $in, array_flip( self::PARAMS ) ) ),
 			);
 		}
 
@@ -119,7 +121,7 @@ final class Authorize {
 			return $fail( 'access_denied', 'The user declined.' );
 		}
 		// Browsers send nothing for unticked boxes: no `scopes` field means nothing was granted.
-		$ticked = array_values( array_intersect( $offered, (array) ( $post['scopes'] ?? array() ) ) );
+		$ticked = array_values( array_intersect( Scopes::supported(), array_merge( $offered, $optional ), (array) ( $post['scopes'] ?? array() ) ) );
 		if ( ! $ticked ) {
 			return $fail( 'access_denied', 'No access was granted.' );
 		}
@@ -179,11 +181,12 @@ final class Authorize {
 	 *
 	 * @param array{client_id:string, name:string, redirect_uris:list<string>, type:string} $client   Client.
 	 * @param string                                                                        $redirect Redirect URI.
-	 * @param list<string>                                                                  $offered  Scopes the user may grant.
+	 * @param list<string>                                                                  $offered  Requested scopes the user may grant (ticked).
+	 * @param list<string>                                                                  $optional Scopes not requested that the user may add (unticked).
 	 * @param \WP_User                                                                      $user     User.
 	 * @param array<string, mixed>                                                          $params   OAuth params to carry.
 	 */
-	private static function consent( array $client, string $redirect, array $offered, \WP_User $user, array $params ): string {
+	private static function consent( array $client, string $redirect, array $offered, array $optional, \WP_User $user, array $params ): string {
 		$host     = (string) wp_parse_url( $redirect, PHP_URL_HOST );
 		$loopback = in_array( $host, array( 'localhost', '127.0.0.1', '[::1]' ), true );
 		$labels   = array(
@@ -209,6 +212,10 @@ final class Authorize {
 		$html .= '<fieldset><legend>' . esc_html__( 'Allow:', 'kuduy-mcp' ) . '</legend>';
 		foreach ( $offered as $scope ) {
 			$html .= '<p><label><input type="checkbox" name="scopes[]" value="' . esc_attr( $scope ) . '" checked> ' . esc_html( $labels[ $scope ] ?? $scope ) . '</label></p>';
+		}
+		foreach ( $optional as $scope ) {
+			$html .= '<p><label><input type="checkbox" name="scopes[]" value="' . esc_attr( $scope ) . '"> ' . esc_html( $labels[ $scope ] ?? $scope ) . '</label><br>'
+				. '<small>' . esc_html__( 'Optional. Not requested by the application; tick only if it should also manage plugins, themes, users, settings and Elementor site templates.', 'kuduy-mcp' ) . '</small></p>';
 		}
 		$html .= '</fieldset>';
 		foreach ( $params as $key => $value ) {

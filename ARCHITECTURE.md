@@ -170,7 +170,7 @@ sequenceDiagram
 
 All layers must pass:
 
-1. **OAuth scope** granted at consent: `kuduy:read` ⊂ `kuduy:write` ⊂ `kuduy:admin`; `kuduy:code` separate and only offered when D4's constant is set. Offered scopes are cut to what the user can do (`read`, `edit_posts`, `manage_options`, + `unfiltered_html`/`edit_plugins` for code).
+1. **OAuth scope** granted at consent: `kuduy:read` ⊂ `kuduy:write` ⊂ `kuduy:admin`; `kuduy:code` separate and only offered when D4's constant is set. Offered scopes are cut to what the user can do (`read`, `edit_posts`, `manage_options`, + `unfiltered_html`/`edit_plugins` for code). Requested scopes are ticked; `kuduy:admin`, when not requested, is still offered unticked to users with `manage_options` (claude.ai requests none, so it would otherwise never get admin tools). `kuduy:code` is only offered when requested.
 2. **Token binding**: a token works only on the MCP route (§7).
 3. **WordPress capability** per tool and per object: `current_user_can( $tool->capability( $input ) )`.
 4. **Undo** (`kuduy-snapshot-restore`) needs the original tool's scope and its capability for the saved input; only the snapshot's owner or a site manager; each snapshot restores once.

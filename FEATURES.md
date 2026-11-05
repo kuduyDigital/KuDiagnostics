@@ -36,6 +36,7 @@ Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude cli
 | Token bound to the MCP route only | Tested | O12 (+ exploit probe over HTTP) |
 | Scopes `read` ⊂ `write` ⊂ `admin`, `code` behind D4 constant; limited by user caps | Tested | O10 |
 | Consent: unticked scopes not granted, nothing ticked → denied | Tested | O13 |
+| Consent: site admins may opt in to `kuduy:admin` when the client did not ask (claude.ai asks for none); unticked by default | Tested | O14 |
 | Sign-in detection (`initialize` → 401 + challenge) | Tested | O14; claude.ai re-check in O11 |
 | Logged-out visitors cannot trigger outbound CIMD fetches | Tested | OAuth test `logged_out_visitors_cannot_make_the_site_fetch_a_cimd_url` |
 | WordPress identity binding (`determine_current_user`) | Tested | O7, O12; also when another plugin checks the user on `plugins_loaded` (O18) |
