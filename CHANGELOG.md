@@ -6,6 +6,9 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 - Added (Phase 6): `kuduy-seo-status`, `kuduy-seo-get`, `kuduy-seo-update` — a post's SEO title, description, focus and extra keywords, canonical, robots, Open Graph and X, through Rank Math's or Yoast SEO's own APIs, with each plugin's own permission rules and undo. Refused while two SEO plugins are active.
 - Added (Phase 6): `kuduy-media-list`, `kuduy-media-get` (can show Claude the image itself, so alt text describes what it shows), `kuduy-media-update` (alt text, decorative images, title, caption, description; undo).
+
+## 0.4.1 — 2026-11-06
+
 - Added: the sign-in approval screen offers site administrators an extra, unticked "Manage plugins, themes, users and settings" box when the app did not ask for it. claude.ai asks only for read and write, so until now it could never use admin tools (plugins, themes, users, settings, Elementor Kit and Theme Builder conditions). Tick it only if Claude should manage those; existing connections keep their access until you reconnect.
 
 ## 0.4.0 — 2026-11-05
