@@ -13,6 +13,11 @@ namespace Kuduy\Mcp\OAuth;
 final class TokenAuth {
 
 	/**
+	 * The only REST route a bearer token is valid on.
+	 */
+	private const ROUTE = '/kuduy-mcp/v1/mcp';
+
+	/**
 	 * Validated grant for this request, if a valid bearer token was sent.
 	 *
 	 * @var array{user_id:int, client_id:string, scopes:list<string>}|null
@@ -25,6 +30,13 @@ final class TokenAuth {
 	 * @var string|null
 	 */
 	private static ?string $error = null;
+
+	/**
+	 * Whether the request's first REST dispatch (the HTTP request itself) was already checked.
+	 *
+	 * @var bool
+	 */
+	private static bool $route_checked = false;
 
 	/**
 	 * Filter callback.
@@ -73,8 +85,9 @@ final class TokenAuth {
 	 * Forget per-request state (tests, long-running processes).
 	 */
 	public static function reset(): void {
-		self::$grant = null;
-		self::$error = null;
+		self::$grant         = null;
+		self::$error         = null;
+		self::$route_checked = false;
 	}
 
 	/**
@@ -103,13 +116,45 @@ final class TokenAuth {
 	}
 
 	/**
-	 * Request targets the MCP endpoint (path or ?rest_route=).
+	 * Hooked to rest_pre_dispatch: a bearer token is valid on the MCP route only, never on core or other routes.
+	 * Only the first dispatch is the HTTP request; later ones are internal calls a tool makes (rest_do_request) and stay allowed.
+	 *
+	 * @param mixed            $result  Response so far (null).
+	 * @param \WP_REST_Server  $server  Server.
+	 * @param \WP_REST_Request $request Request.
+	 * @phpstan-param \WP_REST_Request<array<string, mixed>> $request
+	 * @return mixed
+	 */
+	public static function guard_route( mixed $result, \WP_REST_Server $server, \WP_REST_Request $request ): mixed {
+		if ( null === self::$grant || self::$route_checked ) {
+			return $result;
+		}
+		self::$route_checked = true;
+		if ( self::ROUTE === untrailingslashit( $request->get_route() ) ) {
+			return $result;
+		}
+		return new \WP_Error( 'kuduy_mcp_token_route', 'This access token only works on the KUDUY MCP endpoint.', array( 'status' => 401 ) );
+	}
+
+	/**
+	 * Request targets exactly the MCP endpoint: the REST path itself, or the site root with ?rest_route= (plain permalinks).
+	 * A different rest_route in the query or body would make WordPress dispatch elsewhere, so it disqualifies the request.
 	 */
 	private static function is_mcp_request(): bool {
 		// phpcs:disable WordPress.Security.ValidatedSanitizedInput, WordPress.Security.NonceVerification -- read-only routing check.
-		$uri   = isset( $_SERVER['REQUEST_URI'] ) ? (string) wp_parse_url( (string) $_SERVER['REQUEST_URI'], PHP_URL_PATH ) : '';
-		$route = isset( $_GET['rest_route'] ) ? (string) $_GET['rest_route'] : '';
+		$path = isset( $_SERVER['REQUEST_URI'] ) ? untrailingslashit( (string) wp_parse_url( (string) $_SERVER['REQUEST_URI'], PHP_URL_PATH ) ) : '';
+		foreach ( array( $_GET, $_POST ) as $input ) {
+			if ( isset( $input['rest_route'] ) && ( ! is_string( $input['rest_route'] ) || self::ROUTE !== untrailingslashit( $input['rest_route'] ) ) ) {
+				return false;
+			}
+		}
+		$has_route = isset( $_GET['rest_route'] ) || isset( $_POST['rest_route'] );
 		// phpcs:enable
-		return str_ends_with( untrailingslashit( $uri ), '/' . rest_get_url_prefix() . '/kuduy-mcp/v1/mcp' ) || '/kuduy-mcp/v1/mcp' === untrailingslashit( $route );
+		$home = untrailingslashit( (string) wp_parse_url( home_url(), PHP_URL_PATH ) );
+		$rest = '/' . rest_get_url_prefix() . self::ROUTE;
+		if ( in_array( $path, array( $home . $rest, $home . '/index.php' . $rest ), true ) ) {
+			return true;
+		}
+		return $has_route && in_array( $path, array( $home, $home . '/index.php' ), true );
 	}
 }

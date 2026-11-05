@@ -63,7 +63,7 @@ final class Executor {
 			if ( $tool instanceof Snapshottable && ( $tool->annotations()['destructiveHint'] ?? false ) ) {
 				$snap = $tool->snapshot( $input );
 				if ( null !== $snap ) {
-					$snapshot = Snapshots::store( $tool->name(), $snap );
+					$snapshot = Snapshots::store( $tool->name(), $snap, $input );
 				}
 			}
 			$result = Redactor::redact_array( $tool->execute( $input ) );

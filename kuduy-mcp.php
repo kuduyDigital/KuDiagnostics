@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       KUDUY MCP
  * Description:       MCP server for WordPress: connect Claude and manage this site under your own WordPress permissions.
- * Version:           0.1.1
+ * Version:           0.1.2
  * Requires at least: 6.9
  * Requires PHP:      8.1
  * Author:            KUDUY Digital

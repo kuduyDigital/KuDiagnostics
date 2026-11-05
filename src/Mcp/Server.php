@@ -48,7 +48,8 @@ final class Server {
 		$is_notification = ! array_key_exists( 'id', $message );
 
 		if ( 'initialize' === $method ) {
-			return $this->initialize( $id, $params );
+			// 401 here is how clients (claude.ai's "Detected" sign-in mode) learn that this server needs OAuth.
+			return $this->authed( $id ) ?? $this->initialize( $id, $params );
 		}
 		$version = $params['_meta'][ self::VERSION_META ] ?? null;
 		if ( is_string( $version ) ) {

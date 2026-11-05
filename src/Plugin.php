@@ -25,7 +25,7 @@ final class Plugin {
 	/**
 	 * Must match the `Version:` header in kuduy-mcp.php.
 	 */
-	public const VERSION = '0.1.1';
+	public const VERSION = '0.1.2';
 
 	/**
 	 * Hooks added once per request.
@@ -60,6 +60,7 @@ final class Plugin {
 
 		// After core's cookie (10) and Application Password (20) checks: a bad bearer token wins and yields no user.
 		add_filter( 'determine_current_user', array( TokenAuth::class, 'determine_current_user' ), 30 );
+		add_filter( 'rest_pre_dispatch', array( TokenAuth::class, 'guard_route' ), 0, 3 );
 		add_action( 'login_form_kuduy-mcp-authorize', array( Authorize::class, 'route' ) );
 		add_action( 'init', array( Endpoints::class, 'well_known' ), 0 );
 		add_action( 'admin_notices', array( self::class, 'permalink_notice' ) );

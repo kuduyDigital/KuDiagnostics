@@ -7,9 +7,12 @@
 
 namespace Kuduy\Mcp\Tests\Integration;
 
+use Kuduy\Mcp\Audit\AuditLog;
+use Kuduy\Mcp\Execution\Snapshottable;
 use Kuduy\Mcp\Mcp\Tool;
 use Kuduy\Mcp\Mcp\ToolRegistry;
 use Kuduy\Mcp\OAuth\Authorize;
+use Kuduy\Mcp\OAuth\Scopes;
 use Kuduy\Mcp\OAuth\TokenAuth;
 use Kuduy\Mcp\OAuth\Urls;
 use Kuduy\Mcp\Plugin;
@@ -40,7 +43,7 @@ final class OAuthTest extends TestCase {
 	}
 
 	protected function tearDown(): void {
-		unset( $_SERVER['HTTP_AUTHORIZATION'] );
+		unset( $_SERVER['HTTP_AUTHORIZATION'], $_GET['rest_route'], $_POST['rest_route'] );
 		$_SERVER['REQUEST_URI'] = '/';
 		TokenAuth::reset();
 		remove_all_filters( 'pre_http_request' );
@@ -89,6 +92,51 @@ final class OAuthTest extends TestCase {
 				}
 			}
 		);
+		$registry->register(
+			new class() implements Tool, Snapshottable {
+				public function name(): string {
+					return 'test-admin-setting';
+				}
+				public function title(): string {
+					return 'Admin setting';
+				}
+				public function description(): string {
+					return 'test';
+				}
+				public function input_schema(): array {
+					return array(
+						'type'       => 'object',
+						'properties' => array( 'value' => array( 'type' => 'string' ) ),
+					);
+				}
+				public function annotations(): array {
+					return array( 'destructiveHint' => true );
+				}
+				public function scope(): string {
+					return 'kuduy:admin';
+				}
+				public function capability( array $input ): string {
+					return 'manage_options';
+				}
+				public function is_available(): bool|string {
+					return true;
+				}
+				public function execute( array $input ): array {
+					update_option( 'kuduy_test_admin_setting', $input['value'] ?? '' );
+					return array( 'ok' => true );
+				}
+				public function snapshot( array $input ): array {
+					return array(
+						'object_type' => 'option',
+						'object_id'   => 'kuduy_test_admin_setting',
+						'payload'     => array( 'value' => get_option( 'kuduy_test_admin_setting' ) ),
+					);
+				}
+				public function restore( array $payload ): void {
+					update_option( 'kuduy_test_admin_setting', $payload['value'] );
+				}
+			}
+		);
 	}
 
 	// ---------------------------------------------------------------- helpers.
@@ -102,6 +150,7 @@ final class OAuthTest extends TestCase {
 	 * @param array<mixed>|null    $json   JSON body.
 	 */
 	private function rest( string $verb, string $route, array $form = array(), ?array $json = null ): \WP_REST_Response {
+		TokenAuth::reset(); // A new HTTP request to an OAuth endpoint carries no bearer state.
 		$request = new \WP_REST_Request( $verb, $route );
 		if ( null !== $json ) {
 			$request->set_header( 'Content-Type', 'application/json' );
@@ -173,7 +222,7 @@ final class OAuthTest extends TestCase {
 	 * Approve the consent screen.
 	 *
 	 * @param array<string, mixed> $q      Authorization params.
-	 * @param list<string>|null    $scopes Ticked scopes (null = keep all offered).
+	 * @param list<string>|null    $scopes Ticked scopes (null = every box, as the form is rendered).
 	 * @param string               $choice approve|deny.
 	 * @return array<string, mixed> Handler result.
 	 */
@@ -183,10 +232,11 @@ final class OAuthTest extends TestCase {
 			array(
 				'decision'     => $choice,
 				'_kuduy_nonce' => wp_create_nonce( 'kuduy-mcp-authorize' ),
+				'scopes'       => $scopes ?? Scopes::supported(),
 			)
 		);
-		if ( null !== $scopes ) {
-			$post['scopes'] = $scopes;
+		if ( array() === $post['scopes'] ) {
+			unset( $post['scopes'] ); // What a browser sends when every box is unticked.
 		}
 		return Authorize::handle( 'POST', $q, $post );
 	}
@@ -362,6 +412,31 @@ final class OAuthTest extends TestCase {
 		}
 	}
 
+	public function test_registration_is_capped_by_unused_clients_not_per_ip(): void {
+		global $wpdb;
+		$p = $wpdb->prefix;
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- test setup on custom tables.
+		$wpdb->query( "DELETE FROM {$p}kuduy_oauth_clients WHERE type = 'dcr' AND client_id NOT IN ( SELECT client_id FROM {$p}kuduy_oauth_tokens ) AND client_id NOT IN ( SELECT client_id FROM {$p}kuduy_oauth_codes )" );
+		$limit    = static fn() => 2;
+		add_filter( 'kuduy_mcp_registration_limit', $limit );
+		$register = fn() => $this->rest(
+			'POST',
+			'/kuduy-mcp/v1/oauth/register',
+			array(),
+			array( 'redirect_uris' => array( self::CLAUDE_REDIRECT ) )
+		);
+
+		$first = $register()->get_data()['client_id'];
+		$this->assertSame( 201, $register()->get_status() );
+		$this->assertSame( 429, $register()->get_status(), 'cap reached and nothing is old enough to evict' );
+
+		$wpdb->update( "{$p}kuduy_oauth_clients", array( 'created_at' => gmdate( 'Y-m-d H:i:s', time() - 2 * HOUR_IN_SECONDS ) ), array( 'client_id' => $first ) );
+		$this->assertSame( 201, $register()->get_status(), 'the oldest unused client makes room' );
+		$this->assertNull( $wpdb->get_var( $wpdb->prepare( "SELECT client_id FROM {$p}kuduy_oauth_clients WHERE client_id = %s", $first ) ) );
+		// phpcs:enable
+		remove_filter( 'kuduy_mcp_registration_limit', $limit );
+	}
+
 	// ---------------------------------------------------------------- authorize.
 
 	public function test_not_logged_in_is_sent_to_wp_login(): void {
@@ -373,6 +448,24 @@ final class OAuthTest extends TestCase {
 		$this->assertSame( 'login', $result['type'] );
 		$this->assertStringContainsString( 'wp-login.php', $result['url'] );
 		$this->assertStringContainsString( 'kuduy-mcp-authorize', rawurldecode( $result['url'] ) );
+	}
+
+	public function test_logged_out_visitors_cannot_make_the_site_fetch_a_cimd_url(): void {
+		wp_set_current_user( 0 );
+		$fetched = 0;
+		add_filter(
+			'pre_http_request',
+			static function () use ( &$fetched ) {
+				++$fetched;
+				return new \WP_Error( 'blocked', 'no network in tests' );
+			}
+		);
+		[ , $challenge ] = self::pkce();
+
+		$result = Authorize::handle( 'GET', self::query( 'https://attacker.example/client.json', $challenge ), array() );
+
+		$this->assertSame( 'login', $result['type'] );
+		$this->assertSame( 0, $fetched );
 	}
 
 	public function test_consent_page_shows_client_and_redirect_host(): void {
@@ -605,6 +698,41 @@ final class OAuthTest extends TestCase {
 		$t = $this->tokens( $this->register_client() );
 
 		$this->assertSame( 0, self::as_bearer( $t['access_token'], '/wp-json/wp/v2/users/me' ) );
+		$this->assertSame( 0, self::as_bearer( $t['access_token'], '/wp-admin/admin-ajax.php/wp-json/kuduy-mcp/v1/mcp' ), 'PATH_INFO tail is not the MCP path' );
+		$_GET['rest_route'] = '/kuduy-mcp/v1/mcp';
+		$this->assertSame( 0, self::as_bearer( $t['access_token'], '/wp-admin/admin-ajax.php?rest_route=/kuduy-mcp/v1/mcp' ), 'rest_route only counts on the site root' );
+	}
+
+	public function test_mcp_path_with_another_rest_route_does_not_authenticate(): void {
+		$t = $this->tokens( $this->register_client(), array( 'kuduy:read' ) );
+
+		foreach ( array( '/wp/v2/users/me', '', '/kuduy-mcp/v1/oauth/token' ) as $route ) {
+			$_GET['rest_route'] = $route;
+			$this->assertSame( 0, self::as_bearer( $t['access_token'] ), 'rest_route=' . $route );
+		}
+		unset( $_GET['rest_route'] );
+		$_POST['rest_route'] = '/wp/v2/posts';
+		$this->assertSame( 0, self::as_bearer( $t['access_token'] ), 'rest_route in the body' );
+		unset( $_POST['rest_route'] );
+
+		$_GET['rest_route'] = '/kuduy-mcp/v1/mcp';
+		$this->assertSame( self::$admin, self::as_bearer( $t['access_token'], '/?rest_route=/kuduy-mcp/v1/mcp' ), 'plain permalinks still work' );
+		unset( $_GET['rest_route'] );
+		$this->assertSame( self::$admin, self::as_bearer( $t['access_token'] ) );
+	}
+
+	public function test_token_is_refused_on_every_other_rest_route(): void {
+		$t = $this->tokens( $this->register_client(), array( 'kuduy:read' ) );
+		self::as_bearer( $t['access_token'] );
+
+		$response = rest_get_server()->dispatch( new \WP_REST_Request( 'GET', '/wp/v2/users/me' ) );
+		$this->assertSame( 401, $response->get_status() );
+		$this->assertSame( 'kuduy_mcp_token_route', $response->get_data()['code'] ?? null );
+
+		self::as_bearer( $t['access_token'] );
+		$this->assertSame( 200, $this->mcp( 'tools/call', 'kuduy-site-info' )->get_status() );
+		$internal = rest_do_request( new \WP_REST_Request( 'GET', '/wp/v2/users/me' ) );
+		$this->assertSame( 200, $internal->get_status(), 'a tool may dispatch core routes internally during an MCP request' );
 	}
 
 	public function test_scopes_follow_user_capabilities_and_are_enforced(): void {
@@ -632,6 +760,72 @@ final class OAuthTest extends TestCase {
 		self::as_bearer( $t['access_token'] );
 		$this->assertSame( 200, $this->mcp( 'tools/call', 'kuduy-site-info' )->get_status(), 'kuduy:write implies kuduy:read' );
 		$this->assertSame( 200, $this->mcp( 'tools/call', 'test-write' )->get_status() );
+	}
+
+	public function test_write_token_cannot_undo_an_admin_tool_change(): void {
+		update_option( 'kuduy_test_admin_setting', 'before' );
+		$admin = $this->tokens( $this->register_client(), null, array( 'scope' => 'kuduy:admin' ) );
+		$write = $this->tokens( $this->register_client(), array( 'kuduy:write' ) );
+
+		self::as_bearer( $admin['access_token'] );
+		$this->assertFalse( $this->mcp_call( 'test-admin-setting', array( 'value' => 'after' ) )['isError'] );
+		$snapshot_id = (int) AuditLog::latest( 1 )[0]['snapshot_id'];
+		$this->assertGreaterThan( 0, $snapshot_id );
+
+		self::as_bearer( $write['access_token'] );
+		$denied = $this->mcp_call( 'kuduy-snapshot-restore', array( 'snapshot_id' => $snapshot_id ) );
+		$this->assertTrue( $denied['isError'], (string) wp_json_encode( $denied ) );
+		$this->assertSame( 'after', get_option( 'kuduy_test_admin_setting' ) );
+
+		self::as_bearer( $admin['access_token'] );
+		$this->assertFalse( $this->mcp_call( 'kuduy-snapshot-restore', array( 'snapshot_id' => $snapshot_id ) )['isError'], 'still restorable with the right scope' );
+		$this->assertSame( 'before', get_option( 'kuduy_test_admin_setting' ) );
+	}
+
+	/**
+	 * Modern tools/call with arguments; returns the CallToolResult.
+	 *
+	 * @param string               $tool Tool.
+	 * @param array<string, mixed> $args Arguments.
+	 * @return array<string, mixed>
+	 */
+	private function mcp_call( string $tool, array $args ): array {
+		$request = new \WP_REST_Request( 'POST', '/kuduy-mcp/v1/mcp' );
+		$request->set_header( 'Content-Type', 'application/json' );
+		$request->set_header( 'MCP-Protocol-Version', '2026-07-28' );
+		$request->set_header( 'Mcp-Method', 'tools/call' );
+		$request->set_header( 'Mcp-Name', $tool );
+		$request->set_body(
+			(string) wp_json_encode(
+				array(
+					'jsonrpc' => '2.0',
+					'id'      => 1,
+					'method'  => 'tools/call',
+					'params'  => array(
+						'name'      => $tool,
+						'arguments' => $args,
+						'_meta'     => array( 'io.modelcontextprotocol/protocolVersion' => '2026-07-28' ),
+					),
+				)
+			)
+		);
+		$data = rest_ensure_response( rest_get_server()->dispatch( $request ) )->get_data();
+		return $data['result'] ?? array(
+			'isError' => true,
+			'error'   => $data['error'] ?? null,
+		);
+	}
+
+	public function test_approving_with_every_box_unticked_grants_nothing(): void {
+		[ , $challenge ] = self::pkce();
+		$q               = self::query( $this->register_client(), $challenge, array( 'scope' => 'kuduy:read kuduy:write kuduy:admin' ) );
+
+		$result = self::consent( $q, array() );
+
+		$this->assertSame( 'redirect', $result['type'] );
+		$p = self::params( $result['url'] );
+		$this->assertSame( 'access_denied', $p['error'] ?? null );
+		$this->assertArrayNotHasKey( 'code', $p );
 	}
 
 	public function test_revoke_always_200_and_kills_the_token(): void {

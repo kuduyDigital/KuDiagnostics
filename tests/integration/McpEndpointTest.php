@@ -273,6 +273,11 @@ final class McpEndpointTest extends TestCase {
 
 		[ , $body ] = $this->post( $init( '2099-01-01' ) );
 		$this->assertSame( '2025-11-25', $body['result']['protocolVersion'] );
+
+		wp_set_current_user( 0 );
+		[ $status, $body, $raw ] = $this->post( $init( '2025-11-25' ) );
+		$this->assertSame( 401, $status, 'initialize tells clients that sign-in is needed' );
+		$this->assertSame( -32001, $body['error']['code'] ?? null, $raw );
 	}
 
 	public function test_legacy_ping_tools_list_and_notifications(): void {

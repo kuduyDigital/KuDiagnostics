@@ -126,6 +126,34 @@ final class Clients {
 	}
 
 	/**
+	 * Keep unused DCR clients (never got a code or token) under a cap before registering another.
+	 * At the cap, the oldest unused ones older than an hour are deleted; false only while a flood is under way.
+	 */
+	public static function make_room(): bool {
+		global $wpdb;
+		/**
+		 * Filters how many registered-but-unused DCR clients the site keeps.
+		 *
+		 * @param int $limit Unused clients.
+		 */
+		$limit  = max( 1, (int) apply_filters( 'kuduy_mcp_registration_limit', 1000 ) );
+		$p      = $wpdb->prefix;
+		$unused = "FROM {$p}kuduy_oauth_clients WHERE type = 'dcr' AND client_id NOT IN ( SELECT client_id FROM {$p}kuduy_oauth_tokens ) AND client_id NOT IN ( SELECT client_id FROM {$p}kuduy_oauth_codes )";
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared -- custom tables, fixed SQL.
+		$count = (int) $wpdb->get_var( "SELECT COUNT(*) {$unused}" );
+		if ( $count < $limit ) {
+			return true;
+		}
+		$stale = $wpdb->get_col( $wpdb->prepare( "SELECT client_id {$unused} AND created_at < %s ORDER BY created_at LIMIT %d", gmdate( 'Y-m-d H:i:s', time() - HOUR_IN_SECONDS ), $count - $limit + 1 ) );
+		if ( ! $stale ) {
+			return false;
+		}
+		$wpdb->query( $wpdb->prepare( "DELETE FROM {$p}kuduy_oauth_clients WHERE client_id IN (" . implode( ',', array_fill( 0, count( $stale ), '%s' ) ) . ')', $stale ) );
+		// phpcs:enable
+		return $count - count( $stale ) < $limit;
+	}
+
+	/**
 	 * DCR client from the table.
 	 *
 	 * @param string $client_id Client id.

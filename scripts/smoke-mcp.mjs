@@ -98,7 +98,11 @@ try {
   [body, text] = await json(res);
   check('tools/call site-info with Application Password', res.status === 200 && body?.result?.isError === false && body.result.structuredContent?.wordpress_version === '7.1.4', `${res.status} ${text.slice(0, 300)}`);
 
-  res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'initialize', params: { protocolVersion: '2025-11-25', capabilities: {}, clientInfo: { name: 'smoke', version: '1' } } }) });
+  const initBody = JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'initialize', params: { protocolVersion: '2025-11-25', capabilities: {}, clientInfo: { name: 'smoke', version: '1' } } });
+  res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: initBody });
+  // claude.ai picks its sign-in mode from this answer ("Detected").
+  check('legacy initialize without auth: 401 + OAuth challenge', res.status === 401 && /resource_metadata="/.test(res.headers.get('www-authenticate') ?? ''), `${res.status} ${res.headers.get('www-authenticate')}`);
+  res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: auth }, body: initBody });
   [body] = await json(res);
   check('legacy initialize: 200, no Mcp-Session-Id', res.status === 200 && body?.result?.protocolVersion === '2025-11-25' && !res.headers.has('mcp-session-id'), `${res.status} session=${res.headers.get('mcp-session-id')}`);
 
@@ -120,6 +124,8 @@ try {
   const wk = await fetch(`${BASE}/.well-known/oauth-authorization-server${issuerPath}`);
   const asm = wk.status === 200 ? await wk.json() : {};
   check('AS metadata at /.well-known (RFC 8414 path insertion)', asm.issuer === issuer, `${wk.status}`);
+  const wkRoot = await fetch(`${BASE}/.well-known/oauth-authorization-server`);
+  check('AS metadata at root /.well-known (older clients)', wkRoot.status === 200 && (await wkRoot.json()).issuer === issuer, String(wkRoot.status));
   const oidc = await (await fetch(`${issuer}/.well-known/openid-configuration`)).json();
   check('AS metadata at REST fallback {issuer}/.well-known/openid-configuration', oidc.issuer === issuer && oidc.code_challenge_methods_supported?.[0] === 'S256', JSON.stringify(oidc).slice(0, 200));
   const wkPrm = await fetch(`${BASE}/.well-known/oauth-protected-resource${new URL(url).pathname}`);

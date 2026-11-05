@@ -55,6 +55,15 @@ final class Authorize {
 		$in  = 'POST' === $method ? $post : $query;
 		$get = static fn( string $key ): string => is_string( $in[ $key ] ?? null ) ? $in[ $key ] : '';
 
+		// Log in first: looking up a CIMD client fetches a URL, which anonymous visitors must not trigger.
+		if ( ! is_user_logged_in() ) {
+			$params = array_filter( array_intersect_key( $in, array_flip( self::PARAMS ) ), 'is_string' );
+			return array(
+				'type' => 'login',
+				'url'  => wp_login_url( add_query_arg( array_map( 'rawurlencode', $params ), Urls::authorize() ) ),
+			);
+		}
+
 		$client = '' === $get( 'client_id' ) ? null : Clients::find( $get( 'client_id' ) );
 		if ( null === $client ) {
 			return self::page( 400, __( 'This application is not registered, or its client information could not be verified.', 'kuduy-mcp' ) );
@@ -86,13 +95,6 @@ final class Authorize {
 			return $fail( 'invalid_scope', 'Supported scopes: ' . implode( ' ', Scopes::supported() ) );
 		}
 
-		if ( ! is_user_logged_in() ) {
-			$params = array_intersect_key( $in, array_flip( self::PARAMS ) );
-			return array(
-				'type' => 'login',
-				'url'  => wp_login_url( add_query_arg( array_map( 'rawurlencode', array_map( 'strval', $params ) ), Urls::authorize() ) ),
-			);
-		}
 		$user    = wp_get_current_user();
 		$offered = Scopes::for_user( $requested, $user );
 		if ( ! $offered ) {
@@ -113,7 +115,8 @@ final class Authorize {
 		if ( 'approve' !== ( $post['decision'] ?? '' ) ) {
 			return $fail( 'access_denied', 'The user declined.' );
 		}
-		$ticked = isset( $post['scopes'] ) ? array_values( array_intersect( $offered, (array) $post['scopes'] ) ) : $offered;
+		// Browsers send nothing for unticked boxes: no `scopes` field means nothing was granted.
+		$ticked = array_values( array_intersect( $offered, (array) ( $post['scopes'] ?? array() ) ) );
 		if ( ! $ticked ) {
 			return $fail( 'access_denied', 'No access was granted.' );
 		}

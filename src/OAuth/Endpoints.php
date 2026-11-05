@@ -124,31 +124,21 @@ final class Endpoints {
 	}
 
 	/**
-	 * Dynamic Client Registration, rate-limited per IP.
+	 * Dynamic Client Registration. Bounded by the number of unused clients, not per IP:
+	 * behind a CDN every visitor can share one IP, so a per-IP limit lets one attacker block claude.ai.
 	 *
 	 * @param \WP_REST_Request $request Request.
 	 * @phpstan-param \WP_REST_Request<array<string, mixed>> $request
 	 */
 	public static function register_client( \WP_REST_Request $request ): \WP_REST_Response {
-		$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
-		if ( '' !== $ip ) {
-			$key   = 'kuduy_mcp_dcr_' . md5( $ip );
-			$count = (int) get_transient( $key );
-			/**
-			 * Filters how many client registrations one IP may make per hour.
-			 *
-			 * @param int $limit Registrations per hour.
-			 */
-			if ( $count >= (int) apply_filters( 'kuduy_mcp_registration_limit', 30 ) ) {
-				return self::json(
-					array(
-						'error'             => 'temporarily_unavailable',
-						'error_description' => 'Too many registrations from this address; try again later.',
-					),
-					429
-				);
-			}
-			set_transient( $key, $count + 1, HOUR_IN_SECONDS );
+		if ( ! Clients::make_room() ) {
+			return self::json(
+				array(
+					'error'             => 'temporarily_unavailable',
+					'error_description' => 'Too many new registrations right now; try again later.',
+				),
+				429
+			);
 		}
 		$meta   = $request->get_json_params();
 		$result = Clients::register( $meta ?? array() );
@@ -190,11 +180,14 @@ final class Endpoints {
 		$issuer_path = (string) wp_parse_url( Urls::issuer(), PHP_URL_PATH );
 		$docs        = array(
 			'/.well-known/oauth-protected-resource' . wp_parse_url( Urls::resource(), PHP_URL_PATH ) => array( self::class, 'protected_resource' ),
-			'/.well-known/oauth-protected-resource' => array( self::class, 'protected_resource' ),
+			'/.well-known/oauth-protected-resource'   => array( self::class, 'protected_resource' ),
 			'/.well-known/oauth-authorization-server' . $issuer_path => array( self::class, 'authorization_server' ),
 			'/.well-known/openid-configuration' . $issuer_path => array( self::class, 'authorization_server' ),
+			// Older clients ignore the issuer path and ask the site root.
+			'/.well-known/oauth-authorization-server' => array( self::class, 'authorization_server' ),
+			'/.well-known/openid-configuration'       => array( self::class, 'authorization_server' ),
 		);
-		$callback    = $docs[ untrailingslashit( $path ) ] ?? null;
+		$callback = $docs[ untrailingslashit( $path ) ] ?? null;
 		if ( null === $callback ) {
 			return;
 		}

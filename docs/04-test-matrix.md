@@ -33,6 +33,9 @@ Legend: **U** unit (PHPUnit, no WP), **I** integration (WP test suite / Playgrou
 | O9 | Revoke | RFC 7009; revoked token → 401 | I — **pass 2026-11-05** |
 | O10 | Scopes | token without `kuduy:write` calling a write tool → 403 `insufficient_scope` | I — **pass 2026-11-05** (hierarchy write ⊃ read; consent limited by caps) |
 | O11 | Real clients | connect + call from claude.ai, Desktop, Claude Code | E |
+| O12 | Token bound to the MCP route | token refused on core routes, with `rest_route` in query or body, and on PATH_INFO tails; plain-permalink `?rest_route=/kuduy-mcp/v1/mcp` still works | I, M — **pass 2026-11-05** (0.1.2; exploit probe over real HTTP: all 401) |
+| O13 | Consent with nothing ticked | approve with every box unticked → `access_denied`, no code | I — **pass 2026-11-05** (0.1.2) |
+| O14 | Sign-in detection | unauthenticated `initialize` → 401 + challenge, so claude.ai detects OAuth | I — **pass 2026-11-05** (0.1.2, also real HTTP); claude.ai check in O11 |
 
 ## Permissions
 
