@@ -2,7 +2,7 @@
 
 A phase is done only when its exit gate passes with evidence recorded in `TESTING.md` and its rows in `FEATURES.md` are `Tested`. Process: TDD per tool, small commits, docs updated in the same commit, no TODOs in released code.
 
-Status on 2026-11-05: **Phase 3 code complete; only the real-client check (O11) is left. Phase 4 started. Latest release v0.1.2; `main` has unreleased fixes and the first Phase 4 tools.**
+Status on 2026-11-05: **Phase 3 code complete; only the real-client check (O11) is left. Phase 4 started. Latest release v0.2.0 (Phase 3 fixes and the first Phase 4 read tools).**
 
 | Phase | Scope | Exit gate | Status |
 |---|---|---|---|

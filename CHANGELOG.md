@@ -2,7 +2,9 @@
 
 Format: user-facing releases first (newest on top), then the dated development history. Versions follow semantic versioning; tags `vX.Y.Z` publish a GitHub Release that installed sites receive through the built-in updater.
 
-## Unreleased
+## 0.2.0 — 2026-11-05
+
+**Recommended for all sites: HTTPS enforcement and a crash fix.**
 
 - Security: OAuth sign-in, token and registration requests, and access tokens are refused over plain HTTP, except on local development sites.
 - Fixed: a fatal error when another plugin checks the current user very early (`plugins_loaded`) during a Claude request.

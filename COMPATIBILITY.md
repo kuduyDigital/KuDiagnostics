@@ -1,13 +1,13 @@
 # KUDUY MCP — Compatibility
 
-Only versions listed as **Tested** have passing evidence (see `TESTING.md`). Everything else is a target, not a claim. Updated 2026-11-05 for v0.1.2.
+Only versions listed as **Tested** have passing evidence (see `TESTING.md`). Everything else is a target, not a claim. Updated 2026-11-05 for v0.2.0.
 
 ## Requirements
 
 - WordPress **6.9** or newer (header `Requires at least: 6.9`)
 - PHP **8.1** or newer (header `Requires PHP: 8.1`)
 - Pretty permalinks (any setting except "Plain"); an admin notice says so otherwise. Plain permalinks work for the MCP endpoint (`?rest_route=`) but Claude's sign-in needs the REST paths.
-- HTTPS for OAuth and access tokens (enforced on `main`, next release). Local sites (loopback, `*.localhost`, `*.test`, `WP_ENVIRONMENT_TYPE=local`) may use HTTP. Behind a TLS-terminating proxy, `X-Forwarded-Proto: https` is accepted when the site URL is https. claude.ai and Claude Desktop also need a publicly reachable address; Claude Code can use a local site.
+- HTTPS for OAuth and access tokens (enforced since 0.2.0). Local sites (loopback, `*.localhost`, `*.test`, `WP_ENVIRONMENT_TYPE=local`) may use HTTP. Behind a TLS-terminating proxy, `X-Forwarded-Proto: https` is accepted when the site URL is https. claude.ai and Claude Desktop also need a publicly reachable address; Claude Code can use a local site.
 
 ## WordPress and PHP
 
@@ -63,7 +63,7 @@ Only versions listed as **Tested** have passing evidence (see `TESTING.md`). Eve
 
 ## Known limitations
 
-- Eight tools so far: `kuduy-site-info`, `kuduy-snapshot-list`, `kuduy-snapshot-restore`, `kuduy-check-update`, and the read-only `kuduy-post-types`, `kuduy-post-list`, `kuduy-post-get`, `kuduy-term-list` (the last four are on `main`, not yet released).
+- Eight tools so far: `kuduy-site-info`, `kuduy-snapshot-list`, `kuduy-snapshot-restore`, `kuduy-check-update`, and the read-only `kuduy-post-types`, `kuduy-post-list`, `kuduy-post-get`, `kuduy-term-list` (the last four since 0.2.0).
 - Real Claude clients have not been confirmed yet (O11).
 - After a programmatic upgrade, WordPress left the plugin inactive once; Plugins-screen and auto-update paths not observed yet.
 - Update checksum proves integrity, not authorship (no signature yet).

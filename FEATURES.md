@@ -1,7 +1,7 @@
 # KUDUY MCP — Features
 
 Status values: `Not started` · `In progress` · `Implemented` (code exists, tests incomplete) · `Tested` (passing tests or recorded manual evidence; IDs refer to `TESTING.md`) · `Blocked`.
-Section numbers follow the KUDUY MCP Master Development Prompt. Updated 2026-11-05 (main after v0.1.2).
+Section numbers follow the KUDUY MCP Master Development Prompt. Updated 2026-11-05 (v0.2.0).
 
 Summary: Foundation (brief §4, §12, §13) is built and tested except real Claude clients (O11). Phase 4 has started: read tools for post types, posts and terms are `Tested`; everything else from §5 onward is `Not started`.
 

@@ -1,6 +1,6 @@
 # KUDUY MCP — Architecture
 
-Approved 2026-11-04 (decisions D1–D6); D1 and D2 changed by user decision during Phase 3. This file describes what is **built** (Phase 3 foundation and the start of Phase 4, `main` after v0.1.2) and what is **designed but not built yet** (marked *planned*). Research behind each decision: `RESEARCH.md`.
+Approved 2026-11-04 (decisions D1–D6); D1 and D2 changed by user decision during Phase 3. This file describes what is **built** (Phase 3 foundation and the start of Phase 4, v0.2.0) and what is **designed but not built yet** (marked *planned*). Research behind each decision: `RESEARCH.md`.
 
 ## 1. Goals and non-goals
 

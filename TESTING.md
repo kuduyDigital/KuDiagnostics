@@ -22,7 +22,7 @@ Process: test first (red), then code (green); every new security fix gets a regr
 
 See `CLAUDE.md` → Commands. Integration: `KUDUY_WP=<6.9|7.1> KUDUY_PHP=<8.1|8.3> node scripts/test-integration.mjs`. Smoke: `node scripts/smoke-mcp.mjs`.
 
-## 3. Latest results (2026-11-05, main after v0.1.2)
+## 3. Latest results (2026-11-05, v0.2.0)
 
 | Check | Result |
 |---|---|

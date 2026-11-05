@@ -1,6 +1,6 @@
 # KUDUY MCP — Security
 
-Covers v0.1.2 plus unreleased changes on `main` (HTTPS enforcement, early-auth fix, first Phase 4 read tools). Planned controls for later phases are marked *planned*.
+Covers v0.2.0 (Phase 3 foundation, HTTPS enforcement, early-auth fix, first Phase 4 read tools). Planned controls for later phases are marked *planned*.
 
 ## Reporting a vulnerability
 
@@ -58,7 +58,7 @@ Ran PHPCS (WPCS), PHPStan level 6, `composer audit` (clean), `npm audit` (3 mode
 
 Users of v0.1.0 or v0.1.1 should update to v0.1.2.
 
-Found afterwards, fixed on `main` (unreleased): **HTTPS was not enforced** (now refused over plain HTTP outside local sites, O17), and a **fatal error** when another plugin checks the current user on `plugins_loaded` during an MCP request with a token: `rest_url()` needs `$wp_rewrite`, which does not exist yet (reproduced on WordPress 7.1.4; fixed and tested, O18).
+Found afterwards, fixed in **v0.2.0**: **HTTPS was not enforced** (now refused over plain HTTP outside local sites, O17), and a **fatal error** when another plugin checks the current user on `plugins_loaded` during an MCP request with a token: `rest_url()` needs `$wp_rewrite`, which does not exist yet (reproduced on WordPress 7.1.4; fixed and tested, O18).
 
 ## 5. Known limitations and accepted risks
 
