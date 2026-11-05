@@ -5,6 +5,7 @@ Format: user-facing releases first (newest on top), then the dated development h
 ## Unreleased
 
 - Added (Phase 4): `kuduy-post-create`, `kuduy-post-update` and `kuduy-post-trash` for posts, pages and custom post types — status (publish, schedule, unpublish, private), slug, date, parent, order, comments, terms and featured image. Updates and trash take a snapshot first and can be undone with `kuduy-snapshot-restore`. Permanent deletion is not offered. Content of Elementor-built pages is not overwritten.
+- Added (Phase 4): terms (`kuduy-term-create`, `-update`, `-delete`), comments (`kuduy-comment-list`, `-moderate`, `-reply`), revisions (`kuduy-revision-list`, `-restore`) and public custom fields (`kuduy-post-meta-get`, `-set`), each with the same permission rules as WordPress's own REST API and undo for every overwrite.
 
 ## 0.2.0 — 2026-11-05
 
@@ -172,3 +173,13 @@ Format: user-facing releases first (newest on top), then the dated development h
 - `Modules\Core\PostWriter` (fields, status caps, date/schedule checks, term and featured-image checks before writing, Elementor content guard, snapshot state + restore) and tools `kuduy-post-create`, `kuduy-post-update` (Snapshottable), `kuduy-post-trash` (Snapshottable; trash only, refuses when `EMPTY_TRASH_DAYS` is 0).
 - Found while testing: `wp_trash_post()` returns the post as it was **before** trashing, so the tool reported the old status; it now reads the post back.
 - Tests: `CoreWriteTest` (8 tests); 89/89 on WP 6.9.11/PHP 8.1.34 and WP 7.1.4/PHP 8.3.36; smoke 26/26.
+
+### 2026-11-05 — Phase 4: terms, comments, revisions, custom fields
+
+- `TermWrite` (create/update/delete; capabilities as core's REST terms controller; parent checks; delete keeps posts; undo recreates the term and reassigns posts; default category protected).
+- `Comments` (list/moderate/reply; non-approved and emails/IPs only for moderators, approved comments only on readable posts; `edit_comment` per comment; replies via `wp_new_comment()`, held unless the user moderates; undo of status).
+- `Revisions` (list with optional content, restore via `wp_restore_post_revision()` so plugins restore their revision data; undo).
+- `PostMeta` (get/set public keys only; `edit_post_meta` per key; null deletes; undo).
+- Test helper trait `tests/integration/CallsTools.php` (loaded with `require_once`: PHPUnit only loads `*Test.php`, and the folder is lower-case).
+- Learned while testing: WordPress stores a revision of the **new** content on each update and none on creation, so the oldest restorable state is the first update.
+- Tests: `CoreEditorialTest` (7 tests); 96/96 on WP 6.9.11/PHP 8.1.34 and WP 7.1.4/PHP 8.3.36; smoke 26/26.

@@ -8,16 +8,20 @@
 namespace Kuduy\Mcp\Mcp;
 
 use Kuduy\Mcp\Modules\Core\CheckUpdate;
+use Kuduy\Mcp\Modules\Core\Comments;
 use Kuduy\Mcp\Modules\Core\PostCreate;
 use Kuduy\Mcp\Modules\Core\PostGet;
 use Kuduy\Mcp\Modules\Core\PostList;
+use Kuduy\Mcp\Modules\Core\PostMeta;
 use Kuduy\Mcp\Modules\Core\PostTrash;
 use Kuduy\Mcp\Modules\Core\PostTypes;
 use Kuduy\Mcp\Modules\Core\PostUpdate;
+use Kuduy\Mcp\Modules\Core\Revisions;
 use Kuduy\Mcp\Modules\Core\SiteInfo;
 use Kuduy\Mcp\Modules\Core\SnapshotList;
 use Kuduy\Mcp\Modules\Core\SnapshotRestore;
 use Kuduy\Mcp\Modules\Core\TermList;
+use Kuduy\Mcp\Modules\Core\TermWrite;
 
 /**
  * Built per request so tools and integrations reflect the current state.
@@ -47,6 +51,16 @@ final class ToolRegistry {
 		$registry->register( new PostCreate() );
 		$registry->register( new PostUpdate() );
 		$registry->register( new PostTrash() );
+		foreach ( array( 'create', 'update', 'delete' ) as $mode ) {
+			$registry->register( new TermWrite( $mode ) );
+		}
+		foreach ( array( 'list', 'moderate', 'reply' ) as $mode ) {
+			$registry->register( new Comments( $mode ) );
+		}
+		$registry->register( new Revisions( 'list' ) );
+		$registry->register( new Revisions( 'restore' ) );
+		$registry->register( new PostMeta( 'get' ) );
+		$registry->register( new PostMeta( 'set' ) );
 		do_action( 'kuduy_mcp_register_tools', $registry );
 		return $registry;
 	}
