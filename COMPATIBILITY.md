@@ -1,6 +1,6 @@
 # KUDUY MCP — Compatibility
 
-Only versions listed as **Tested** have passing evidence (see `TESTING.md`). Everything else is a target, not a claim. Updated 2026-11-05 for v0.3.0.
+Only versions listed as **Tested** have passing evidence (see `TESTING.md`). Everything else is a target, not a claim. Updated 2026-11-05 for v0.4.0.
 
 ## Requirements
 
@@ -68,7 +68,7 @@ Only versions listed as **Tested** have passing evidence (see `TESTING.md`). Eve
 
 ## Known limitations
 
-- 49 tools (all released in 0.3.0): `kuduy-site-info`, `kuduy-snapshot-list`, `kuduy-snapshot-restore`, `kuduy-check-update`, and the read-only `kuduy-post-types`, `kuduy-post-list`, `kuduy-post-get`, `kuduy-term-list` (since 0.2.0), and, since 0.3.0: `kuduy-post-create`, `kuduy-post-update`, `kuduy-post-trash`, `kuduy-term-create`/`-update`/`-delete`, `kuduy-comment-list`/`-moderate`/`-reply`, `kuduy-revision-list`/`-restore`, `kuduy-post-meta-get`/`-set`, `kuduy-user-list`/`-get`/`-create`/`-update`, `kuduy-role-list`, `kuduy-menu-list`/`-get`/`-create`/`-item-add`/`-item-update`/`-item-delete`/`-assign`, `kuduy-settings-get`/`-update`, `kuduy-plugin-list`/`-install`/`-activate`/`-deactivate`/`-update`, `kuduy-theme-list`/`-install`/`-switch`/`-update`, `kuduy-site-health`, `kuduy-cron-list`, `kuduy-rewrite-check`, `kuduy-rewrite-flush`, `kuduy-hooks-inspect`.
+- 63 tools (since 0.4.0 also the 14 Elementor tools: `kuduy-elementor-documents`, `-get`, `-widgets`, `-widget-schema`, `-kit`, `-edit`, `-create`, `-kit-update`, `-verify`, `-v4-globals`, `-v4-classes`, `-v4-variables`, `-theme-templates`, `-theme-conditions`; Theme Builder tools need Elementor Pro): `kuduy-site-info`, `kuduy-snapshot-list`, `kuduy-snapshot-restore`, `kuduy-check-update`, and the read-only `kuduy-post-types`, `kuduy-post-list`, `kuduy-post-get`, `kuduy-term-list` (since 0.2.0), and, since 0.3.0: `kuduy-post-create`, `kuduy-post-update`, `kuduy-post-trash`, `kuduy-term-create`/`-update`/`-delete`, `kuduy-comment-list`/`-moderate`/`-reply`, `kuduy-revision-list`/`-restore`, `kuduy-post-meta-get`/`-set`, `kuduy-user-list`/`-get`/`-create`/`-update`, `kuduy-role-list`, `kuduy-menu-list`/`-get`/`-create`/`-item-add`/`-item-update`/`-item-delete`/`-assign`, `kuduy-settings-get`/`-update`, `kuduy-plugin-list`/`-install`/`-activate`/`-deactivate`/`-update`, `kuduy-theme-list`/`-install`/`-switch`/`-update`, `kuduy-site-health`, `kuduy-cron-list`, `kuduy-rewrite-check`, `kuduy-rewrite-flush`, `kuduy-hooks-inspect`.
 - Of the real Claude clients, only claude.ai (and Claude Code through the synced claude.ai connector) is confirmed; Desktop and Claude Code's own sign-in are not yet observed (O11).
 - Plugin and theme installs/updates need direct file access; sites that ask for FTP credentials get a clear refusal (do it in wp-admin).
 - `Plugin_Upgrader::upgrade()` deactivates active plugins outside cron (wp-admin reactivates them in a second request). KUDUY's update tool runs like WordPress's background updates, so plugins stay active; the earlier `check:update` script used the plain upgrader, which is why it saw the plugin inactive.

@@ -4,6 +4,8 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 ## Unreleased
 
+## 0.4.0 — 2026-11-05
+
 - Added (Phase 5): Elementor read tools — `kuduy-elementor-documents`, `kuduy-elementor-get` (element tree, outline, subtree, unregistered types), `kuduy-elementor-widgets`, `kuduy-elementor-widget-schema` (classic controls per breakpoint, v4 JSON Schema), `kuduy-elementor-kit`.
 - Added (Phase 5): Elementor write tools — `kuduy-elementor-edit` (1–50 patch operations: update, add, move, duplicate, remove; only named settings change, other breakpoints keep their values; all-or-nothing; undo), `kuduy-elementor-create` (new Elementor page from a tree), `kuduy-elementor-kit-update` (global colors and fonts, undo), `kuduy-elementor-verify` (checks the rendered and live page for element ids and texts).
 - Added (Phase 5): `kuduy-elementor-v4-globals`, `kuduy-elementor-v4-classes`, `kuduy-elementor-v4-variables` — Elementor 4.3+'s own abilities for v4 global classes and variables, behind KUDUY's scopes, permission checks, snapshots and audit.

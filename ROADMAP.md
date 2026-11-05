@@ -2,7 +2,7 @@
 
 A phase is done only when its exit gate passes with evidence recorded in `TESTING.md` and its rows in `FEATURES.md` are `Tested`. Process: TDD per tool, small commits, docs updated in the same commit, no TODOs in released code.
 
-Status on 2026-11-05: **Phase 3 code complete; claude.ai verified; Desktop, Claude Code's own sign-in, refresh and revoke still to observe (O11). Phase 4 done. Latest release v0.3.0 (all of Phase 4, 49 tools).**
+Status on 2026-11-05: **Phase 3 code complete; claude.ai verified; Desktop, Claude Code's own sign-in, refresh and revoke still to observe (O11). Phase 4 done. Phase 5 in progress. Latest release v0.4.0 (Phase 5 Elementor tools so far, 63 tools).**
 
 | Phase | Scope | Exit gate | Status |
 |---|---|---|---|
