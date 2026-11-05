@@ -2,7 +2,7 @@
 
 A phase is done only when its exit gate passes with evidence recorded in `TESTING.md` and its rows in `FEATURES.md` are `Tested`. Process: TDD per tool, small commits, docs updated in the same commit, no TODOs in released code.
 
-Status on 2026-11-05: **Phase 3 code complete; only the real-client check (O11) is left. Phase 4 started. Latest release v0.2.0 (Phase 3 fixes and the first Phase 4 read tools).**
+Status on 2026-11-05: **Phase 3 code complete; claude.ai verified on the real staging site; Desktop, Claude Code's own sign-in, refresh and revoke still to observe (O11). Phase 4 started. Latest release v0.2.0 (Phase 3 fixes and the first Phase 4 read tools).**
 
 | Phase | Scope | Exit gate | Status |
 |---|---|---|---|
@@ -20,8 +20,10 @@ Status on 2026-11-05: **Phase 3 code complete; only the real-client check (O11) 
 
 ## Phase 3 — what is left
 
-1. Connect claude.ai, Claude Desktop and Claude Code to the staging site running **v0.1.2** (choose "Sign in now" if the dialog does not detect it), sign in, call `kuduy-site-info`.
-2. Confirm on the server: audit row per client, connection listed under Tools > KUDUY MCP, revoke ends it, refresh works after one hour.
-3. Record O11 in `TESTING.md` and `FEATURES.md`, then close Phase 3.
+1. ~~claude.ai~~ — **done 2026-11-05** (tools listed and called on 0.1.2 and 0.2.0; update 0.1.2 → 0.2.0 kept the connection).
+2. Claude Desktop: open a chat, enable the KUDUY connector, ask for `kuduy-site-info`.
+3. Claude Code's own sign-in: `claude mcp add --transport http kuduy-direct https://<site>/wp-json/kuduy-mcp/v1/mcp`, then `/mcp` → Authenticate (exercises CIMD + loopback).
+4. Revoke: Tools > KUDUY MCP → Revoke the claude.ai connection; the next Claude call must fail and ask to sign in again. Refresh is covered by any connection that keeps working after one hour.
+5. Record O11, then close Phase 3.
 
-Optional, not blocking: observe whether updating from the Plugins screen and by auto-update keeps the plugin active (the programmatic upgrade in `check:update` left it inactive).
+Observed 2026-11-05: the normal WordPress update on Hostinger (0.1.2 → 0.2.0) kept the plugin active.

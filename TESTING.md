@@ -36,7 +36,8 @@ See `CLAUDE.md` → Commands. Integration: `KUDUY_WP=<6.9|7.1> KUDUY_PHP=<8.1|8.
 | Security probe (read-only token on core routes, `rest_route` override, PATH_INFO, unticked consent, unauthenticated `initialize`, root AS metadata) | All refused / as expected on 0.1.2 |
 | GitHub CI on `3591d92` | All 9 jobs green; release workflow for `v0.1.2` green |
 | Real update v0.1.0 → v0.1.1 | Pass (2026-11-05) |
-| Real Claude clients (O11) | **Not yet run successfully** |
+| Real Claude clients (O11) | **claude.ai: pass** (Hostinger, 0.1.2 and 0.2.0). Desktop, Claude Code's own sign-in, refresh, revoke: not yet run |
+| Real host after release (Hostinger, 0.2.0, from outside) | Unauthenticated `initialize` → 401 + challenge; root AS metadata 200; token with `rest_route` override → 401; plain HTTP → 301 to HTTPS |
 
 ## 4. Feature test matrix
 
@@ -74,7 +75,7 @@ Legend: **U** unit, **I** integration (Playground), **E** end-to-end with a real
 | O8 | Refresh | rotation; reuse of old refresh revokes family | I — **pass 2026-11-05** (also real HTTP) |
 | O9 | Revoke | RFC 7009; revoked token → 401 | I — **pass 2026-11-05** |
 | O10 | Scopes | token without `kuduy:write` calling a write tool → 403 `insufficient_scope` | I — **pass 2026-11-05** (hierarchy write ⊃ read; consent limited by caps) |
-| O11 | Real clients | connect + call from claude.ai, Desktop, Claude Code; refresh after 1 h; revoke | E — **open**. Hostinger staging (v0.1.1) checked from outside 2026-11-05: 401 + challenge, PRM, AS metadata, DCR reachable. claude.ai showed "No sign-in · Detected" then "Couldn't reach" → fixed in 0.1.2 (O14). Re-test on 0.1.2 pending |
+| O11 | Real clients | connect + call from claude.ai, Desktop, Claude Code; refresh after 1 h; revoke | E — **claude.ai pass 2026-11-05**: claude.ai custom connector on the user's Hostinger staging site (OAuth done by claude.ai), synced into a Claude Code desktop session: tools listed (4 on 0.1.2) and `kuduy-site-info` + `kuduy-check-update` called as user `admin`, on 0.1.2 and again on 0.2.0. Before: v0.1.1 was detected as "No sign-in" → "Couldn't reach" (fixed in 0.1.2, O14). **Still open:** Claude Desktop, Claude Code's own sign-in (`claude mcp add` + CIMD), refresh after 1 h, revoke from Tools > KUDUY MCP |
 | O12 | Token bound to the MCP route | token refused on core routes, with `rest_route` in query or body, and on PATH_INFO tails; plain-permalink `?rest_route=/kuduy-mcp/v1/mcp` still works | I, M — **pass 2026-11-05** (0.1.2; exploit probe over real HTTP: all 401) |
 | O13 | Consent with nothing ticked | approve with every box unticked → `access_denied`, no code | I — **pass 2026-11-05** (0.1.2) |
 | O14 | Sign-in detection | unauthenticated `initialize` → 401 + challenge, so claude.ai detects OAuth | I — **pass 2026-11-05** (0.1.2, also real HTTP); claude.ai check in O11 |
@@ -166,6 +167,6 @@ Legend: **U** unit, **I** integration (Playground), **E** end-to-end with a real
 | H4 | `wp kuduy ui show` and `KUDUY_MCP_SHOW_UI` restore UI | I |
 | G1 | Updater detects newer GitHub release, shows in Updates | I — **pass 2026-11-05** (`UpdaterTest` through core `wp_update_plugins()`, also when wordpress.org is unreachable) |
 | G2 | Checksum mismatch aborts install | I — **pass 2026-11-05** |
-| G3 | Update from release ZIP keeps data and settings | I, E — release ZIP install + activation **pass 2026-11-05** (`npm run check:release`, WP 6.9/PHP 8.1 and WP 7.1/PHP 8.1); real update v0.1.0 → v0.1.1 from GitHub Releases **pass 2026-11-05** (`npm run check:update`: core offered it, checksum verified, `Plugin_Upgrader` installed, settings + rows kept). Note: after this programmatic upgrade core left the plugin inactive (reactivated by the script); Plugins-screen and auto-update paths still to observe |
+| G3 | Update from release ZIP keeps data and settings | I, E — release ZIP install + activation **pass 2026-11-05** (`npm run check:release`, WP 6.9/PHP 8.1 and WP 7.1/PHP 8.1); real update v0.1.0 → v0.1.1 from GitHub Releases **pass 2026-11-05** (`npm run check:update`: core offered it, checksum verified, `Plugin_Upgrader` installed, settings + rows kept). Note: after this programmatic upgrade core left the plugin inactive (reactivated by the script); Plugins-screen and auto-update paths still to observe. **Real host 2026-11-05:** Hostinger staging updated 0.1.2 → 0.2.0 through WordPress's updater minutes after the release; plugin stayed active and the Claude connection kept working. |
 | G4 | GitHub API failure / rate limit → no error spam, cached result | I — **pass 2026-11-05** (12 h cache, ETag/304, 1 h retry after failure) |
 | G5 | "Check again" on Dashboard → Updates re-reads GitHub; opening the screen alone uses the cache | I — **pass 2026-11-05** |

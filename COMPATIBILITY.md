@@ -33,9 +33,9 @@ Only versions listed as **Tested** have passing evidence (see `TESTING.md`). Eve
 
 | Client | Status | Notes |
 |---|---|---|
-| claude.ai (web) | **Not verified** | v0.1.1 was mis-detected as "No sign-in" → fixed in 0.1.2 (O14). Real sign-in pending (O11). |
-| Claude Desktop | Not verified | Uses the connector configured in claude.ai. |
-| Claude Code | Not verified | CIMD + loopback redirect implemented and tested with simulated clients (O3, O6). |
+| claude.ai (web) | **Tested** 2026-11-05 | Custom connector, "Sign in now", OAuth (DCR) against Hostinger staging; tools listed and called on 0.1.2 and 0.2.0. v0.1.1 was mis-detected as "No sign-in" (fixed in 0.1.2, O14). |
+| Claude Desktop | Not verified directly | Uses the claude.ai connector; not yet observed in the Desktop chat. |
+| Claude Code | Partly | Uses the synced claude.ai connector: **tested** (tools called from a Claude Code desktop session). Its own sign-in (`claude mcp add`, CIMD + loopback) is tested only with simulated clients (O3, O6). |
 | Other MCP clients with OAuth 2.1 + PKCE, or with Application Passwords | Expected to work | Not tested |
 
 ## Hosting
@@ -44,7 +44,7 @@ Only versions listed as **Tested** have passing evidence (see `TESTING.md`). Eve
 |---|---|---|
 | WordPress Playground CLI (PHP built-in server, SQLite) | **Tested** | All automated tests run here |
 | Cloudflare quick tunnel in front of Playground | **Tested** | 401 + metadata + CIMD checked from outside (2026-11-04) |
-| Hostinger (LiteSpeed, Hostinger CDN `hcdn`) — user's staging site | Partly checked (v0.1.1) | From outside: tool calls 401 with challenge, PRM and AS metadata (path-inserted and REST fallback), DCR endpoint reachable. Root `/.well-known/oauth-authorization-server` was 404 → served since 0.1.2. |
+| Hostinger (LiteSpeed, Hostinger CDN `hcdn`) — user's staging site | **Tested** (0.1.2, 0.2.0) | Real claude.ai connection works; update 0.1.2 → 0.2.0 kept the plugin active; HTTPS check passes behind the CDN. Earlier (0.1.1): From outside: tool calls 401 with challenge, PRM and AS metadata (path-inserted and REST fallback), DCR endpoint reachable. Root `/.well-known/oauth-authorization-server` was 404 → served since 0.1.2. |
 | Apache, Nginx (incl. hosts that block `/.well-known/`) | Not tested | Issuer is a REST path, so `{issuer}/.well-known/openid-configuration` works where `/.well-known/` is blocked |
 | MySQL / MariaDB | Not tested directly | Schema uses `dbDelta`; tests run on SQLite |
 | Persistent object cache | Not tested | Rate limiter uses transients (not atomic under heavy concurrency) |
@@ -64,6 +64,6 @@ Only versions listed as **Tested** have passing evidence (see `TESTING.md`). Eve
 ## Known limitations
 
 - Eight tools so far: `kuduy-site-info`, `kuduy-snapshot-list`, `kuduy-snapshot-restore`, `kuduy-check-update`, and the read-only `kuduy-post-types`, `kuduy-post-list`, `kuduy-post-get`, `kuduy-term-list` (the last four since 0.2.0).
-- Real Claude clients have not been confirmed yet (O11).
-- After a programmatic upgrade, WordPress left the plugin inactive once; Plugins-screen and auto-update paths not observed yet.
+- Of the real Claude clients, only claude.ai (and Claude Code through the synced claude.ai connector) is confirmed; Desktop and Claude Code's own sign-in are not yet observed (O11).
+- A programmatic `Plugin_Upgrader` run in tests left the plugin inactive; the normal WordPress update on Hostinger kept it active.
 - Update checksum proves integrity, not authorship (no signature yet).

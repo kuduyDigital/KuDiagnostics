@@ -153,3 +153,11 @@ Format: user-facing releases first (newest on top), then the dated development h
 - `LifecycleTest` now resets KUDUY itself (new test files sort before it alphabetically).
 - Tests: 81/81 on WP 6.9.11/PHP 8.1.34 and WP 7.1.4/PHP 8.3.36; smoke 26/26.
 - Phase 3 exit gate still open: real Claude clients (O11) need the user.
+
+### 2026-11-05 — Release v0.2.0; real claude.ai connection verified
+
+- Published `v0.2.0` (tag on `4f6eab4`) after CI passed: `kuduy-mcp.zip` (79 907 bytes, now with `LICENSE`) + `.sha256`.
+- **O11, claude.ai: pass.** The user's claude.ai connector for the Hostinger staging site appeared in this Claude Code desktop session; `kuduy-site-info` returned the site (WordPress 7.1.4, user `admin`, administrator) on 0.1.2, and again on 0.2.0.
+- **Real-host update:** the Hostinger site updated 0.1.2 → 0.2.0 through WordPress's own updater minutes after the release; the plugin stayed active and the connection kept working without a new sign-in. `kuduy-check-update` reports 0.2.0 = latest.
+- From outside on Hostinger (0.2.0): unauthenticated `initialize` → 401 + challenge; root AS metadata 200; token with a `rest_route` override → 401; plain HTTP → 301 to HTTPS.
+- Phases 0–4 recheck: Phases 0–2 complete. Phase 3 code complete; still to observe with the user: Claude Desktop, Claude Code's own sign-in, refresh after 1 h, revoke. Phase 4 in progress (see `FEATURES.md`).

@@ -3,7 +3,7 @@
 Status values: `Not started` · `In progress` · `Implemented` (code exists, tests incomplete) · `Tested` (passing tests or recorded manual evidence; IDs refer to `TESTING.md`) · `Blocked`.
 Section numbers follow the KUDUY MCP Master Development Prompt. Updated 2026-11-05 (v0.2.0).
 
-Summary: Foundation (brief §4, §12, §13) is built and tested except real Claude clients (O11). Phase 4 has started: read tools for post types, posts and terms are `Tested`; everything else from §5 onward is `Not started`.
+Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude clients are partly verified (claude.ai works; Desktop, Claude Code's own sign-in, refresh and revoke still to observe — O11). Phase 4 has started: read tools for post types, posts and terms are `Tested`; everything else from §5 onward is `Not started`.
 
 ## Foundation — MCP and transport (§4)
 
@@ -20,7 +20,8 @@ Summary: Foundation (brief §4, §12, §13) is built and tested except real Clau
 | Tool execution, schema validation, structured errors | Tested | F8 |
 | Output schema per tool (§14) | Tested | F13: every tool declares `outputSchema`; results validated against it |
 | Background processing / jobs | Not started | ARCHITECTURE §12 |
-| Real Claude clients (claude.ai, Desktop, Claude Code) | In progress | O11 — endpoints checked from outside on the user's Hostinger site; real sign-in not yet confirmed |
+| Real Claude clients: claude.ai | Tested | O11 — claude.ai custom connector on the user's Hostinger staging site (OAuth done by claude.ai), synced into a Claude Code desktop session: tools listed (4 on 0.1.2) and `kuduy-site-info` + `kuduy-check-update` called as user `admin`, on 0.1.2 and again on 0.2.0 (2026-11-05) |
+| Real Claude clients: Claude Desktop, Claude Code's own sign-in (CIMD), refresh after 1 h, revoke | In progress | O11 — need the user's clients and a Revoke click |
 
 ## Authentication and authorization (§12)
 
@@ -65,7 +66,7 @@ Summary: Foundation (brief §4, §12, §13) is built and tested except real Clau
 | GitHub self-update with SHA-256 check | Tested | G1, G2, G4; real update v0.1.0 → v0.1.1 (G3) |
 | "Check again" bypasses the release cache | Tested | Updater test |
 | Release workflow (CI → build → install check → publish) | Tested | v0.1.0, v0.1.1, v0.1.2 published |
-| Plugin stays active after Plugins-screen / auto-update | Not started | Programmatic upgrade left it inactive; to observe |
+| Plugin stays active after a normal WordPress update | Tested | G3 — Hostinger site went 0.1.2 → 0.2.0 through WordPress's own updater, stayed active, and the existing Claude connection kept working without signing in again |
 
 ## WordPress core administration (§5) — Phase 4
 
