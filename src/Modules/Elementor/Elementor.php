@@ -141,6 +141,66 @@ final class Elementor {
 	}
 
 	/**
+	 * Refuse settings a type does not know. Classic: control names from both control lists, per-device keys of
+	 * responsive controls, and Elementor's "__globals__" / "__dynamic__" references. v4: prop names, each value
+	 * checked with the prop type's own validate().
+	 *
+	 * @param object               $type     Widget or element type object.
+	 * @param array<string, mixed> $settings Settings to set.
+	 * @throws ToolError Naming the unknown or invalid keys.
+	 */
+	public static function check_settings( object $type, array $settings ): void {
+		$bad = array();
+		if ( self::is_atomic( $type ) ) {
+			$props = (array) $type::get_props_schema();
+			foreach ( $settings as $key => $value ) {
+				$prop = $props[ $key ] ?? null;
+				if ( null === $prop ) {
+					$bad[] = $key . ' (unknown prop)';
+				} elseif ( null !== $value && is_object( $prop ) && method_exists( $prop, 'validate' ) && ! $prop->validate( $value ) ) {
+					$bad[] = $key . ' (value does not match its schema; see kuduy-elementor-widget-schema)';
+				}
+			}
+		} else {
+			$known   = self::control_names( $type );
+			$devices = (array) \Elementor\Plugin::$instance->breakpoints->get_active_devices_list();
+			foreach ( array_keys( $settings ) as $key ) {
+				$key = (string) $key;
+				if ( isset( $known[ $key ] ) || str_starts_with( $key, '__' ) ) {
+					continue;
+				}
+				$base = '';
+				foreach ( $devices as $device ) {
+					if ( 'desktop' !== $device && str_ends_with( $key, '_' . $device ) ) {
+						$base = substr( $key, 0, -strlen( '_' . $device ) );
+					}
+				}
+				if ( '' === $base || empty( $known[ $base ] ) ) {
+					$bad[] = $key;
+				}
+			}
+		}//end if
+		if ( $bad ) {
+			throw new ToolError( 'Unknown or invalid settings for "' . esc_html( (string) $type->get_name() ) . '": ' . esc_html( implode( ', ', array_slice( $bad, 0, 10 ) ) ) . '. See kuduy-elementor-widget-schema.' );
+		}
+	}
+
+	/**
+	 * Control names of a classic type => whether the control is responsive (both control lists).
+	 *
+	 * @param object $type Type object.
+	 * @return array<string, bool>
+	 */
+	public static function control_names( object $type ): array {
+		$stack = (array) $type->get_stack();
+		$names = array();
+		foreach ( (array) ( $stack['controls'] ?? array() ) + (array) ( $stack['style_controls'] ?? array() ) as $name => $control ) {
+			$names[ (string) $name ] = is_array( $control ) && ( ! empty( $control['is_responsive'] ) || isset( $control['responsive'] ) );
+		}
+		return $names;
+	}
+
+	/**
 	 * Which plugin (or theme) defines a class: "elementor", "elementor-pro", an add-on folder, or "theme".
 	 *
 	 * @param object $type Type object.

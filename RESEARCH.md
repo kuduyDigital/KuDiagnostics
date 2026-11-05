@@ -111,6 +111,9 @@ Free Elementor only; Elementor Pro (Theme Builder, custom CSS) is a paid plugin 
 - **Silent data loss risk:** `get_elements_raw_data()` builds each element through `elements_manager->create_element_instance()`; an element whose type is not registered (an add-on that is inactive, a removed widget) returns `null` and is **skipped**. Saving such a document through `save()` drops those elements. KUDUY must refuse to save when the tree contains unregistered element types.
 - Element ids: `Utils::generate_random_string()` = `dechex( rand() )` (short hex, not guaranteed unique). KUDUY must check uniqueness inside the document when it creates ids.
 - `_elementor_edit_mode = builder` marks a post as built with Elementor (`set_is_built_with_elementor()`).
+- Element `settings` must be a PHP **array** when saving: `Controls_Stack::sanitize_settings()` is typed `array` and throws a `TypeError` for an empty object (found in tests on 4.3.6).
+- Page settings are saved whole, not merged (`save_settings_to_db()`); `Kit::save()` runs each tab's hooks and then clears **all** CSS files (`files_manager->clear_cache()`).
+- `documents->get( $id )` caches per request; read with `get( $id, false )` after a save in the same request.
 
 **Classic (v3) widgets** — `includes/base/controls-stack.php`:
 - Widget schema: `get_controls()` per widget type (`widgets_manager->get_widget_types( $name )`).

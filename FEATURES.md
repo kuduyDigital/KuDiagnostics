@@ -106,14 +106,16 @@ Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude cli
 | Feature | Status |
 |---|---|
 | Discover documents and templates; read structure and settings | Tested (EL1: `kuduy-elementor-documents`, `kuduy-elementor-get` incl. outline, subtree and unregistered types; Elementor 4.3.6) |
-| Create, duplicate, update documents via `Document::save()` | Not started |
+| Create and update documents via `Document::save()` | Tested (`kuduy-elementor-create`, `kuduy-elementor-edit`; snapshot + undo; unregistered-widget guard) |
+| Duplicate whole documents | Not started |
 | Theme Builder templates | Not started |
 | Widget discovery v3 (`get_controls`) and v4 atomic (`get_props_schema`) | Tested (EL2: `kuduy-elementor-widgets`, `kuduy-elementor-widget-schema`; v3 style controls included, responsive keys per active device; v4 JSON Schema per prop) |
-| Add, update, move, duplicate, reorder, remove elements; nested containers; ID/parent validation | Not started |
-| Styling and responsive values (patch per breakpoint) | Not started |
+| Add, update, move, duplicate, reorder, remove elements; nested containers; ID/parent validation | Tested (EL3: 1–50 operations per call, all-or-nothing, fresh unique ids, nesting rules, settings checked against the widget schema) |
+| Styling and responsive values (patch per breakpoint) | Tested (EL4: only named keys change; `{control}_{device}` keys; `unset`) |
 | Kit globals: colors, typography, breakpoints (read) | Tested (EL7 read: `kuduy-elementor-kit`) |
-| Kit globals: update; v4 classes and variables | Not started |
-| CSS regeneration, cache clearing, frontend verification | Not started |
+| Kit globals: colors and fonts update | Tested (EL7: `kuduy-elementor-kit-update`, add/update/remove, undo) |
+| v4 global classes and variables | Not started — via Elementor's own abilities (D7 hybrid) |
+| CSS regeneration, cache clearing, frontend verification | Tested (EL6: `kuduy-elementor-verify` renders with Elementor's front-end renderer and, when published, fetches the live page; CSS is reset by `Document::save()` and rebuilt on the next view). Page-cache purging: Not started |
 | Add-on adapters (Essential Addons, UAE, Premium Addons, JetElements) | Not started |
 | Legacy / v3 / v4 / mixed-version matrix | Not started |
 

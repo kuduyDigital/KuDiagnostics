@@ -19,6 +19,8 @@ namespace Elementor {
 		public $breakpoints;
 		/** @var mixed Core\Kits\Manager */
 		public $kits_manager;
+		/** @var mixed Frontend */
+		public $frontend;
 	}
 }
 
@@ -29,6 +31,13 @@ namespace Elementor\Core\Base {
 		public function get_name(): string {}
 		/** @return int */
 		public function get_id() {}
+		/** @return int */
+		public function get_main_id() {}
+		/**
+		 * @param bool $is_built_with_elementor
+		 * @return $this
+		 */
+		public function set_is_built_with_elementor( $is_built_with_elementor ) {}
 		public function is_built_with_elementor(): bool {}
 		/**
 		 * @param string $status

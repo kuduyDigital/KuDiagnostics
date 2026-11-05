@@ -1,6 +1,6 @@
 # Phase 5 — Elementor (plan)
 
-Research: `RESEARCH.md` §8 (Elementor 4.3.6 source, 2026-11-05). Status: **D7 decided 2026-11-05 — option C (hybrid)**. Read pass **done** (tools 1–5, tested on Elementor 4.3.6). Next: write pass (tools 6–9).
+Research: `RESEARCH.md` §8 (Elementor 4.3.6 source, 2026-11-05). Status: **D7 decided 2026-11-05 — option C (hybrid)**. Read pass and write pass **done** (tools 1–9, tested on Elementor 4.3.6). Next: Elementor 3.x LTS run; v4 global classes/variables via Elementor's abilities (tool 10); Theme Builder research (Pro); add-on adapters.
 
 ## Decision D7 — who edits Elementor documents
 

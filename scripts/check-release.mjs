@@ -5,6 +5,7 @@ import { spawnSync } from 'node:child_process';
 import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
+import { cleanPlaygroundTemp } from './playground-temp.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const zip = join(root, 'build', 'kuduy-mcp.zip');
@@ -40,6 +41,7 @@ writeFileSync(join(dir, 'blueprint.json'), JSON.stringify({
 const cli = join(root, 'node_modules', '@wp-playground', 'cli', 'wp-playground.js');
 const run = spawnSync(process.execPath, [cli, 'run-blueprint', `--blueprint=${join(dir, 'blueprint.json')}`, '--blueprint-may-read-adjacent-files',
   '--mount-dir', dir, '/check-out'], { cwd: root, stdio: 'inherit' });
+cleanPlaygroundTemp(run.pid);
 
 const resultFile = join(dir, 'result.json');
 if (!existsSync(resultFile)) {

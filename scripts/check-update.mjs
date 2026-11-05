@@ -7,6 +7,7 @@ import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
+import { cleanPlaygroundTemp } from './playground-temp.mjs';
 
 const [from = '0.1.0', to = '0.1.1'] = process.argv.slice(2);
 const root = fileURLToPath(new URL('..', import.meta.url));
@@ -64,7 +65,8 @@ writeFileSync(join(dir, 'blueprint.json'), JSON.stringify({
 }));
 
 const cli = join(root, 'node_modules', '@wp-playground', 'cli', 'wp-playground.js');
-spawnSync(process.execPath, [cli, 'run-blueprint', `--blueprint=${join(dir, 'blueprint.json')}`, '--mount-dir', dir, '/check-out'], { cwd: root, stdio: 'inherit' });
+const run = spawnSync(process.execPath, [cli, 'run-blueprint', `--blueprint=${join(dir, 'blueprint.json')}`, '--mount-dir', dir, '/check-out'], { cwd: root, stdio: 'inherit' });
+cleanPlaygroundTemp(run.pid);
 
 const read = (name) => (existsSync(join(dir, name)) ? JSON.parse(readFileSync(join(dir, name), 'utf8')) : null);
 const a = read('pre.json');

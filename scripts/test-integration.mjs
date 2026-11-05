@@ -5,6 +5,7 @@ import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
+import { cleanPlaygroundTemp } from './playground-temp.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const out = join(root, 'build', 'it');
@@ -37,6 +38,7 @@ const run = spawnSync(process.execPath, [cli, 'run-blueprint', `--wp=${wp}`, `--
   '--mount-dir', root, '/wordpress/wp-content/plugins/kuduy-mcp',
   '--mount-dir', out, '/kuduy-out',
 ], { cwd: root, stdio: 'inherit' });
+cleanPlaygroundTemp(run.pid);
 
 if (!existsSync(report)) {
   console.error(`No JUnit report (Playground exit ${run.status}). PHPUnit did not run or crashed before writing it.`);

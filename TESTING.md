@@ -30,8 +30,8 @@ See `CLAUDE.md` → Commands. Integration: `KUDUY_WP=<6.9|7.1> KUDUY_PHP=<8.1|8.
 | PHPStan level 6 | No errors |
 | `composer audit` | No advisories |
 | `npm audit` | 3 moderate in `@wp-playground/cli` dependencies (dev only, not shipped) |
-| Integration, WordPress 6.9.11 / PHP 8.1.34 (+ Elementor 4.3.6) | **132 / 132 pass** |
-| Integration, WordPress 7.1.4 / PHP 8.3.36 (+ Elementor 4.3.6) | **132 / 132 pass** |
+| Integration, WordPress 6.9.11 / PHP 8.1.34 (+ Elementor 4.3.6) | **141 / 141 pass** |
+| Integration, WordPress 7.1.4 / PHP 8.3.36 (+ Elementor 4.3.6) | **141 / 141 pass** |
 | Smoke over real HTTP (WP 7.1.4 / PHP 8.3, Elementor 4.3.6 + WooCommerce 11.2.1 active) | **26 / 26 pass** |
 | Security probe (read-only token on core routes, `rest_route` override, PATH_INFO, unticked consent, unauthenticated `initialize`, root AS metadata) | All refused / as expected on 0.1.2 |
 | GitHub CI on `3591d92` | All 9 jobs green; release workflow for `v0.1.2` green |
@@ -112,11 +112,11 @@ Legend: **U** unit, **I** integration (Playground), **E** end-to-end with a real
 |---|---|---|
 | EL1 | List documents/templates, read tree (v3 sections/columns, containers, atomic) | I — **pass 2026-11-05** on Elementor 4.3.6 (`ElementorReadTest`: list with document type, subscriber refused, tree with counts, outline without settings, subtree by id, author refused on someone else's page, unregistered add-on widget named) |
 | EL2 | Widget schema discovery v3 (`get_controls`) and atomic (`get_props_schema`) | I — **pass 2026-11-05** on 4.3.6 (heading: `title`, responsive `align` with `align`/`align_tablet`/`align_mobile`; `e-heading` props as JSON Schema with the `$$type` envelope and `anyOf` for overridable values; unknown type refused) |
-| EL3 | Add / update / move / duplicate / remove element; IDs unique | I |
-| EL4 | Patch edit on desktop does not change tablet/mobile values | I |
-| EL5 | Save via `Document::save`; revision created; non-`unfiltered_html` user gets kses | I |
-| EL6 | Post CSS regenerated; frontend HTML contains edited element ID and text | I, E |
-| EL7 | Kit global colors/typography/breakpoints read + update | I — read **pass 2026-11-05** (Kit id, breakpoints incl. `mobile`, colors list); update not run |
+| EL3 | Add / update / move / duplicate / remove element; IDs unique | I — **pass 2026-11-05** on 4.3.6 (`ElementorWriteTest`: add at index, duplicate with fresh id, move, remove, all ids unique; widget at top level, column in a container and unknown widget refused; one invalid operation saves nothing) |
+| EL4 | Patch edit on desktop does not change tablet/mobile values | I — **pass 2026-11-05** (title + `align_tablet` changed, `align` and `align_mobile` kept; `unset align_mobile` removes only that key) |
+| EL5 | Save via `Document::save`; revision created; non-`unfiltered_html` user gets kses | I — **pass 2026-11-05** (all saves through `Document::save()`; author's `<script>` stripped; author refused on someone else's page; pages with an inactive add-on widget refused and left untouched; undo restores the previous tree). Revision count not asserted |
+| EL6 | Post CSS regenerated; frontend HTML contains edited element ID and text | I — **pass 2026-11-05** (`kuduy-elementor-verify`: rendered HTML contains the element id and texts; missing text reported; drafts checked by rendering only). Live-page fetch: E on staging |
+| EL7 | Kit global colors/typography/breakpoints read + update | I — **pass 2026-11-05** (read: Kit id, breakpoints, colors; update: custom color added and read back, undo removes it, unknown id refused, editors refused) |
 | EL8 | Theme Builder templates list/conditions (Pro) | I |
 | EL9 | Addon adapters (EA, UAE, Premium, Jet) widget discovery | I |
 | EL10 | Build a full page from a prompt on 3.x and 4.3 | E |

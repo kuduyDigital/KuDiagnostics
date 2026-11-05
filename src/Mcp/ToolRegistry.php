@@ -29,6 +29,8 @@ use Kuduy\Mcp\Modules\Core\Themes;
 use Kuduy\Mcp\Modules\Core\TermWrite;
 use Kuduy\Mcp\Modules\Core\Users;
 use Kuduy\Mcp\Modules\Elementor\ElementorRead;
+use Kuduy\Mcp\Modules\Elementor\ElementorVerify;
+use Kuduy\Mcp\Modules\Elementor\ElementorWrite;
 
 /**
  * Built per request so tools and integrations reflect the current state.
@@ -88,6 +90,10 @@ final class ToolRegistry {
 		foreach ( array( 'documents', 'get', 'widgets', 'schema', 'kit' ) as $mode ) {
 			$registry->register( new ElementorRead( $mode ) );
 		}
+		foreach ( array( 'edit', 'create', 'kit-update' ) as $mode ) {
+			$registry->register( new ElementorWrite( $mode ) );
+		}
+		$registry->register( new ElementorVerify() );
 		do_action( 'kuduy_mcp_register_tools', $registry );
 		return $registry;
 	}

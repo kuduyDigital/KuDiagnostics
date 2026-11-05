@@ -13,8 +13,8 @@ Only versions listed as **Tested** have passing evidence (see `TESTING.md`). Eve
 
 | WordPress | PHP | Status | Evidence |
 |---|---|---|---|
-| 6.9.11 | 8.1.34 | **Tested** | 132/132 integration tests (with Elementor 4.3.6), 2026-11-05; release ZIP installs (CI) |
-| 7.1.4 | 8.3.36 | **Tested** | 132/132 integration tests (with Elementor 4.3.6), 2026-11-05; smoke 26/26 over real HTTP; real update v0.1.0 → v0.1.1 |
+| 6.9.11 | 8.1.34 | **Tested** | 141/141 integration tests (with Elementor 4.3.6), 2026-11-05; release ZIP installs (CI) |
+| 7.1.4 | 8.3.36 | **Tested** | 141/141 integration tests (with Elementor 4.3.6), 2026-11-05; smoke 26/26 over real HTTP; real update v0.1.0 → v0.1.1 |
 | 7.1.4 | 8.1 | **Tested** (install only) | Release ZIP install check |
 | 7.0.x | any | Not tested | |
 | any | 8.2, 8.4 | Syntax only | `php -l` in CI on 8.1–8.4; no integration run |
@@ -54,7 +54,7 @@ Only versions listed as **Tested** have passing evidence (see `TESTING.md`). Eve
 
 | Plugin | Version | Status | Notes |
 |---|---|---|---|
-| Elementor | 4.3.6 | **Tested** (read tools, EL1/EL2/EL7 read) | Write tools in progress (Phase 5); 3.x LTS run still to do |
+| Elementor | 4.3.6 | **Tested** (EL1–EL7) | Elementor 3.x LTS run and Elementor Pro (Theme Builder) still to do |
 | WooCommerce | 11.2.1 | Coexists (smoke, tunnel site) | No Woo tools yet (Phase 7) |
 | Rank Math, Yoast, AIOSEO, SEOPress | — | Not tested | Phase 6 |
 | Elementor Pro, add-ons (EA, UAE, Premium, Jet) | — | Not tested | Phase 5 |

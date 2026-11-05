@@ -457,7 +457,9 @@ final class ElementorRead implements Tool {
 	 * @throws ToolError When there is no active Kit.
 	 */
 	private static function kit(): array {
-		$kit = \Elementor\Plugin::$instance->kits_manager->get_active_kit();
+		// Not the cached Kit document: after a save in the same request it would still hold the old settings.
+		$kit_id = (int) \Elementor\Plugin::$instance->kits_manager->get_active_id();
+		$kit    = $kit_id > 0 ? \Elementor\Plugin::$instance->documents->get( $kit_id, false ) : null;
 		if ( ! $kit || ! $kit->get_id() ) {
 			throw new ToolError( 'This site has no active Elementor Kit.' );
 		}

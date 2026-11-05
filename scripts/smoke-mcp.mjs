@@ -5,6 +5,7 @@ import { spawn, spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
+import { cleanPlaygroundTemp } from './playground-temp.mjs';
 
 const PORT = 9401;
 const BASE = `http://127.0.0.1:${PORT}`;
@@ -41,9 +42,11 @@ const server = spawn(process.execPath, [cli, 'server', '--wp=7.1', '--php=8.3', 
 let log = '';
 server.stdout.on('data', (d) => { log += d; });
 server.stderr.on('data', (d) => { log += d; });
-const stop = () => (process.platform === 'win32'
-  ? spawnSync('taskkill', ['/pid', String(server.pid), '/T', '/F'])
-  : server.kill());
+const stop = () => {
+  if (process.platform === 'win32') spawnSync('taskkill', ['/pid', String(server.pid), '/T', '/F']);
+  else server.kill();
+  cleanPlaygroundTemp(server.pid);
+};
 
 const results = [];
 const check = (name, ok, detail = '') => {

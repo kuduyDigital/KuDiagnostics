@@ -5,6 +5,7 @@ Format: user-facing releases first (newest on top), then the dated development h
 ## Unreleased
 
 - Added (Phase 5): Elementor read tools — `kuduy-elementor-documents`, `kuduy-elementor-get` (element tree, outline, subtree, unregistered types), `kuduy-elementor-widgets`, `kuduy-elementor-widget-schema` (classic controls per breakpoint, v4 JSON Schema), `kuduy-elementor-kit`.
+- Added (Phase 5): Elementor write tools — `kuduy-elementor-edit` (1–50 patch operations: update, add, move, duplicate, remove; only named settings change, other breakpoints keep their values; all-or-nothing; undo), `kuduy-elementor-create` (new Elementor page from a tree), `kuduy-elementor-kit-update` (global colors and fonts, undo), `kuduy-elementor-verify` (checks the rendered and live page for element ids and texts).
 
 ## 0.3.0 — 2026-11-05
 
@@ -235,3 +236,10 @@ Format: user-facing releases first (newest on top), then the dated development h
 - `Modules\Elementor\Elementor` (availability, documents, tree walk, unregistered types, type sources) and `ElementorRead` (5 tools). PHPStan gets a minimal Elementor stub (`tests/phpstan/elementor.stub`, via `scanFiles`).
 - **Found in testing:** Elementor keeps controls with CSS selectors in a separate `style_controls` list that `get_controls()` omits outside the editor, so the heading's `align` was missing; the schema tool reads both lists.
 - Tests: `ElementorReadTest` (7 tests); 132/132 on WP 6.9.11/PHP 8.1.34 and WP 7.1.4/PHP 8.3.36 with Elementor 4.3.6; smoke 26/26 (one rerun after a slow plugin download).
+
+### 2026-11-05 — Phase 5: Elementor write pass; dev-machine disk fix
+
+- `Tree` (pure tree operations: find, locate, insert with nesting rules, remove, fresh unique ids), `Elementor::check_settings()` (classic control names from both control lists + per-device keys + `__globals__`/`__dynamic__`; v4 props through each prop type's `validate()`), `ElementorWrite` (edit, create, kit-update; snapshots + undo), `ElementorVerify`.
+- **Found in testing:** Elementor needs element settings as an array (`sanitize_settings()` throws for an empty object); `documents->get()` caches per request, so reads after a save use `get( $id, false )`.
+- **Disk full on the dev machine:** Playground CLI leaves a ~300 MB WordPress copy in the temp folder after every run (killed runs included); 25 leftovers filled C: (111 MB free). Removed them (8.0 GB free) and added `scripts/playground-temp.mjs`, called by the integration, smoke, release-check and update-check scripts after each run.
+- Tests: `ElementorWriteTest` (8 tests); 141/141 on WP 6.9.11/PHP 8.1.34 and WP 7.1.4/PHP 8.3.36 with Elementor 4.3.6.
