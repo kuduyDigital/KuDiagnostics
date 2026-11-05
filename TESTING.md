@@ -30,8 +30,8 @@ See `CLAUDE.md` → Commands. Integration: `KUDUY_WP=<6.9|7.1> KUDUY_PHP=<8.1|8.
 | PHPStan level 6 | No errors |
 | `composer audit` | No advisories |
 | `npm audit` | 3 moderate in `@wp-playground/cli` dependencies (dev only, not shipped) |
-| Integration, WordPress 6.9.11 / PHP 8.1.34 | **81 / 81 pass** |
-| Integration, WordPress 7.1.4 / PHP 8.3.36 | **81 / 81 pass** |
+| Integration, WordPress 6.9.11 / PHP 8.1.34 | **89 / 89 pass** |
+| Integration, WordPress 7.1.4 / PHP 8.3.36 | **89 / 89 pass** |
 | Smoke over real HTTP (WP 7.1.4 / PHP 8.3, Elementor 4.3.6 + WooCommerce 11.2.1 active) | **26 / 26 pass** |
 | Security probe (read-only token on core routes, `rest_route` override, PATH_INFO, unticked consent, unauthenticated `initialize`, root AS metadata) | All refused / as expected on 0.1.2 |
 | GitHub CI on `3591d92` | All 9 jobs green; release workflow for `v0.1.2` green |
@@ -88,7 +88,7 @@ Legend: **U** unit, **I** integration (Playground), **E** end-to-end with a real
 
 | # | Tests | Type |
 |---|---|---|
-| P1 | Author can edit own post, not others' | I — read side **pass 2026-11-05** (author cannot list or read other people's drafts); edit side comes with write tools |
+| P1 | Author can edit own post, not others' | I — **pass 2026-11-05** (author cannot list, read or update other people's drafts/posts; contributor cannot trash others' posts) |
 | P2 | Editor cannot install plugins | I |
 | P3 | Subscriber token sees only read tools it can use | I — partly **pass** (subscriber: published posts only, no drafts/private, no non-public taxonomy; scope filtering O10) |
 | P4 | No response or log contains wp-config secrets, password hashes, app passwords, gateway keys | U, I — partly **pass** (redactor F9; post password never returned) |
@@ -97,7 +97,7 @@ Legend: **U** unit, **I** integration (Playground), **E** end-to-end with a real
 
 | # | Feature | Type |
 |---|---|---|
-| C1 | Posts/pages CRUD, status, schedule, search, count | I — read part **pass 2026-11-05** (`CoreContentTest`: list/search/paging, drafts and private by role, `read_post` per post, password-protected content, unknown type); writes not run |
+| C1 | Posts/pages CRUD, status, schedule, search, count | I — read part **pass 2026-11-05** (`CoreContentTest`: list/search/paging, drafts and private by role, `read_post` per post, password-protected content, unknown type); writes **pass 2026-11-05** (`CoreWriteTest`: create draft with terms + featured image, contributor cannot publish, kses without `unfiltered_html`, scheduling needs a future date, `edit_post` per object, update snapshot + undo restores fields/status/terms, invalid terms/images refused before writing, Elementor content guard, trash + undo restores status). Count not run |
 | C2 | CPT + custom taxonomies, terms CRUD | I — read part **pass 2026-11-05** (`kuduy-post-types` hides types without admin UI; `kuduy-term-list` public vs non-public taxonomy); writes not run |
 | C3 | Comments moderate/reply | I |
 | C4 | Post meta (protected keys blocked), revisions list/restore | I |

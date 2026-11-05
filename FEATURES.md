@@ -3,7 +3,7 @@
 Status values: `Not started` · `In progress` · `Implemented` (code exists, tests incomplete) · `Tested` (passing tests or recorded manual evidence; IDs refer to `TESTING.md`) · `Blocked`.
 Section numbers follow the KUDUY MCP Master Development Prompt. Updated 2026-11-05 (v0.2.0).
 
-Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude clients are partly verified (claude.ai works; Desktop, Claude Code's own sign-in, refresh and revoke still to observe — O11). Phase 4 has started: read tools for post types, posts and terms are `Tested`; everything else from §5 onward is `Not started`.
+Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude clients are partly verified (claude.ai works; Desktop, Claude Code's own sign-in, refresh and revoke still to observe — O11). Phase 4 in progress: read tools for post types, posts and terms, and post create/update/trash with undo are `Tested`; everything else from §5 onward is `Not started`.
 
 ## Foundation — MCP and transport (§4)
 
@@ -74,15 +74,20 @@ Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude cli
 |---|---|
 | Site info tool (`kuduy-site-info`) | Tested (F8, smoke) |
 | Posts and pages: list, search, read | Tested (C1: `kuduy-post-list`, `kuduy-post-get`) |
-| Posts and pages: create, update, publish, schedule, delete | Not started |
-| Drafts, revisions, comments, excerpts, slugs, permalinks | Not started |
+| Posts and pages: create, update, publish, schedule, unpublish | Tested (C1 writes: `kuduy-post-create`, `kuduy-post-update`) |
+| Posts and pages: delete | Tested — trash only (`kuduy-post-trash`, undo restores the previous status); permanent deletion deliberately not offered |
+| Drafts, excerpts, slugs, dates, parent, menu order, comment status | Tested (`kuduy-post-update` fields) |
+| Revisions list/restore, comments moderation/reply | Not started |
 | Categories, tags, custom taxonomies: list | Tested (C2: `kuduy-term-list`) |
-| Categories, tags, custom taxonomies: create, update, delete, assign | Not started |
+| Categories, tags, custom taxonomies: assign to posts | Tested (`terms` on create/update; `assign_terms` checked) |
+| Categories, tags, custom taxonomies: create, update, delete terms | Not started |
 | Custom post types: discover and read (`kuduy-post-types`, list, get) | Tested (C2) |
-| Custom post types: write | Not started |
-| Post meta (protected keys blocked), featured images | Not started |
+| Custom post types: write | Tested (same create/update/trash tools; only types with an admin UI) |
+| Featured images: set/remove | Tested (`featured_media`; must be an image attachment) |
+| Post meta (protected keys blocked) | Not started |
 | Menus and navigation | Not started |
-| Block Editor content inspect/edit | Not started |
+| Block Editor content inspect/edit | Implemented (raw block markup via get/update; no block-level tools yet) |
+| Elementor-built pages protected from content overwrite | Tested (update refuses `content` on `_elementor_edit_mode = builder`) |
 | Users and roles: inspect, create, update; capabilities | Not started |
 | Never return passwords, hashes, tokens | Tested (redactor, F9); per-tool tests come with user tools |
 | Plugins/themes: list, versions, install, update, activate, deactivate (safety checks) | Not started |

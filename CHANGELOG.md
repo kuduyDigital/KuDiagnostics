@@ -2,6 +2,10 @@
 
 Format: user-facing releases first (newest on top), then the dated development history. Versions follow semantic versioning; tags `vX.Y.Z` publish a GitHub Release that installed sites receive through the built-in updater.
 
+## Unreleased
+
+- Added (Phase 4): `kuduy-post-create`, `kuduy-post-update` and `kuduy-post-trash` for posts, pages and custom post types — status (publish, schedule, unpublish, private), slug, date, parent, order, comments, terms and featured image. Updates and trash take a snapshot first and can be undone with `kuduy-snapshot-restore`. Permanent deletion is not offered. Content of Elementor-built pages is not overwritten.
+
 ## 0.2.0 — 2026-11-05
 
 **Recommended for all sites: HTTPS enforcement and a crash fix.**
@@ -161,3 +165,10 @@ Format: user-facing releases first (newest on top), then the dated development h
 - **Real-host update:** the Hostinger site updated 0.1.2 → 0.2.0 through WordPress's own updater minutes after the release; the plugin stayed active and the connection kept working without a new sign-in. `kuduy-check-update` reports 0.2.0 = latest.
 - From outside on Hostinger (0.2.0): unauthenticated `initialize` → 401 + challenge; root AS metadata 200; token with a `rest_route` override → 401; plain HTTP → 301 to HTTPS.
 - Phases 0–4 recheck: Phases 0–2 complete. Phase 3 code complete; still to observe with the user: Claude Desktop, Claude Code's own sign-in, refresh after 1 h, revoke. Phase 4 in progress (see `FEATURES.md`).
+
+### 2026-11-05 — Phase 4: post writes with undo
+
+- Recheck of Phases 0–4: Phases 0–2 complete; Phase 3 code complete with claude.ai verified (remaining: Desktop, Claude Code's own sign-in, refresh, revoke — need the user); Phase 4 continued.
+- `Modules\Core\PostWriter` (fields, status caps, date/schedule checks, term and featured-image checks before writing, Elementor content guard, snapshot state + restore) and tools `kuduy-post-create`, `kuduy-post-update` (Snapshottable), `kuduy-post-trash` (Snapshottable; trash only, refuses when `EMPTY_TRASH_DAYS` is 0).
+- Found while testing: `wp_trash_post()` returns the post as it was **before** trashing, so the tool reported the old status; it now reads the post back.
+- Tests: `CoreWriteTest` (8 tests); 89/89 on WP 6.9.11/PHP 8.1.34 and WP 7.1.4/PHP 8.3.36; smoke 26/26.

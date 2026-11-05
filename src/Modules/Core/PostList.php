@@ -134,8 +134,8 @@ final class PostList implements Tool {
 	public function capability( array $input ): string|array {
 		$type = Content::post_types()[ $input['post_type'] ?? 'post' ] ?? null;
 		if ( null === $type ) {
+			// Unknown type: execute() explains it.
 			return 'read';
-			// execute() explains the unknown type.
 		}
 		$status = $input['status'] ?? 'publish';
 		if ( 'publish' === $status && $type->public ) {

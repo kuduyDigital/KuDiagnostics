@@ -8,9 +8,12 @@
 namespace Kuduy\Mcp\Mcp;
 
 use Kuduy\Mcp\Modules\Core\CheckUpdate;
+use Kuduy\Mcp\Modules\Core\PostCreate;
 use Kuduy\Mcp\Modules\Core\PostGet;
 use Kuduy\Mcp\Modules\Core\PostList;
+use Kuduy\Mcp\Modules\Core\PostTrash;
 use Kuduy\Mcp\Modules\Core\PostTypes;
+use Kuduy\Mcp\Modules\Core\PostUpdate;
 use Kuduy\Mcp\Modules\Core\SiteInfo;
 use Kuduy\Mcp\Modules\Core\SnapshotList;
 use Kuduy\Mcp\Modules\Core\SnapshotRestore;
@@ -41,6 +44,9 @@ final class ToolRegistry {
 		$registry->register( new PostList() );
 		$registry->register( new PostGet() );
 		$registry->register( new TermList() );
+		$registry->register( new PostCreate() );
+		$registry->register( new PostUpdate() );
+		$registry->register( new PostTrash() );
 		do_action( 'kuduy_mcp_register_tools', $registry );
 		return $registry;
 	}
