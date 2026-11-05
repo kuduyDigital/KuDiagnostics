@@ -64,14 +64,22 @@ try {
   const meta = { 'io.modelcontextprotocol/protocolVersion': '2026-07-28', 'io.modelcontextprotocol/clientInfo': { name: 'smoke', version: '1' }, 'io.modelcontextprotocol/clientCapabilities': {} };
   const modern = (method, params = {}, extra = {}) => fetch(url, {
     method: 'POST',
+    // A followed redirect would silently turn the POST into a GET (seen once on CI as a 405).
+    redirect: 'manual',
     headers: { 'Content-Type': 'application/json', Accept: 'application/json, text/event-stream', 'MCP-Protocol-Version': '2026-07-28', 'Mcp-Method': method, ...(params.name ? { 'Mcp-Name': params.name } : {}), ...extra },
     body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params: { ...params, _meta: meta } }),
   });
   const json = async (res) => { const text = await res.text(); try { return [JSON.parse(text), text]; } catch { return [null, text]; } };
 
+  // Warm-up: Playground's first request after boot can be a redirect; that is not what we test.
+  const warm = await fetch(url, { method: 'POST', redirect: 'manual', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+  const warmNote = `warm-up: ${warm.status}${warm.headers.get('location') ? ` -> ${warm.headers.get('location')}` : ''}`;
+  console.log(warmNote);
+  // Expected: 400 (empty JSON-RPC object). Anything else is worth seeing on CI.
+  if (warm.status !== 400 && process.env.GITHUB_ACTIONS) console.log(`::warning title=smoke warm-up::${warmNote}`);
   let res = await modern('server/discover');
   let [body, text] = await json(res);
-  check('discover: 200 + clean JSON despite noisy plugin', res.status === 200 && body?.result?.supportedVersions?.[0] === '2026-07-28' && !text.includes('NOISE') && !text.includes('smoke notice'), `${res.status} ${text.slice(0, 200)}`);
+  check('discover: 200 + clean JSON despite noisy plugin', res.status === 200 && body?.result?.supportedVersions?.[0] === '2026-07-28' && !text.includes('NOISE') && !text.includes('smoke notice'), `${res.status} location=${res.headers.get('location')} ${text.slice(0, 200)}`);
   check('discover: Content-Type application/json', (res.headers.get('content-type') ?? '').startsWith('application/json'), res.headers.get('content-type'));
   check('noise really printed on normal pages', (await (await fetch(`${BASE}/`)).text()).includes('NOISE-FROM-ANOTHER-PLUGIN'), 'mu-plugin not active: F2 check would be meaningless');
 
