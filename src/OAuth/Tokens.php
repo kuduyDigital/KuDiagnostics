@@ -248,7 +248,7 @@ final class Tokens {
 	 *
 	 * @param string $family Family id.
 	 */
-	private static function revoke_family( string $family ): void {
+	public static function revoke_family( string $family ): void {
 		global $wpdb;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- custom table.
 		$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}kuduy_oauth_tokens SET revoked_at = %s WHERE family_id = %s AND revoked_at IS NULL", self::at( 0 ), $family ) );

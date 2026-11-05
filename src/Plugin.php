@@ -7,7 +7,9 @@
 
 namespace Kuduy\Mcp;
 
+use Kuduy\Mcp\Admin\ConnectionsPage;
 use Kuduy\Mcp\Http\OutputGuard;
+use Kuduy\Mcp\Lifecycle\Cleanup;
 use Kuduy\Mcp\Lifecycle\Migrations;
 use Kuduy\Mcp\Mcp\RestController;
 use Kuduy\Mcp\OAuth\Authorize;
@@ -37,6 +39,7 @@ final class Plugin {
 	public static function boot(): void {
 		// Auto-updates replace files without firing the activation hook.
 		Migrations::maybe_upgrade();
+		Cleanup::schedule();
 
 		if ( self::$hooked ) {
 			return;
@@ -59,6 +62,8 @@ final class Plugin {
 		add_action( 'login_form_kuduy-mcp-authorize', array( Authorize::class, 'route' ) );
 		add_action( 'init', array( Endpoints::class, 'well_known' ), 0 );
 		add_action( 'admin_notices', array( self::class, 'permalink_notice' ) );
+		add_action( Cleanup::HOOK, array( Cleanup::class, 'run' ) );
+		add_action( 'admin_menu', array( ConnectionsPage::class, 'menu' ) );
 	}
 
 	/**

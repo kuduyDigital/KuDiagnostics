@@ -58,3 +58,11 @@
 - Found while testing: (1) the smoke test's noisy mu-plugin broke core's own `wp-login.php` (headers already sent) — limited to non-login pages; (2) WordPress stubs claim `WP_REST_Request::get_json_params()` always returns an array, but it returns null for non-JSON bodies — corrected with a PHPStan stub instead of trusting it. PHPCS: excluded `Squiz…IncorrectTypeHint` (rejects `list<string>` docs; PHPStan checks types).
 - Needs pretty permalinks (admin notice otherwise). Deferred: admin screen to list/revoke connections, expired-row cleanup cron (step 4).
 - Not yet verified: real Claude clients (O11) — needs the tunnel and you signing in.
+
+## 2026-11-05 — Phase 3 step 4: safety layer
+
+- Plan: `docs/plans/phase-3-04-05-safety-updater.md`.
+- New: `Audit\{Redactor, AuditLog}`, `Execution\{Snapshottable, Snapshots}`, `Policy\RateLimiter`, `Lifecycle\{Cleanup, Deactivator}`, `Admin\{Connections, ConnectionsPage}`, tools `kuduy-snapshot-list` / `kuduy-snapshot-restore`.
+- Every `tools/call` is audited (ok / denied / error + code, client = OAuth client id, `application-password` or `wordpress-login`); arguments **and tool results** are redacted. Destructive `Snapshottable` tools are snapshotted first; a snapshot restores once, by its owner or a site manager. 120 calls/min per user + client, then 429 + `Retry-After`. Daily cleanup cron (audit 90 d, snapshots 30 d, expired codes/tokens, unused clients); deactivation clears it. Tools → KUDUY MCP shows the URL to paste into Claude, connections with Revoke, recent calls.
+- Tests: 11 new, red first, then 50/50 on WP 6.9.11/PHP 8.1.34 and WP 7.1.4/PHP 8.3.36; smoke 24/24.
+- CI smoke failure on `cbd3299` explained: Playground answers the first request after boot with `302` to the same URL, and the followed redirect turned the POST into a GET (405). Smoke now uses `redirect: manual` + a warm-up and reports failures as public annotations (job logs need a GitHub login). CI green since `2e29af0`.

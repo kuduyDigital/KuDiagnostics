@@ -56,6 +56,13 @@ final class TokenAuth {
 	}
 
 	/**
+	 * OAuth client of this request, or null when not authenticated by token.
+	 */
+	public static function client_id(): ?string {
+		return self::$grant['client_id'] ?? null;
+	}
+
+	/**
 	 * OAuth error code for this request, if any.
 	 */
 	public static function error(): ?string {

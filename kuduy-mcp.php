@@ -31,4 +31,5 @@ require_once __DIR__ . '/vendor/autoload.php';
 Kuduy\Mcp\Http\OutputGuard::start();
 
 register_activation_hook( __FILE__, array( Kuduy\Mcp\Lifecycle\Migrations::class, 'run' ) );
+register_deactivation_hook( __FILE__, array( Kuduy\Mcp\Lifecycle\Deactivator::class, 'run' ) );
 add_action( 'plugins_loaded', array( Kuduy\Mcp\Plugin::class, 'boot' ) );

@@ -7,7 +7,9 @@
 
 namespace Kuduy\Mcp\Mcp;
 
+use Kuduy\Mcp\Audit\AuditLog;
 use Kuduy\Mcp\OAuth\Scopes;
+use Kuduy\Mcp\Policy\RateLimiter;
 use Kuduy\Mcp\OAuth\TokenAuth;
 use Kuduy\Mcp\Plugin;
 
@@ -193,8 +195,15 @@ final class Server {
 			return self::fail( $id, -32602, 'Unknown tool: ' . ( is_string( $name ) ? $name : '' ), $modern ? 400 : 200 );
 		}
 		if ( ! self::scope_allows( $tool ) ) {
+			AuditLog::record( $tool->name(), $params['arguments'] ?? null, 'denied', 'insufficient_scope', 0 );
 			$out            = self::fail( $id, -32001, 'Insufficient scope: this tool needs ' . $tool->scope(), 403 );
 			$out['headers'] = array( 'WWW-Authenticate' => TokenAuth::challenge( 'insufficient_scope', $tool->scope() ) );
+			return $out;
+		}
+		$wait = RateLimiter::hit( get_current_user_id(), AuditLog::client_label() );
+		if ( $wait > 0 ) {
+			$out            = self::fail( $id, -32029, 'Rate limit exceeded; retry after ' . $wait . ' seconds.', 429 );
+			$out['headers'] = array( 'Retry-After' => (string) $wait );
 			return $out;
 		}
 		$result = Executor::call( $tool, $params['arguments'] ?? null );
