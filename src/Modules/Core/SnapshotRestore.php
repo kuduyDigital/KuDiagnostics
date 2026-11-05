@@ -54,6 +54,26 @@ final class SnapshotRestore implements Tool {
 	}
 
 	/**
+	 * Structured result.
+	 *
+	 * @return array<string, mixed>
+	 */
+	public function output_schema(): array {
+		return array(
+			'type'       => 'object',
+			'properties' => array(
+				'restored'    => array(
+					'type'        => 'integer',
+					'description' => 'Snapshot id that was restored.',
+				),
+				'object_type' => array( 'type' => 'string' ),
+				'object_id'   => array( 'type' => 'string' ),
+			),
+			'required'   => array( 'restored', 'object_type', 'object_id' ),
+		);
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public function annotations(): array {

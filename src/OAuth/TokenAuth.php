@@ -49,6 +49,11 @@ final class TokenAuth {
 		if ( null === $token ) {
 			return $user_id;
 		}
+		if ( Urls::insecure() ) {
+			// A token sent over plain HTTP may already be exposed; never accept it.
+			self::$error = 'invalid_request';
+			return 0;
+		}
 		self::$grant = Tokens::authenticate( $token );
 		if ( null === self::$grant ) {
 			// A bad bearer token never falls back to another identity.

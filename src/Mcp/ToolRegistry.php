@@ -8,9 +8,13 @@
 namespace Kuduy\Mcp\Mcp;
 
 use Kuduy\Mcp\Modules\Core\CheckUpdate;
+use Kuduy\Mcp\Modules\Core\PostGet;
+use Kuduy\Mcp\Modules\Core\PostList;
+use Kuduy\Mcp\Modules\Core\PostTypes;
 use Kuduy\Mcp\Modules\Core\SiteInfo;
 use Kuduy\Mcp\Modules\Core\SnapshotList;
 use Kuduy\Mcp\Modules\Core\SnapshotRestore;
+use Kuduy\Mcp\Modules\Core\TermList;
 
 /**
  * Built per request so tools and integrations reflect the current state.
@@ -33,6 +37,10 @@ final class ToolRegistry {
 		$registry->register( new SnapshotList() );
 		$registry->register( new SnapshotRestore() );
 		$registry->register( new CheckUpdate() );
+		$registry->register( new PostTypes() );
+		$registry->register( new PostList() );
+		$registry->register( new PostGet() );
+		$registry->register( new TermList() );
 		do_action( 'kuduy_mcp_register_tools', $registry );
 		return $registry;
 	}

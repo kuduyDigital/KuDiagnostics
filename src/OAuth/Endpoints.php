@@ -111,6 +111,9 @@ final class Endpoints {
 	 * @phpstan-param \WP_REST_Request<array<string, mixed>> $request
 	 */
 	public static function token( \WP_REST_Request $request ): \WP_REST_Response {
+		if ( Urls::insecure() ) {
+			return self::https_required();
+		}
 		$form   = self::form( $request );
 		$result = match ( $form['grant_type'] ?? null ) {
 			'authorization_code' => Tokens::exchange_code( $form ),
@@ -131,6 +134,9 @@ final class Endpoints {
 	 * @phpstan-param \WP_REST_Request<array<string, mixed>> $request
 	 */
 	public static function register_client( \WP_REST_Request $request ): \WP_REST_Response {
+		if ( Urls::insecure() ) {
+			return self::https_required();
+		}
 		if ( ! Clients::make_room() ) {
 			return self::json(
 				array(
@@ -155,7 +161,20 @@ final class Endpoints {
 	}
 
 	/**
-	 * RFC 7009: always 200, whatever the token.
+	 * Refusal for token and registration requests over plain HTTP.
+	 */
+	private static function https_required(): \WP_REST_Response {
+		return self::json(
+			array(
+				'error'             => 'invalid_request',
+				'error_description' => 'This site only issues tokens over HTTPS.',
+			),
+			400
+		);
+	}
+
+	/**
+	 * RFC 7009: always 200, whatever the token. Allowed over HTTP too: revoking a possibly exposed token is always safe.
 	 *
 	 * @param \WP_REST_Request $request Request.
 	 * @phpstan-param \WP_REST_Request<array<string, mixed>> $request

@@ -1,6 +1,6 @@
 # KUDUY MCP — Security
 
-Covers v0.1.2 (Phase 3 foundation). Planned controls for later phases are marked *planned*.
+Covers v0.1.2 plus unreleased changes on `main` (HTTPS enforcement, early-auth fix, first Phase 4 read tools). Planned controls for later phases are marked *planned*.
 
 ## Reporting a vulnerability
 
@@ -25,6 +25,7 @@ Please do not open a public issue. Report privately to the maintainer (KUDUY Dig
 | Malicious website (CSRF, clickjacking, DNS rebinding) | Ride a logged-in admin's browser | Origin allowlist on the MCP route (403); REST cookie auth needs a nonce; consent page nonce + `X-Frame-Options: DENY` + CSP `frame-ancestors 'none'` |
 | Stolen or leaked token | Use it beyond its grant | Token valid only on the MCP route; scopes enforced per tool; access 1 h; refresh rotation with family revoke on reuse; revocation endpoint and admin revoke; tokens stored only as SHA-256 |
 | Malicious OAuth client | Steal a code via redirect | Exact redirect URI match (loopback any port only); PKCE S256 required; code single-use and bound to client, redirect and verifier; `iss` returned (RFC 9207); `resource` must be our MCP URL |
+| Content read tools | Leak drafts, private or protected content | Unpublished statuses need the type's `edit_posts` (`read_private_posts` for private); without `edit_others_posts` only your own; `read_post` per post; password-protected content only for users who can edit that post; post passwords never returned; only post types and taxonomies with an admin UI |
 | Signed-in user with low role | Escalate through tools | Offered scopes cut to the user's caps; `current_user_can()` per tool and input; undo needs the original tool's scope and capability |
 | Claude (model) mistakes | Destroy data | Snapshots before destructive tools; audit log; rate limit 120/min; *planned:* confirm policy for disruptive actions |
 | Other plugins | Break JSON responses, leak notices | Output guard on our routes |
@@ -57,6 +58,8 @@ Ran PHPCS (WPCS), PHPStan level 6, `composer audit` (clean), `npm audit` (3 mode
 
 Users of v0.1.0 or v0.1.1 should update to v0.1.2.
 
+Found afterwards, fixed on `main` (unreleased): **HTTPS was not enforced** (now refused over plain HTTP outside local sites, O17), and a **fatal error** when another plugin checks the current user on `plugins_loaded` during an MCP request with a token: `rest_url()` needs `$wp_rewrite`, which does not exist yet (reproduced on WordPress 7.1.4; fixed and tested, O18).
+
 ## 5. Known limitations and accepted risks
 
 - **Update authorship**: SHA-256 from the same release; no signature yet (later: Ed25519 with an embedded public key).
@@ -64,7 +67,7 @@ Users of v0.1.0 or v0.1.1 should update to v0.1.2.
 - **Rate limiter**: transient counter, not atomic under heavy concurrency (marked `shortcut:` in code).
 - **Redaction** is pattern-based; application passwords and gateway keys get dedicated tests when user and WooCommerce tools land (P4).
 - **Application Password / cookie users** are limited by capabilities only (no OAuth scope) — by design, same as WordPress.
-- **HTTPS** is not enforced by the plugin yet; WordPress's own site URL decides the scheme. *Planned:* refuse OAuth over plain HTTP except loopback and `WP_ENVIRONMENT_TYPE=local`.
+- **HTTPS** is enforced for authorize, token, registration and bearer tokens (not for revocation, which is always safe) unless the site is local. Behind a TLS-terminating proxy `X-Forwarded-Proto: https` is trusted when the site URL is https; a client that fakes it over plain HTTP only exposes its own token.
 - **CIMD fetch** relies on `wp_safe_remote_get`; DNS rebinding between check and connect is a known limit of the WordPress HTTP API.
 - `kuduy-check-update` with `refresh: true` can be called up to the rate limit and use GitHub's anonymous quota (60/h); failure only delays update checks.
 

@@ -55,7 +55,7 @@ final class Executor {
 		}
 		$input = (array) rest_sanitize_value_from_schema( $args, $schema, 'arguments' );
 
-		if ( ! current_user_can( $tool->capability( $input ) ) ) {
+		if ( ! self::allowed( $tool, $input ) ) {
 			return self::error( __( 'Your WordPress account is not allowed to use this tool.', 'kuduy-mcp' ), 'denied', 'forbidden' );
 		}
 
@@ -63,6 +63,7 @@ final class Executor {
 			if ( $tool instanceof Snapshottable && ( $tool->annotations()['destructiveHint'] ?? false ) ) {
 				$snap = $tool->snapshot( $input );
 				if ( null !== $snap ) {
+					AuditLog::target( $snap['object_type'], $snap['object_id'] );
 					$snapshot = Snapshots::store( $tool->name(), $snap, $input );
 				}
 			}
@@ -92,6 +93,18 @@ final class Executor {
 			'ok',
 			null,
 		);
+	}
+
+	/**
+	 * Whether the current user has the tool's capability for this input (object checks like [ 'edit_post', 42 ]).
+	 *
+	 * @param Tool                 $tool  Tool.
+	 * @param array<string, mixed> $input Validated input; empty for listing.
+	 */
+	public static function allowed( Tool $tool, array $input ): bool {
+		$cap = $tool->capability( $input );
+		$cap = is_array( $cap ) ? array_values( $cap ) : array( $cap );
+		return is_string( $cap[0] ?? null ) && current_user_can( ...$cap );
 	}
 
 	/**

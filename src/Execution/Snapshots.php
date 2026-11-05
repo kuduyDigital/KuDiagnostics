@@ -7,6 +7,7 @@
 
 namespace Kuduy\Mcp\Execution;
 
+use Kuduy\Mcp\Mcp\Executor;
 use Kuduy\Mcp\Mcp\ToolError;
 use Kuduy\Mcp\Mcp\ToolRegistry;
 use Kuduy\Mcp\OAuth\Scopes;
@@ -100,7 +101,7 @@ final class Snapshots {
 		if ( null !== $granted && ! Scopes::allows( $granted, $tool->scope() ) ) {
 			throw new ToolError( 'This connection was not granted the access level that undoing this change needs.' );
 		}
-		if ( ! current_user_can( $tool->capability( $input ) ) ) {
+		if ( ! Executor::allowed( $tool, $input ) ) {
 			throw new ToolError( 'Your WordPress account is not allowed to make this change.' );
 		}
 		// Claim first so two simultaneous restores cannot both run; release the claim if restoring fails.

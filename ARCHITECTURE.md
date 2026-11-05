@@ -1,6 +1,6 @@
 # KUDUY MCP — Architecture
 
-Approved 2026-11-04 (decisions D1–D6); D1 and D2 changed by user decision during Phase 3. This file describes what is **built** (Phase 3 foundation, v0.1.2) and what is **designed but not built yet** (marked *planned*). Research behind each decision: `RESEARCH.md`.
+Approved 2026-11-04 (decisions D1–D6); D1 and D2 changed by user decision during Phase 3. This file describes what is **built** (Phase 3 foundation and the start of Phase 4, `main` after v0.1.2) and what is **designed but not built yet** (marked *planned*). Research behind each decision: `RESEARCH.md`.
 
 ## 1. Goals and non-goals
 
@@ -75,7 +75,7 @@ kuduy-mcp/                       repo root = plugin root
 │  ├─ Audit/                     AuditLog, Redactor
 │  ├─ Admin/                     Connections, ConnectionsPage (Tools > KUDUY MCP)
 │  ├─ Update/GitHubUpdater.php
-│  └─ Modules/Core/              SiteInfo, SnapshotList, SnapshotRestore, CheckUpdate
+│  └─ Modules/Core/              SiteInfo, SnapshotList, SnapshotRestore, CheckUpdate, Content (shared), PostTypes, PostList, PostGet, TermList
 ├─ scripts/                      test-integration, smoke-mcp, tunnel, build-release, check-release, check-update
 ├─ tests/integration/            PHPUnit inside Playground; tests/playground blueprint; tests/phpstan stub
 └─ .github/workflows/            ci.yml, release.yml
@@ -116,17 +116,18 @@ interface Tool {
     public function title(): string;
     public function description(): string;
     public function input_schema(): array;       // JSON Schema, validated with core rest_validate_value_from_schema()
+    public function output_schema(): array;      // JSON Schema of structuredContent, listed as outputSchema
     public function annotations(): array;        // readOnlyHint, destructiveHint, idempotentHint, openWorldHint
     public function scope(): string;             // kuduy:read | kuduy:write | kuduy:admin | kuduy:code
-    public function capability( array $input ): string; // WP capability, may depend on the object
+    public function capability( array $input ): string|array; // 'read' or [ 'read_post', 42 ] for object checks
     public function is_available(): bool|string; // true, or why not (e.g. "Elementor is not active")
     public function execute( array $input ): array;
 }
 ```
 
-`ToolRegistry::create()` registers core tools and fires `kuduy_mcp_register_tools`. `Executor::call()` order: availability → schema validation + sanitizing → `current_user_can( capability( input ) )` → snapshot if `Snapshottable` and `destructiveHint` → execute → `Redactor` → audit row. Exceptions become a generic tool error (`isError: true`) plus an `error_log` line with class/file/line only. `Server` checks the OAuth scope (403 `insufficient_scope`) and the rate limit (429 `Retry-After`) before the executor. Unavailable tools are hidden unless `KUDUY_MCP_LIST_UNAVAILABLE`.
+`ToolRegistry::create()` registers core tools and fires `kuduy_mcp_register_tools`. `Executor::allowed()` is the one capability check (listing, calling, undo). `Executor::call()` order: availability → schema validation + sanitizing → `Executor::allowed( tool, input )` → snapshot if `Snapshottable` and `destructiveHint` → execute → `Redactor` → audit row. Exceptions become a generic tool error (`isError: true`) plus an `error_log` line with class/file/line only. `Server` checks the OAuth scope (403 `insufficient_scope`) and the rate limit (429 `Retry-After`) before the executor. Unavailable tools are hidden unless `KUDUY_MCP_LIST_UNAVAILABLE`.
 
-*Planned:* `output_schema()` per tool (brief §14), object-level guards per module.
+Tools name the object they touch with `AuditLog::target( type, id )` (snapshots do it automatically), so audit rows carry `object_type` / `object_id`. Content tools share `Modules\Core\Content`: only post types and taxonomies with an admin UI (`show_ui`), attachments excluded until media tools, a post summary that never contains the post password, paging (1–100 per page).
 
 ## 7. OAuth and authentication flow
 
@@ -152,6 +153,7 @@ sequenceDiagram
   C->>W: MCP requests with Authorization: Bearer
 ```
 
+- HTTPS: authorize, token, registration and bearer tokens are refused over plain HTTP unless the site is local (loopback, `*.localhost`, `*.test`, `WP_ENVIRONMENT_TYPE=local`; filter `kuduy_mcp_require_https`). `Urls` builds REST URLs without `$wp_rewrite` when called before WordPress creates it.
 - Issuer = `rest_url( 'kuduy-mcp/v1/oauth' )`, so `{issuer}/.well-known/openid-configuration` works on hosts that block `/.well-known/`. Root `/.well-known/` documents are also served from `init` when the host passes them to WordPress.
 - Public clients only (`token_endpoint_auth_method: none`). S256 only. Exact redirect match, except loopback (`localhost`, `127.0.0.1`, `[::1]`) on any port.
 - Codes: single use (atomic claim); reuse revokes the tokens issued from that code. Refresh: rotation; reuse of a rotated/revoked refresh revokes the whole family. Revocation (RFC 7009) always 200; revoking a refresh token ends the connection.

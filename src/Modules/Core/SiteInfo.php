@@ -48,6 +48,46 @@ final class SiteInfo implements Tool {
 	}
 
 	/**
+	 * Structured result.
+	 *
+	 * @return array<string, mixed>
+	 */
+	public function output_schema(): array {
+		return array(
+			'type'       => 'object',
+			'properties' => array(
+				'name'              => array( 'type' => 'string' ),
+				'description'       => array( 'type' => 'string' ),
+				'url'               => array( 'type' => 'string' ),
+				'admin_url'         => array( 'type' => 'string' ),
+				'language'          => array( 'type' => 'string' ),
+				'timezone'          => array( 'type' => 'string' ),
+				'wordpress_version' => array( 'type' => 'string' ),
+				'kuduy_mcp_version' => array( 'type' => 'string' ),
+				'theme'             => array( 'type' => 'string' ),
+				'is_multisite'      => array( 'type' => 'boolean' ),
+				'php_version'       => array(
+					'type'        => 'string',
+					'description' => 'Only for users who can manage options.',
+				),
+				'user'              => array(
+					'type'       => 'object',
+					'properties' => array(
+						'id'           => array( 'type' => 'integer' ),
+						'display_name' => array( 'type' => 'string' ),
+						'roles'        => array(
+							'type'  => 'array',
+							'items' => array( 'type' => 'string' ),
+						),
+					),
+					'required'   => array( 'id', 'display_name', 'roles' ),
+				),
+			),
+			'required'   => array( 'name', 'url', 'wordpress_version', 'kuduy_mcp_version', 'user' ),
+		);
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public function annotations(): array {

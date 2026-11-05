@@ -1,9 +1,9 @@
 # KUDUY MCP — Features
 
 Status values: `Not started` · `In progress` · `Implemented` (code exists, tests incomplete) · `Tested` (passing tests or recorded manual evidence; IDs refer to `TESTING.md`) · `Blocked`.
-Section numbers follow the KUDUY MCP Master Development Prompt. Updated 2026-11-05 (v0.1.2).
+Section numbers follow the KUDUY MCP Master Development Prompt. Updated 2026-11-05 (main after v0.1.2).
 
-Summary: Foundation (brief §4, §12, §13) is built and tested except real Claude clients. Everything from §5 onward is `Not started`.
+Summary: Foundation (brief §4, §12, §13) is built and tested except real Claude clients (O11). Phase 4 has started: read tools for post types, posts and terms are `Tested`; everything else from §5 onward is `Not started`.
 
 ## Foundation — MCP and transport (§4)
 
@@ -18,7 +18,7 @@ Summary: Foundation (brief §4, §12, §13) is built and tested except real Clau
 | Origin validation | Tested | F6 |
 | Tool discovery filtered by availability, scope and capability | Tested | F7 |
 | Tool execution, schema validation, structured errors | Tested | F8 |
-| Output schema per tool (§14) | Not started | Input schemas exist; `outputSchema` not yet declared |
+| Output schema per tool (§14) | Tested | F13: every tool declares `outputSchema`; results validated against it |
 | Background processing / jobs | Not started | ARCHITECTURE §12 |
 | Real Claude clients (claude.ai, Desktop, Claude Code) | In progress | O11 — endpoints checked from outside on the user's Hostinger site; real sign-in not yet confirmed |
 
@@ -37,12 +37,12 @@ Summary: Foundation (brief §4, §12, §13) is built and tested except real Clau
 | Consent: unticked scopes not granted, nothing ticked → denied | Tested | O13 |
 | Sign-in detection (`initialize` → 401 + challenge) | Tested | O14; claude.ai re-check in O11 |
 | Logged-out visitors cannot trigger outbound CIMD fetches | Tested | OAuth test `logged_out_visitors_cannot_make_the_site_fetch_a_cimd_url` |
-| WordPress identity binding (`determine_current_user`) | Tested | O7, O12 |
+| WordPress identity binding (`determine_current_user`) | Tested | O7, O12; also when another plugin checks the user on `plugins_loaded` (O18) |
 | Per-tool capability checks | Tested | F7, F8 |
-| Object-level authorization | In progress | Tool contract passes input to `capability()`; object guards come with Phase 4 tools |
+| Object-level authorization | Tested | `capability()` may return `[cap, object_id]`; `kuduy-post-get` checks `read_post` per post (C1, P1) |
 | Rate limiting | Tested | F11 |
 | Request validation, sanitization, escaping | Tested | F5, F8, PHPCS (WPCS) clean |
-| HTTPS enforcement | Not started | Endpoints work over http on local dev; plan: refuse OAuth on non-HTTPS except loopback/local environment |
+| HTTPS enforcement | Tested | O17: token, registration, authorize and bearer refused over plain HTTP unless the site is local (filter `kuduy_mcp_require_https`) |
 | Safe uploads and paths | Not started | Comes with media and developer tools |
 | Backup and recovery for destructive changes | Tested | F10, snapshot scope test |
 
@@ -53,7 +53,7 @@ Summary: Foundation (brief §4, §12, §13) is built and tested except real Clau
 | Custom tables only where justified (5 tables) | Tested | F1 |
 | Token material hashed (SHA-256), no plaintext refresh tokens | Tested | O7 |
 | Audit: actor, client, tool, result, error code, duration, snapshot | Tested | F9 |
-| Audit: target object type/id | Implemented | Columns exist; filled by object tools from Phase 4 |
+| Audit: target object type/id | Tested | Filled from snapshots and by object tools (`kuduy-post-get` test) |
 | Secrets redacted in results and audit rows | Tested | F9, P4 partial |
 | Retention and cleanup (daily cron) | Tested | Safety tests |
 | Multisite behaviour designed and tested | Not started | Per-site activation only today; see ARCHITECTURE §12 |
@@ -72,10 +72,13 @@ Summary: Foundation (brief §4, §12, §13) is built and tested except real Clau
 | Feature | Status |
 |---|---|
 | Site info tool (`kuduy-site-info`) | Tested (F8, smoke) |
-| Posts and pages: list, search, read, create, update, publish, schedule, delete | Not started |
+| Posts and pages: list, search, read | Tested (C1: `kuduy-post-list`, `kuduy-post-get`) |
+| Posts and pages: create, update, publish, schedule, delete | Not started |
 | Drafts, revisions, comments, excerpts, slugs, permalinks | Not started |
-| Categories, tags, custom taxonomies | Not started |
-| Custom post types | Not started |
+| Categories, tags, custom taxonomies: list | Tested (C2: `kuduy-term-list`) |
+| Categories, tags, custom taxonomies: create, update, delete, assign | Not started |
+| Custom post types: discover and read (`kuduy-post-types`, list, get) | Tested (C2) |
+| Custom post types: write | Not started |
 | Post meta (protected keys blocked), featured images | Not started |
 | Menus and navigation | Not started |
 | Block Editor content inspect/edit | Not started |
@@ -83,7 +86,8 @@ Summary: Foundation (brief §4, §12, §13) is built and tested except real Clau
 | Never return passwords, hashes, tokens | Tested (redactor, F9); per-tool tests come with user tools |
 | Plugins/themes: list, versions, install, update, activate, deactivate (safety checks) | Not started |
 | Theme file inspection, conflict diagnosis | Not started |
-| Site settings (allow-list), Site Health, cron, rewrite rules, registered types/hooks/caps, cache diagnostics | Not started |
+| Registered post types | Tested (`kuduy-post-types`) |
+| Site settings (allow-list), Site Health, cron, rewrite rules, registered hooks/caps, cache diagnostics | Not started |
 
 ## Elementor (§6) — Phase 5
 

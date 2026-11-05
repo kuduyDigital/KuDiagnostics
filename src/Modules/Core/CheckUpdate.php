@@ -55,6 +55,29 @@ final class CheckUpdate implements Tool {
 	}
 
 	/**
+	 * Structured result.
+	 *
+	 * @return array<string, mixed>
+	 */
+	public function output_schema(): array {
+		return array(
+			'type'       => 'object',
+			'properties' => array(
+				'installed_version' => array( 'type' => 'string' ),
+				'latest_version'    => array( 'type' => array( 'string', 'null' ) ),
+				'update_available'  => array( 'type' => 'boolean' ),
+				'release_url'       => array( 'type' => array( 'string', 'null' ) ),
+				'release_notes'     => array( 'type' => array( 'string', 'null' ) ),
+				'install_from'      => array(
+					'type'        => 'string',
+					'description' => 'Where updates are installed (the Plugins screen).',
+				),
+			),
+			'required'   => array( 'installed_version', 'latest_version', 'update_available', 'install_from' ),
+		);
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public function annotations(): array {

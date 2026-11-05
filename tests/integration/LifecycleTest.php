@@ -2,7 +2,7 @@
 /**
  * Lifecycle: activation, upgrade without re-activation, uninstall (test matrix F1).
  *
- * Runs inside Playground's WordPress; tests share one database and run in file order.
+ * Runs inside Playground's WordPress; tests share one database, so setUpBeforeClass() resets KUDUY first.
  *
  * @package Kuduy\Mcp
  */
@@ -25,6 +25,14 @@ final class LifecycleTest extends TestCase {
 		'kuduy_audit_log',
 		'kuduy_snapshots',
 	);
+
+	/**
+	 * Start from a site where KUDUY was never installed, whatever ran before (files run alphabetically).
+	 */
+	public static function setUpBeforeClass(): void {
+		deactivate_plugins( self::PLUGIN, true );
+		Uninstaller::run( true );
+	}
 
 	private static function table_exists( string $table ): bool {
 		global $wpdb;

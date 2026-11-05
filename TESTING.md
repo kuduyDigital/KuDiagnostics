@@ -22,7 +22,7 @@ Process: test first (red), then code (green); every new security fix gets a regr
 
 See `CLAUDE.md` → Commands. Integration: `KUDUY_WP=<6.9|7.1> KUDUY_PHP=<8.1|8.3> node scripts/test-integration.mjs`. Smoke: `node scripts/smoke-mcp.mjs`.
 
-## 3. Latest results (2026-11-05, commit `0ce48a0`)
+## 3. Latest results (2026-11-05, main after v0.1.2)
 
 | Check | Result |
 |---|---|
@@ -30,9 +30,9 @@ See `CLAUDE.md` → Commands. Integration: `KUDUY_WP=<6.9|7.1> KUDUY_PHP=<8.1|8.
 | PHPStan level 6 | No errors |
 | `composer audit` | No advisories |
 | `npm audit` | 3 moderate in `@wp-playground/cli` dependencies (dev only, not shipped) |
-| Integration, WordPress 6.9.11 / PHP 8.1.34 | **67 / 67 pass** |
-| Integration, WordPress 7.1.4 / PHP 8.3.36 | **67 / 67 pass** |
-| Smoke over real HTTP (WP 7.1.4 / PHP 8.3, Elementor 4.3.6 + WooCommerce 11.2.1 active) | **26 / 26 pass** (on `3591d92`) |
+| Integration, WordPress 6.9.11 / PHP 8.1.34 | **81 / 81 pass** |
+| Integration, WordPress 7.1.4 / PHP 8.3.36 | **81 / 81 pass** |
+| Smoke over real HTTP (WP 7.1.4 / PHP 8.3, Elementor 4.3.6 + WooCommerce 11.2.1 active) | **26 / 26 pass** |
 | Security probe (read-only token on core routes, `rest_route` override, PATH_INFO, unticked consent, unauthenticated `initialize`, root AS metadata) | All refused / as expected on 0.1.2 |
 | GitHub CI on `3591d92` | All 9 jobs green; release workflow for `v0.1.2` green |
 | Real update v0.1.0 → v0.1.1 | Pass (2026-11-05) |
@@ -57,6 +57,7 @@ Legend: **U** unit, **I** integration (Playground), **E** end-to-end with a real
 | F9 | Audit log | every call logged; secrets redacted; retention purge | I — **pass 2026-11-05** (`SafetyTest`: ok/denied/error rows, redacted args and results, 90-day purge) |
 | F10 | Snapshots | destructive tool writes snapshot; restore works | I — **pass 2026-11-05** (restores once; others cannot restore) |
 | F11 | Rate limit | burst over limit → 429 with retry hint | I — **pass 2026-11-05** (`Retry-After`) |
+| F13 | Output schemas | every listed tool has an object `outputSchema`; `structuredContent` of each core tool validates against it | I — **pass 2026-11-05** |
 | F12 | Undo needs the original grant | write-scope token cannot restore an admin-scope tool's snapshot; admin-scope token can | I — **pass 2026-11-05** (0.1.2) |
 
 ## OAuth
@@ -78,23 +79,25 @@ Legend: **U** unit, **I** integration (Playground), **E** end-to-end with a real
 | O13 | Consent with nothing ticked | approve with every box unticked → `access_denied`, no code | I — **pass 2026-11-05** (0.1.2) |
 | O14 | Sign-in detection | unauthenticated `initialize` → 401 + challenge, so claude.ai detects OAuth | I — **pass 2026-11-05** (0.1.2, also real HTTP); claude.ai check in O11 |
 | O15 | Registration cap | unused DCR clients capped; at cap the oldest unused (> 1 h) is evicted, else 429; not per IP | I — **pass 2026-11-05** (0.1.2) |
+| O17 | HTTPS required | with HTTPS required (non-local site): token, registration and authorize refused; bearer over plain HTTP gives no user and a 401 mentioning HTTPS; local sites allowed | I — **pass 2026-11-05** |
+| O18 | Early user check | a bearer token authenticates even before WordPress creates `$wp_rewrite` (another plugin calling `wp_get_current_user()` on `plugins_loaded`). Before the fix, `rest_url()` there threw `Call to a member function using_index_permalinks() on null` (reproduced on WP 7.1.4) | I — **pass 2026-11-05** |
 | O16 | No anonymous outbound fetch | logged-out authorize request with a CIMD `client_id` → login redirect, zero HTTP requests | I — **pass 2026-11-05** (0.1.2) |
 
 ## Permissions
 
 | # | Tests | Type |
 |---|---|---|
-| P1 | Author can edit own post, not others' | I |
+| P1 | Author can edit own post, not others' | I — read side **pass 2026-11-05** (author cannot list or read other people's drafts); edit side comes with write tools |
 | P2 | Editor cannot install plugins | I |
-| P3 | Subscriber token sees only read tools it can use | I |
-| P4 | No response or log contains wp-config secrets, password hashes, app passwords, gateway keys | U, I |
+| P3 | Subscriber token sees only read tools it can use | I — partly **pass** (subscriber: published posts only, no drafts/private, no non-public taxonomy; scope filtering O10) |
+| P4 | No response or log contains wp-config secrets, password hashes, app passwords, gateway keys | U, I — partly **pass** (redactor F9; post password never returned) |
 
 ## Core WordPress
 
 | # | Feature | Type |
 |---|---|---|
-| C1 | Posts/pages CRUD, status, schedule, search, count | I |
-| C2 | CPT + custom taxonomies, terms CRUD | I |
+| C1 | Posts/pages CRUD, status, schedule, search, count | I — read part **pass 2026-11-05** (`CoreContentTest`: list/search/paging, drafts and private by role, `read_post` per post, password-protected content, unknown type); writes not run |
+| C2 | CPT + custom taxonomies, terms CRUD | I — read part **pass 2026-11-05** (`kuduy-post-types` hides types without admin UI; `kuduy-term-list` public vs non-public taxonomy); writes not run |
 | C3 | Comments moderate/reply | I |
 | C4 | Post meta (protected keys blocked), revisions list/restore | I |
 | C5 | Featured image set/unset | I |

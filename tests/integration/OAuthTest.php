@@ -75,6 +75,9 @@ final class OAuthTest extends TestCase {
 				public function input_schema(): array {
 					return array( 'type' => 'object' );
 				}
+				public function output_schema(): array {
+					return array( 'type' => 'object' );
+				}
 				public function annotations(): array {
 					return array();
 				}
@@ -108,6 +111,9 @@ final class OAuthTest extends TestCase {
 						'type'       => 'object',
 						'properties' => array( 'value' => array( 'type' => 'string' ) ),
 					);
+				}
+				public function output_schema(): array {
+					return array( 'type' => 'object' );
 				}
 				public function annotations(): array {
 					return array( 'destructiveHint' => true );
@@ -760,6 +766,52 @@ final class OAuthTest extends TestCase {
 		self::as_bearer( $t['access_token'] );
 		$this->assertSame( 200, $this->mcp( 'tools/call', 'kuduy-site-info' )->get_status(), 'kuduy:write implies kuduy:read' );
 		$this->assertSame( 200, $this->mcp( 'tools/call', 'test-write' )->get_status() );
+	}
+
+	public function test_oauth_and_tokens_require_https_outside_local_sites(): void {
+		$client = $this->register_client();
+		$t      = $this->tokens( $client );
+		$force  = static fn() => true;
+		add_filter( 'kuduy_mcp_require_https', $force );
+
+		$token = $this->rest(
+			'POST',
+			'/kuduy-mcp/v1/oauth/token',
+			array(
+				'grant_type'    => 'refresh_token',
+				'refresh_token' => $t['refresh_token'],
+				'client_id'     => $client,
+			)
+		);
+		$this->assertSame( 400, $token->get_status() );
+		$this->assertSame( 'invalid_request', $token->get_data()['error'] );
+		$this->assertSame( 400, $this->rest( 'POST', '/kuduy-mcp/v1/oauth/register', array(), array( 'redirect_uris' => array( self::CLAUDE_REDIRECT ) ) )->get_status() );
+		[ , $challenge ] = self::pkce();
+		$page            = Authorize::handle( 'GET', self::query( $client, $challenge ), array() );
+		$this->assertSame( 'page', $page['type'] );
+		$this->assertSame( 400, $page['status'] );
+
+		$this->assertSame( 0, self::as_bearer( $t['access_token'] ), 'bearer over plain HTTP is refused' );
+		$this->assertSame( 'invalid_request', TokenAuth::error() );
+		$this->assertStringContainsString( 'HTTPS', $this->mcp( 'tools/list' )->get_data()['error']['message'] ?? '' );
+
+		remove_filter( 'kuduy_mcp_require_https', $force );
+		$this->assertSame( self::$admin, self::as_bearer( $t['access_token'] ), 'local site: plain HTTP allowed' );
+	}
+
+	public function test_token_works_before_wordpress_creates_wp_rewrite(): void {
+		$t        = $this->tokens( $this->register_client() );
+		$expected = Urls::resource();
+		$rewrite  = $GLOBALS['wp_rewrite'];
+		unset( $GLOBALS['wp_rewrite'] ); // As during plugins_loaded, when other plugins often check the current user.
+		try {
+			$early = Urls::resource();
+			$user  = self::as_bearer( $t['access_token'] );
+		} finally {
+			$GLOBALS['wp_rewrite'] = $rewrite; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- restores the global the test removed.
+		}
+		$this->assertSame( $expected, $early );
+		$this->assertSame( self::$admin, $user );
 	}
 
 	public function test_write_token_cannot_undo_an_admin_tool_change(): void {

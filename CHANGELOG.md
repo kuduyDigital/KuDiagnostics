@@ -4,6 +4,12 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 ## Unreleased
 
+- Security: OAuth sign-in, token and registration requests, and access tokens are refused over plain HTTP, except on local development sites.
+- Fixed: a fatal error when another plugin checks the current user very early (`plugins_loaded`) during a Claude request.
+- Added: every tool declares an output schema (`outputSchema`).
+- Added (Phase 4): read-only tools `kuduy-post-types`, `kuduy-post-list` (search, status, paging), `kuduy-post-get` (raw content, terms, featured image) and `kuduy-term-list`, limited to what the connected user may read.
+- Added: audit rows record which object a call touched.
+- Added: GPL-2.0 `LICENSE` file (shipped in the release ZIP).
 - "Check again" on Dashboard → Updates now asks GitHub immediately instead of using the 12-hour release cache (only for users who can update plugins).
 - Project files reorganised: `CLAUDE.md`, `RESEARCH.md`, `ARCHITECTURE.md`, `ROADMAP.md`, `FEATURES.md`, `COMPATIBILITY.md`, `SECURITY.md`, `TESTING.md`, `CHANGELOG.md` replace `docs/01–04` and `docs/DEVLOG.md`.
 
@@ -134,3 +140,14 @@ Format: user-facing releases first (newest on top), then the dated development h
 - Research re-inspected both references: WSP still `20a9582` (GPL-2.0); Novamira now `9277ff3` (AGPL-3.0, v1.12.14). Filled the brief's gaps: WSP has no automated tests, writes Rank Math meta directly, uses Woo CRUD; Novamira's WP-CLI runs through `proc_open` with argv, its `read-file` has no `wp-config.php` guard, every ability is gated by "plugin enabled + user can manage".
 - `ARCHITECTURE.md` now describes the as-built foundation (own MCP layer and OAuth server, schema v1, token route binding) and marks later modules as planned. `FEATURES.md` tracks 104 rows with the brief's five statuses; only foundation rows are `Tested`.
 - Found while writing: GitHub private vulnerability reporting is not enabled on the repo (noted in `SECURITY.md`); HTTPS is not enforced by the plugin (listed as `Not started`).
+
+### 2026-11-05 — Phase 3 code complete; Phase 4 started
+
+- `LICENSE` (GPL-2.0 text from gnu.org) added; the release build already copies it into the ZIP.
+- HTTPS enforcement (`Urls::insecure()`): authorize page, token and registration endpoints and bearer tokens refuse plain HTTP unless the site is local; revocation stays open. Filter `kuduy_mcp_require_https`.
+- **Bug found while planning it:** `rest_url()` calls `$wp_rewrite->using_index_permalinks()`, and `$wp_rewrite` does not exist during `plugins_loaded`. A plugin that checks the current user that early would turn every MCP request with a token into a fatal error. Reproduced on WP 7.1.4 (`Call to a member function using_index_permalinks() on null`); `Urls` now builds the URL itself in that window. Test O18.
+- Tool contract: `output_schema()` required (listed as `outputSchema`, F13); `capability()` may return `[cap, object_id]`; `Executor::allowed()` is the single capability check. `AuditLog::target()` fills `object_type` / `object_id`.
+- Phase 4 read tools with `Modules\Core\Content`: `kuduy-post-types`, `kuduy-post-list`, `kuduy-post-get`, `kuduy-term-list`. Rules: content types and taxonomies only (`show_ui`); unpublished statuses need edit rights and are limited to your own without `edit_others_posts`; `read_post` per post; protected content only for editors of that post; post password never returned.
+- `LifecycleTest` now resets KUDUY itself (new test files sort before it alphabetically).
+- Tests: 81/81 on WP 6.9.11/PHP 8.1.34 and WP 7.1.4/PHP 8.3.36; smoke 26/26.
+- Phase 3 exit gate still open: real Claude clients (O11) need the user.

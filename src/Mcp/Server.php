@@ -229,21 +229,30 @@ final class Server {
 	private static function list_tools(): array {
 		$tools = array();
 		foreach ( ToolRegistry::create()->all() as $tool ) {
-			if ( ( true !== $tool->is_available() && ! self::list_unavailable() ) || ! self::scope_allows( $tool ) || ! current_user_can( $tool->capability( array() ) ) ) {
+			if ( ( true !== $tool->is_available() && ! self::list_unavailable() ) || ! self::scope_allows( $tool ) || ! Executor::allowed( $tool, array() ) ) {
 				continue;
 			}
-			$schema = $tool->input_schema();
-			// An empty PHP array would encode as [], but JSON Schema needs an object.
-			$schema['properties'] = (object) ( $schema['properties'] ?? array() );
-			$tools[]              = array(
-				'name'        => $tool->name(),
-				'title'       => $tool->title(),
-				'description' => $tool->description(),
-				'inputSchema' => $schema,
-				'annotations' => (object) $tool->annotations(),
+			$tools[] = array(
+				'name'         => $tool->name(),
+				'title'        => $tool->title(),
+				'description'  => $tool->description(),
+				'inputSchema'  => self::object_schema( $tool->input_schema() ),
+				'outputSchema' => self::object_schema( $tool->output_schema() ),
+				'annotations'  => (object) $tool->annotations(),
 			);
 		}
 		return $tools;
+	}
+
+	/**
+	 * Top-level object schema as JSON: an empty PHP `properties` array would encode as [], not {}.
+	 *
+	 * @param array<string, mixed> $schema Schema.
+	 * @return array<string, mixed>
+	 */
+	private static function object_schema( array $schema ): array {
+		$schema['properties'] = (object) ( $schema['properties'] ?? array() );
+		return $schema;
 	}
 
 	/**
@@ -264,7 +273,12 @@ final class Server {
 		if ( null === $error && is_user_logged_in() ) {
 			return null;
 		}
-		$out            = self::fail( $id, -32001, null === $error ? 'Authentication required' : 'Invalid or expired access token', 401 );
+		$message = match ( $error ) {
+			null              => 'Authentication required',
+			'invalid_request' => 'Access tokens are only accepted over HTTPS',
+			default           => 'Invalid or expired access token',
+		};
+		$out            = self::fail( $id, -32001, $message, 401 );
 		$out['headers'] = array( 'WWW-Authenticate' => TokenAuth::challenge( $error ) );
 		return $out;
 	}

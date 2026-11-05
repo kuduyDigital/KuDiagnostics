@@ -17,6 +17,23 @@ final class AuditLog {
 	private const MAX_ARGS_BYTES = 65536;
 
 	/**
+	 * Object the running call works on, recorded with the next audit row.
+	 *
+	 * @var array{0:string, 1:string}|null
+	 */
+	private static ?array $target = null;
+
+	/**
+	 * Name the object the current tool call works on (e.g. 'post', '42'). The next record() stores and clears it.
+	 *
+	 * @param string $type Object type.
+	 * @param string $id   Object id.
+	 */
+	public static function target( string $type, string $id ): void {
+		self::$target = array( mb_substr( $type, 0, 32 ), mb_substr( $id, 0, 64 ) );
+	}
+
+	/**
 	 * Record a call.
 	 *
 	 * @param string   $tool        Tool name.
@@ -28,7 +45,9 @@ final class AuditLog {
 	 */
 	public static function record( string $tool, mixed $args, string $result, ?string $error_code, int $duration_ms, ?int $snapshot_id = null ): void {
 		global $wpdb;
-		$json = (string) wp_json_encode( Redactor::redact( $args ), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
+		$target       = self::$target;
+		self::$target = null;
+		$json         = (string) wp_json_encode( Redactor::redact( $args ), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
 		if ( strlen( $json ) > self::MAX_ARGS_BYTES ) {
 			$json = (string) wp_json_encode( array( '_truncated' => strlen( $json ) . ' bytes' ) );
 		}
@@ -45,6 +64,8 @@ final class AuditLog {
 				'error_code'    => $error_code,
 				'duration_ms'   => max( 0, $duration_ms ),
 				'snapshot_id'   => $snapshot_id,
+				'object_type'   => $target[0] ?? null,
+				'object_id'     => $target[1] ?? null,
 			)
 		);
 	}

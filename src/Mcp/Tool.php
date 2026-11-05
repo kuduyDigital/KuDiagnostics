@@ -35,6 +35,14 @@ interface Tool {
 	public function input_schema(): array;
 
 	/**
+	 * JSON Schema of the structured result (`structuredContent`); must have `"type": "object"`.
+	 * Destructive tools may add `_snapshot_id`, so do not set `additionalProperties: false` at the top level.
+	 *
+	 * @return array<string, mixed>
+	 */
+	public function output_schema(): array;
+
+	/**
 	 * MCP annotations: readOnlyHint, destructiveHint, idempotentHint, openWorldHint.
 	 *
 	 * @return array<string, bool>
@@ -47,11 +55,13 @@ interface Tool {
 	public function scope(): string;
 
 	/**
-	 * WordPress capability the current user needs; may depend on the object in `$input`.
+	 * WordPress capability the current user needs: a capability name, or `[ capability, ...args ]` for an
+	 * object check such as `[ 'edit_post', 42 ]`. With empty `$input` (tool listing) return the general capability.
 	 *
 	 * @param array<string, mixed> $input Validated arguments; empty when listing.
+	 * @return string|array<int, mixed>
 	 */
-	public function capability( array $input ): string;
+	public function capability( array $input ): string|array;
 
 	/**
 	 * True, or the reason it is unavailable (e.g. "Elementor is not active").

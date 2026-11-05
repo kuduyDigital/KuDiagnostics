@@ -96,6 +96,9 @@ final class SafetyTest extends TestCase {
 						'required'   => array( 'value' ),
 					);
 				}
+				public function output_schema(): array {
+					return array( 'type' => 'object' );
+				}
 				public function annotations(): array {
 					return array( 'destructiveHint' => true );
 				}
@@ -163,6 +166,9 @@ final class SafetyTest extends TestCase {
 						'nested'   => array( 'type' => 'object' ),
 					),
 				);
+			}
+			public function output_schema(): array {
+				return array( 'type' => 'object' );
 			}
 			public function annotations(): array {
 				return array( 'destructiveHint' => $this->d );

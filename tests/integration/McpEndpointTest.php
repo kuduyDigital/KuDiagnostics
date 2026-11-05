@@ -115,6 +115,9 @@ final class McpEndpointTest extends TestCase {
 			public function input_schema(): array {
 				return $this->s ?? array( 'type' => 'object' );
 			}
+			public function output_schema(): array {
+				return array( 'type' => 'object' );
+			}
 			public function annotations(): array {
 				return array( 'readOnlyHint' => true );
 			}
@@ -367,6 +370,21 @@ final class McpEndpointTest extends TestCase {
 		wp_set_current_user( self::$subscriber );
 		[ , $body ] = $this->modern( 'tools/list' );
 		$this->assertNotContains( 'test-admin-only', array_column( $body['result']['tools'], 'name' ) );
+	}
+
+	public function test_every_tool_declares_an_output_schema_that_its_result_matches(): void {
+		[ , $body ] = $this->modern( 'tools/list' );
+		$schemas    = array();
+		foreach ( $body['result']['tools'] as $tool ) {
+			$this->assertSame( 'object', $tool['outputSchema']['type'] ?? null, $tool['name'] . ' has no object outputSchema' );
+			$schemas[ $tool['name'] ] = $tool['outputSchema'];
+		}
+
+		foreach ( array( 'kuduy-site-info', 'kuduy-snapshot-list' ) as $name ) {
+			[ , $call ] = $this->modern( 'tools/call', array( 'name' => $name ) );
+			$valid      = rest_validate_value_from_schema( $call['result']['structuredContent'], $schemas[ $name ], $name );
+			$this->assertTrue( true === $valid, $name . ': ' . ( is_wp_error( $valid ) ? $valid->get_error_message() : '' ) );
+		}
 	}
 
 	public function test_site_info_returns_structured_and_text_content(): void {

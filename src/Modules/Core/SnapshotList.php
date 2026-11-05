@@ -55,6 +55,38 @@ final class SnapshotList implements Tool {
 	}
 
 	/**
+	 * Structured result.
+	 *
+	 * @return array<string, mixed>
+	 */
+	public function output_schema(): array {
+		return array(
+			'type'       => 'object',
+			'properties' => array(
+				'snapshots' => array(
+					'type'  => 'array',
+					'items' => array(
+						'type'       => 'object',
+						'properties' => array(
+							'id'          => array( 'type' => 'integer' ),
+							'ts'          => array(
+								'type'        => 'string',
+								'description' => 'UTC, Y-m-d H:i:s.',
+							),
+							'user_id'     => array( 'type' => 'integer' ),
+							'tool'        => array( 'type' => 'string' ),
+							'object_type' => array( 'type' => 'string' ),
+							'object_id'   => array( 'type' => 'string' ),
+						),
+						'required'   => array( 'id', 'ts', 'user_id', 'tool', 'object_type', 'object_id' ),
+					),
+				),
+			),
+			'required'   => array( 'snapshots' ),
+		);
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public function annotations(): array {

@@ -55,6 +55,9 @@ final class Authorize {
 		$in  = 'POST' === $method ? $post : $query;
 		$get = static fn( string $key ): string => is_string( $in[ $key ] ?? null ) ? $in[ $key ] : '';
 
+		if ( Urls::insecure() ) {
+			return self::page( 400, __( 'This site must use HTTPS before apps can connect to it.', 'kuduy-mcp' ) );
+		}
 		// Log in first: looking up a CIMD client fetches a URL, which anonymous visitors must not trigger.
 		if ( ! is_user_logged_in() ) {
 			$params = array_filter( array_intersect_key( $in, array_flip( self::PARAMS ) ), 'is_string' );
