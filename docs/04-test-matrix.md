@@ -117,5 +117,5 @@ Legend: **U** unit (PHPUnit, no WP), **I** integration (WP test suite / Playgrou
 | H4 | `wp kuduy ui show` and `KUDUY_MCP_SHOW_UI` restore UI | I |
 | G1 | Updater detects newer GitHub release, shows in Updates | I — **pass 2026-11-05** (`UpdaterTest` through core `wp_update_plugins()`, also when wordpress.org is unreachable) |
 | G2 | Checksum mismatch aborts install | I — **pass 2026-11-05** |
-| G3 | Update from release ZIP keeps data and settings | I, E — release ZIP install + activation **pass 2026-11-05** (`npm run check:release`, WP 6.9/PHP 8.1 and WP 7.1/PHP 8.1); real update v0.1.0 → v0.1.1 not run (needs tags, step 6) |
+| G3 | Update from release ZIP keeps data and settings | I, E — release ZIP install + activation **pass 2026-11-05** (`npm run check:release`, WP 6.9/PHP 8.1 and WP 7.1/PHP 8.1); real update v0.1.0 → v0.1.1 from GitHub Releases **pass 2026-11-05** (`npm run check:update`: core offered it, checksum verified, `Plugin_Upgrader` installed, settings + rows kept). Note: after this programmatic upgrade core left the plugin inactive (reactivated by the script); Plugins-screen and auto-update paths still to observe |
 | G4 | GitHub API failure / rate limit → no error spam, cached result | I — **pass 2026-11-05** (12 h cache, ETag/304, 1 h retry after failure) |

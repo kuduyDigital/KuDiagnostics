@@ -75,3 +75,10 @@
 - Tests: 10 new, red first, then 60/60 on WP 6.9.11/PHP 8.1.34 and WP 7.1.4/PHP 8.3.36; release ZIP check pass on WP 6.9/PHP 8.1; smoke 24/24.
 - Gotcha: Windows PowerShell 5.1 `Set-Content -Encoding utf8` writes a BOM, which breaks PHP (`namespace` must be first). Caught by PHPCS/PHPStan; removed. `docs/04-test-matrix.md` had one from step 4 too (fixed).
 - Not done here: real update `v0.1.0` → `v0.1.1` — pushing release tags needs the user's OK (step 6).
+
+## 2026-11-05 — Phase 3 step 6 (part 1): releases + real update
+
+- Published `v0.1.0` (tag on `d42bad5`) and `v0.1.1` (`0a7ac0e`) through `release.yml` (CI → build → install check → `gh release create`); both carry `kuduy-mcp.zip` (60 804 bytes) + `.sha256`. User approved both public releases.
+- `npm run check:update` (real GitHub, clean Playground WP 7.1/PHP 8.3): installed v0.1.0 from its release asset → core `wp_update_plugins()` offered v0.1.1 → our `upgrader_pre_download` verified the checksum → core `Plugin_Upgrader` installed → fresh request runs 0.1.1, option and table rows kept, DB version intact. **Observed:** core left the plugin inactive after this programmatic upgrade; to watch on the Plugins screen / auto-update paths.
+- Public test site: `node scripts/tunnel.mjs` now mounts and activates KUDUY with pretty permalinks on port 9410 (9400 was in use by another Playground server, left alone). Checked from outside over HTTPS: 401 + `resource_metadata`, PRM, AS metadata at root `.well-known`, CIMD supported.
+- Waiting on the user: connect claude.ai, Claude Desktop and Claude Code (test matrix O11).
