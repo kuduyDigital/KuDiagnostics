@@ -133,6 +133,8 @@ Free Elementor only; Elementor Pro (Theme Builder, custom CSS) is a paid plugin 
 - They are registered with the Abilities API only when the option `elementor_mcp_enabled` is true (**off by default**). The module builds its ability registry in any case (`Module::build_core_registry()`, `Ability_Registry::find_by_id()`); abilities check `edit_posts` and `edit_post` per document; settings are saved through `document->save()`.
 - Coverage: built for **v4 atomic** elements. Classic v3 widgets are editable only from a closed allowlist, with settings merged **without schema validation**; other v3 widgets are rejected (`elementor_v3_not_supported`). Most existing sites are v3, so Elementor's MCP alone cannot edit them.
 - These classes are Elementor internals (not a documented public API) and may change between releases.
+- Calling them (verified 4.3.6): `modules_manager->get_modules( 'mcp' )->registry()->find_by_id( $id )`; `execute_guarded()` does **not** check permissions (Elementor's own proxy calls `check_permission()` first); the input schema sits on the protected `definition()`; resource abilities return JSON strings.
+- Global-class capabilities (`elementor_global_classes_update_class`, …) are granted to administrators by a database update that runs on `admin_init` — a site where nobody opened wp-admin since installing/updating Elementor refuses class changes until then.
 
 **Still UNVERIFIED (Phase 5):** Elementor Pro Theme Builder conditions and custom CSS storage; add-on widget schemas (Essential Addons, UAE, Premium Addons, JetElements); v3 → v4 migration; behaviour on Elementor 3.x LTS (test matrix target).
 

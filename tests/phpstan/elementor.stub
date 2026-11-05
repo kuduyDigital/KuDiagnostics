@@ -21,6 +21,10 @@ namespace Elementor {
 		public $kits_manager;
 		/** @var mixed Frontend */
 		public $frontend;
+		/** @var mixed Core\Modules_Manager */
+		public $modules_manager;
+		/** @var mixed Core\Files\Manager */
+		public $files_manager;
 	}
 }
 

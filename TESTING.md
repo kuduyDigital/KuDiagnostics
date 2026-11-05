@@ -30,8 +30,10 @@ See `CLAUDE.md` → Commands. Integration: `KUDUY_WP=<6.9|7.1> KUDUY_PHP=<8.1|8.
 | PHPStan level 6 | No errors |
 | `composer audit` | No advisories |
 | `npm audit` | 3 moderate in `@wp-playground/cli` dependencies (dev only, not shipped) |
-| Integration, WordPress 6.9.11 / PHP 8.1.34 (+ Elementor 4.3.6) | **141 / 141 pass** |
-| Integration, WordPress 7.1.4 / PHP 8.3.36 (+ Elementor 4.3.6) | **141 / 141 pass** |
+| Integration, WordPress 6.9.11 / PHP 8.1.34 + Elementor 4.3.6 | **145 / 145 pass** |
+| Integration, WordPress 6.9.11 / PHP 8.1.34 + Elementor 3.35.9 (CI pairing) | **145 pass, 5 skipped** (v4-only tests) |
+| Integration, WordPress 7.1.4 / PHP 8.3.36 + Elementor 3.35.9 | **141 pass, 1 skipped** (before the v4 tools; v4-only tests skip) |
+| Integration, WordPress 7.1.4 / PHP 8.3.36 + Elementor 4.3.6 (CI pairing) | **145 / 145 pass** |
 | Smoke over real HTTP (WP 7.1.4 / PHP 8.3, Elementor 4.3.6 + WooCommerce 11.2.1 active) | **26 / 26 pass** |
 | Security probe (read-only token on core routes, `rest_route` override, PATH_INFO, unticked consent, unauthenticated `initialize`, root AS metadata) | All refused / as expected on 0.1.2 |
 | GitHub CI on `3591d92` | All 9 jobs green; release workflow for `v0.1.2` green |
@@ -119,6 +121,7 @@ Legend: **U** unit, **I** integration (Playground), **E** end-to-end with a real
 | EL7 | Kit global colors/typography/breakpoints read + update | I — **pass 2026-11-05** (read: Kit id, breakpoints, colors; update: custom color added and read back, undo removes it, unknown id refused, editors refused) |
 | EL8 | Theme Builder templates list/conditions (Pro) | I |
 | EL9 | Addon adapters (EA, UAE, Premium, Jet) widget discovery | I |
+| EL11 | v4 global classes and variables through Elementor's own abilities | I — **pass 2026-11-05** on 4.3.6 (`ElementorAbilitiesTest`: Elementor's input schema used; variable create, read back, undo; editors refused; class create; class snapshot is a copy and says so; invalid input refused). On 3.35.9 the tools report themselves unavailable (tests skip) |
 | EL10 | Build a full page from a prompt on 3.x and 4.3 | E |
 
 ## SEO + Image SEO

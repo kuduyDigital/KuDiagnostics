@@ -1,6 +1,6 @@
 # Phase 5 — Elementor (plan)
 
-Research: `RESEARCH.md` §8 (Elementor 4.3.6 source, 2026-11-05). Status: **D7 decided 2026-11-05 — option C (hybrid)**. Read pass and write pass **done** (tools 1–9, tested on Elementor 4.3.6). Next: Elementor 3.x LTS run; v4 global classes/variables via Elementor's abilities (tool 10); Theme Builder research (Pro); add-on adapters.
+Research: `RESEARCH.md` §8 (Elementor 4.3.6 source, 2026-11-05). Status: **D7 decided 2026-11-05 — option C (hybrid)**. Read pass and write pass **done** (tools 1–9, tested on Elementor 4.3.6). Elementor 3.35.9 run done (CI now tests 3.35.9 and 4.3.6); tool 10 done (`kuduy-elementor-v4-globals`, `-v4-classes`, `-v4-variables`). Next: Theme Builder research (needs Elementor Pro); add-on adapters; EL10 end-to-end with Claude on staging.
 
 ## Decision D7 — who edits Elementor documents
 

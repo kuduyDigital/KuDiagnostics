@@ -43,14 +43,15 @@ jobs:
       - run: composer test:static
 
   integration:
-    name: WP ${{ matrix.wp }} / PHP ${{ matrix.php }}
+    name: WP ${{ matrix.wp }} / PHP ${{ matrix.php }} / Elementor ${{ matrix.elementor }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
+        # One Elementor major per job: 3.x (most existing sites) and current 4.x.
         include:
-          - { wp: '6.9', php: '8.1' }
-          - { wp: '7.1', php: '8.3' }
+          - { wp: '6.9', php: '8.1', elementor: '3.35.9' }
+          - { wp: '7.1', php: '8.3', elementor: '4.3.6' }
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2
@@ -68,6 +69,7 @@ jobs:
         env:
           KUDUY_WP: ${{ matrix.wp }}
           KUDUY_PHP: ${{ matrix.php }}
+          KUDUY_ELEMENTOR: ${{ matrix.elementor }}
 
   smoke:
     name: MCP over real HTTP

@@ -6,6 +6,8 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 - Added (Phase 5): Elementor read tools — `kuduy-elementor-documents`, `kuduy-elementor-get` (element tree, outline, subtree, unregistered types), `kuduy-elementor-widgets`, `kuduy-elementor-widget-schema` (classic controls per breakpoint, v4 JSON Schema), `kuduy-elementor-kit`.
 - Added (Phase 5): Elementor write tools — `kuduy-elementor-edit` (1–50 patch operations: update, add, move, duplicate, remove; only named settings change, other breakpoints keep their values; all-or-nothing; undo), `kuduy-elementor-create` (new Elementor page from a tree), `kuduy-elementor-kit-update` (global colors and fonts, undo), `kuduy-elementor-verify` (checks the rendered and live page for element ids and texts).
+- Added (Phase 5): `kuduy-elementor-v4-globals`, `kuduy-elementor-v4-classes`, `kuduy-elementor-v4-variables` — Elementor 4.3+'s own abilities for v4 global classes and variables, behind KUDUY's scopes, permission checks, snapshots and audit.
+- Tested on Elementor 3.35.9 as well as 4.3.6.
 
 ## 0.3.0 — 2026-11-05
 
@@ -243,3 +245,10 @@ Format: user-facing releases first (newest on top), then the dated development h
 - **Found in testing:** Elementor needs element settings as an array (`sanitize_settings()` throws for an empty object); `documents->get()` caches per request, so reads after a save use `get( $id, false )`.
 - **Disk full on the dev machine:** Playground CLI leaves a ~300 MB WordPress copy in the temp folder after every run (killed runs included); 25 leftovers filled C: (111 MB free). Removed them (8.0 GB free) and added `scripts/playground-temp.mjs`, called by the integration, smoke, release-check and update-check scripts after each run.
 - Tests: `ElementorWriteTest` (8 tests); 141/141 on WP 6.9.11/PHP 8.1.34 and WP 7.1.4/PHP 8.3.36 with Elementor 4.3.6.
+
+### 2026-11-05 — Phase 5: Elementor 3.x run; v4 globals through Elementor's abilities
+
+- Full suite on Elementor **3.35.9** (latest 3.x): all pass on WP 7.1/PHP 8.3 and WP 6.9/PHP 8.1; v4-only tests skip. CI now pins Elementor per job: 3.35.9 with WP 6.9/PHP 8.1, 4.3.6 with WP 7.1/PHP 8.3.
+- `ElementorAbilities` (D7 hybrid): runs `elementor/global-classes-resource`, `elementor/global-variables-resource`, `elementor/manage-classes`, `elementor/manage-global-variable` in-process, after Elementor's own `check_permission()` (its `execute_guarded()` does not check), with Elementor's input schema read from the protected definition. Variables are undoable (Kit meta); classes get a copy-only snapshot that says so. Unavailable with a clear reason on Elementor before 4.3 or if the internals change.
+- Found: Elementor grants its global-class capabilities through a database update on `admin_init`; until someone opens wp-admin after installing/updating Elementor, class changes are refused. KUDUY's error now says so; the test runs Elementor's updater like a wp-admin visit would.
+- Tests: `ElementorAbilitiesTest` (4 tests); 145/145 on WP 7.1.4/PHP 8.3.36 + Elementor 4.3.6; 145 with 5 skips on WP 6.9.11/PHP 8.1.34 + Elementor 3.35.9; smoke 26/26.

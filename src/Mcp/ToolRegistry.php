@@ -28,6 +28,7 @@ use Kuduy\Mcp\Modules\Core\TermList;
 use Kuduy\Mcp\Modules\Core\Themes;
 use Kuduy\Mcp\Modules\Core\TermWrite;
 use Kuduy\Mcp\Modules\Core\Users;
+use Kuduy\Mcp\Modules\Elementor\ElementorAbilities;
 use Kuduy\Mcp\Modules\Elementor\ElementorRead;
 use Kuduy\Mcp\Modules\Elementor\ElementorVerify;
 use Kuduy\Mcp\Modules\Elementor\ElementorWrite;
@@ -94,6 +95,9 @@ final class ToolRegistry {
 			$registry->register( new ElementorWrite( $mode ) );
 		}
 		$registry->register( new ElementorVerify() );
+		foreach ( array( 'globals', 'classes', 'variables' ) as $mode ) {
+			$registry->register( new ElementorAbilities( $mode ) );
+		}
 		do_action( 'kuduy_mcp_register_tools', $registry );
 		return $registry;
 	}
