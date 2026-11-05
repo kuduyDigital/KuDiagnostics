@@ -9,7 +9,7 @@ A PHP function existing is not proof that a feature works. A row is `pass` only 
 | Syntax | `php -l` on PHP 8.1, 8.2, 8.3, 8.4 | Code parses on every supported PHP | CI |
 | Coding standards | PHPCS with WordPress Coding Standards 3.4.1 | Escaping, sanitizing, nonces, prepared SQL, i18n | Local + CI |
 | Static analysis | PHPStan 2.3.5 level 6 + phpstan-wordpress | Types and WordPress API misuse | Local + CI |
-| Integration | PHPUnit 10.5 **inside WordPress Playground** (`scripts/test-integration.mjs`) | Real WordPress: REST dispatch, OAuth, DB tables, cron, updater hooks. Pass/fail read from the JUnit report; the WP/PHP versions actually used are printed | Local + CI: WP 6.9 / PHP 8.1 and WP 7.1 / PHP 8.3 |
+| Integration | PHPUnit 10.5 **inside WordPress Playground** (`scripts/test-integration.mjs`; Elementor installed and active first, version from `KUDUY_ELEMENTOR`, default 4.3.6, `none` to skip) | Real WordPress: REST dispatch, OAuth, DB tables, cron, updater hooks. Pass/fail read from the JUnit report; the WP/PHP versions actually used are printed | Local + CI: WP 6.9 / PHP 8.1 and WP 7.1 / PHP 8.3 |
 | Real HTTP smoke | `scripts/smoke-mcp.mjs` | The endpoint over real HTTP with Elementor + WooCommerce active and a noisy mu-plugin; the whole OAuth sign-in with a real `wp-login.php` login | Local + CI |
 | Release | `scripts/build-release.php` + `scripts/check-release.mjs` | The ZIP installs as an upload, activates, creates tables and routes, ships no dev files | CI on every push and before every release |
 | Real update | `scripts/check-update.mjs <from> <to>` | Install an older GitHub release, let core find and install the newer one, data kept | Manual |
@@ -30,8 +30,8 @@ See `CLAUDE.md` → Commands. Integration: `KUDUY_WP=<6.9|7.1> KUDUY_PHP=<8.1|8.
 | PHPStan level 6 | No errors |
 | `composer audit` | No advisories |
 | `npm audit` | 3 moderate in `@wp-playground/cli` dependencies (dev only, not shipped) |
-| Integration, WordPress 6.9.11 / PHP 8.1.34 | **125 / 125 pass** |
-| Integration, WordPress 7.1.4 / PHP 8.3.36 | **125 / 125 pass** |
+| Integration, WordPress 6.9.11 / PHP 8.1.34 (+ Elementor 4.3.6) | **132 / 132 pass** |
+| Integration, WordPress 7.1.4 / PHP 8.3.36 (+ Elementor 4.3.6) | **132 / 132 pass** |
 | Smoke over real HTTP (WP 7.1.4 / PHP 8.3, Elementor 4.3.6 + WooCommerce 11.2.1 active) | **26 / 26 pass** |
 | Security probe (read-only token on core routes, `rest_route` override, PATH_INFO, unticked consent, unauthenticated `initialize`, root AS metadata) | All refused / as expected on 0.1.2 |
 | GitHub CI on `3591d92` | All 9 jobs green; release workflow for `v0.1.2` green |
@@ -110,13 +110,13 @@ Legend: **U** unit, **I** integration (Playground), **E** end-to-end with a real
 
 | # | Feature | Type |
 |---|---|---|
-| EL1 | List documents/templates, read tree (v3 sections/columns, containers, atomic) | I |
-| EL2 | Widget schema discovery v3 (`get_controls`) and atomic (`get_props_schema`) | I |
+| EL1 | List documents/templates, read tree (v3 sections/columns, containers, atomic) | I — **pass 2026-11-05** on Elementor 4.3.6 (`ElementorReadTest`: list with document type, subscriber refused, tree with counts, outline without settings, subtree by id, author refused on someone else's page, unregistered add-on widget named) |
+| EL2 | Widget schema discovery v3 (`get_controls`) and atomic (`get_props_schema`) | I — **pass 2026-11-05** on 4.3.6 (heading: `title`, responsive `align` with `align`/`align_tablet`/`align_mobile`; `e-heading` props as JSON Schema with the `$$type` envelope and `anyOf` for overridable values; unknown type refused) |
 | EL3 | Add / update / move / duplicate / remove element; IDs unique | I |
 | EL4 | Patch edit on desktop does not change tablet/mobile values | I |
 | EL5 | Save via `Document::save`; revision created; non-`unfiltered_html` user gets kses | I |
 | EL6 | Post CSS regenerated; frontend HTML contains edited element ID and text | I, E |
-| EL7 | Kit global colors/typography/breakpoints read + update | I |
+| EL7 | Kit global colors/typography/breakpoints read + update | I — read **pass 2026-11-05** (Kit id, breakpoints incl. `mobile`, colors list); update not run |
 | EL8 | Theme Builder templates list/conditions (Pro) | I |
 | EL9 | Addon adapters (EA, UAE, Premium, Jet) widget discovery | I |
 | EL10 | Build a full page from a prompt on 3.x and 4.3 | E |

@@ -1,0 +1,51 @@
+<?php
+/**
+ * Minimal stubs of the Elementor 4.3 public API that KUDUY calls (verified in Elementor 4.3.6 source).
+ * Elementor is not a dependency of this repo; these only let PHPStan check our side.
+ */
+
+namespace Elementor {
+
+	class Plugin {
+		/** @var Plugin */
+		public static $instance;
+		/** @var mixed Core\Documents_Manager */
+		public $documents;
+		/** @var mixed Widgets_Manager */
+		public $widgets_manager;
+		/** @var mixed Elements_Manager */
+		public $elements_manager;
+		/** @var mixed Core\Breakpoints\Manager */
+		public $breakpoints;
+		/** @var mixed Core\Kits\Manager */
+		public $kits_manager;
+	}
+}
+
+namespace Elementor\Core\Base {
+
+	class Document {
+		public function get_post(): \WP_Post {}
+		public function get_name(): string {}
+		/** @return int */
+		public function get_id() {}
+		public function is_built_with_elementor(): bool {}
+		/**
+		 * @param string $status
+		 * @return array<int, mixed>
+		 */
+		public function get_elements_data( $status = 'publish' ) {}
+		/**
+		 * @param array<string, mixed> $data
+		 * @return bool
+		 */
+		public function save( $data ) {}
+		/**
+		 * @param string|null $setting
+		 * @return mixed
+		 */
+		public function get_settings( $setting = null ) {}
+		/** @return string */
+		public function get_edit_url() {}
+	}
+}

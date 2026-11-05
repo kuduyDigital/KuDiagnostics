@@ -2,6 +2,10 @@
 
 Format: user-facing releases first (newest on top), then the dated development history. Versions follow semantic versioning; tags `vX.Y.Z` publish a GitHub Release that installed sites receive through the built-in updater.
 
+## Unreleased
+
+- Added (Phase 5): Elementor read tools — `kuduy-elementor-documents`, `kuduy-elementor-get` (element tree, outline, subtree, unregistered types), `kuduy-elementor-widgets`, `kuduy-elementor-widget-schema` (classic controls per breakpoint, v4 JSON Schema), `kuduy-elementor-kit`.
+
 ## 0.3.0 — 2026-11-05
 
 **Phase 4: WordPress core administration (45 new tools).**
@@ -223,3 +227,11 @@ Format: user-facing releases first (newest on top), then the dated development h
 - Read Elementor 4.3.6 source (wordpress.org ZIP). Findings in `RESEARCH.md` §8: `Document::save()` path (kses, hooks, version, CSS file **deleted** and rebuilt on next view); **unregistered element types are silently dropped on save**; v3 responsive controls are registered once with `is_responsive` when custom breakpoints are on; v4 atomic prop types export JSON Schema with a `$$type` envelope; Kit, global classes and variables storage.
 - New: Elementor ships its own MCP abilities (27, off by default via `elementor_mcp_enabled`), v4-first with only a v3 allowlist.
 - Plan `docs/plans/phase-5-elementor.md`; decision **D7** (own tools vs. wrapping Elementor's abilities vs. hybrid) waits for the user.
+
+### 2026-11-05 — Phase 5: D7 decided, Elementor read pass
+
+- D7 decided by the user: **hybrid** (own tools on Elementor's public document API; Elementor's own abilities for v4 extras on 4.3+).
+- Integration tests now install and activate Elementor (default 4.3.6, `KUDUY_ELEMENTOR` to change, `none` to skip) before WordPress boots; the runner prints the Elementor version used.
+- `Modules\Elementor\Elementor` (availability, documents, tree walk, unregistered types, type sources) and `ElementorRead` (5 tools). PHPStan gets a minimal Elementor stub (`tests/phpstan/elementor.stub`, via `scanFiles`).
+- **Found in testing:** Elementor keeps controls with CSS selectors in a separate `style_controls` list that `get_controls()` omits outside the editor, so the heading's `align` was missing; the schema tool reads both lists.
+- Tests: `ElementorReadTest` (7 tests); 132/132 on WP 6.9.11/PHP 8.1.34 and WP 7.1.4/PHP 8.3.36 with Elementor 4.3.6; smoke 26/26 (one rerun after a slow plugin download).

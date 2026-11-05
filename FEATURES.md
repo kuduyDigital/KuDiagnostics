@@ -105,13 +105,14 @@ Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude cli
 
 | Feature | Status |
 |---|---|
-| Discover documents and templates; read structure and settings | Not started |
+| Discover documents and templates; read structure and settings | Tested (EL1: `kuduy-elementor-documents`, `kuduy-elementor-get` incl. outline, subtree and unregistered types; Elementor 4.3.6) |
 | Create, duplicate, update documents via `Document::save()` | Not started |
 | Theme Builder templates | Not started |
-| Widget discovery v3 (`get_controls`) and v4 atomic (`get_props_schema`) | Not started |
+| Widget discovery v3 (`get_controls`) and v4 atomic (`get_props_schema`) | Tested (EL2: `kuduy-elementor-widgets`, `kuduy-elementor-widget-schema`; v3 style controls included, responsive keys per active device; v4 JSON Schema per prop) |
 | Add, update, move, duplicate, reorder, remove elements; nested containers; ID/parent validation | Not started |
 | Styling and responsive values (patch per breakpoint) | Not started |
-| Kit globals: colors, typography, breakpoints, classes, variables | Not started |
+| Kit globals: colors, typography, breakpoints (read) | Tested (EL7 read: `kuduy-elementor-kit`) |
+| Kit globals: update; v4 classes and variables | Not started |
 | CSS regeneration, cache clearing, frontend verification | Not started |
 | Add-on adapters (Essential Addons, UAE, Premium Addons, JetElements) | Not started |
 | Legacy / v3 / v4 / mixed-version matrix | Not started |

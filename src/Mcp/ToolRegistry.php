@@ -28,6 +28,7 @@ use Kuduy\Mcp\Modules\Core\TermList;
 use Kuduy\Mcp\Modules\Core\Themes;
 use Kuduy\Mcp\Modules\Core\TermWrite;
 use Kuduy\Mcp\Modules\Core\Users;
+use Kuduy\Mcp\Modules\Elementor\ElementorRead;
 
 /**
  * Built per request so tools and integrations reflect the current state.
@@ -83,6 +84,9 @@ final class ToolRegistry {
 		}
 		foreach ( array( 'health', 'cron', 'rewrite', 'rewrite-flush', 'hooks' ) as $mode ) {
 			$registry->register( new Diagnostics( $mode ) );
+		}
+		foreach ( array( 'documents', 'get', 'widgets', 'schema', 'kit' ) as $mode ) {
+			$registry->register( new ElementorRead( $mode ) );
 		}
 		do_action( 'kuduy_mcp_register_tools', $registry );
 		return $registry;

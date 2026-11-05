@@ -20,8 +20,16 @@ if (!existsSync(join(root, 'vendor', 'phpunit'))) {
 // The blueprint's preferredVersions (or its defaults: latest PHP/WP) override --wp/--php, so set them here.
 const wp = process.env.KUDUY_WP ?? '7.1';
 const php = process.env.KUDUY_PHP ?? '8.3';
+// Elementor is installed and active before WordPress boots the tests (it cannot start mid-request).
+// KUDUY_ELEMENTOR=<version> picks a release from wordpress.org; KUDUY_ELEMENTOR=none runs without it.
+const elementor = process.env.KUDUY_ELEMENTOR ?? '4.3.6';
 const blueprint = JSON.parse(readFileSync(join(root, 'tests', 'integration', 'blueprint.json'), 'utf8'));
-writeFileSync(join(out, 'blueprint.json'), JSON.stringify({ ...blueprint, preferredVersions: { php, wp } }));
+const steps = elementor === 'none' ? [] : [{
+  step: 'installPlugin',
+  pluginData: { resource: 'url', url: `https://downloads.wordpress.org/plugin/elementor.${elementor}.zip` },
+  options: { activate: true },
+}];
+writeFileSync(join(out, 'blueprint.json'), JSON.stringify({ ...blueprint, preferredVersions: { php, wp }, steps: [...steps, ...blueprint.steps] }));
 
 const cli = join(root, 'node_modules', '@wp-playground', 'cli', 'wp-playground.js');
 const run = spawnSync(process.execPath, [cli, 'run-blueprint', `--wp=${wp}`, `--php=${php}`,

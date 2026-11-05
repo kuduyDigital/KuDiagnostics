@@ -5,6 +5,9 @@ parameters:
   level: 6
   stubFiles:
     - tests/phpstan/wp-rest-request.stub
+  # Elementor is not a dependency; this declares only the Elementor API KUDUY calls.
+  scanFiles:
+    - tests/phpstan/elementor.stub
   paths:
     - kuduy-mcp.php
     - uninstall.php

@@ -116,6 +116,7 @@ Free Elementor only; Elementor Pro (Theme Builder, custom CSS) is a paid plugin 
 - Widget schema: `get_controls()` per widget type (`widgets_manager->get_widget_types( $name )`).
 - Responsive settings are stored as `{control}` (desktop) and `{control}_{device}` (`tablet`, `mobile`, and with custom breakpoints `mobile_extra`, `tablet_extra`, `laptop`, `widescreen`; keys from `breakpoints->get_active_devices_list()`).
 - With the `additional_custom_breakpoints` experiment active (default in current releases), the server registers **one** control with `is_responsive = true`; the per-device copies exist only in the editor's JavaScript. Schema discovery must expand responsive controls itself.
+- **Style controls are kept apart** (found in tests on 4.3.6): controls with CSS `selectors` (e.g. heading `align`) live in the stack's `style_controls`, and `get_controls()` merges them only when `Performance::is_use_style_controls()` is on (in the editor, not in REST requests). Read `get_stack()['controls'] + ['style_controls']` for the full list.
 
 **Atomic (v4) elements** — `modules/atomic-widgets/`:
 - Elements: `div-block`, `flexbox`, `grid`, `atomic-heading`, `atomic-paragraph`, `atomic-button`, `atomic-image`, `atomic-svg`, `atomic-divider`, `atomic-tabs`, `atomic-accordion`, `atomic-form`, `atomic-list`, `atomic-youtube`, `atomic-self-hosted-video`, `atomic-background-video`, `atomic-collection-loop`.
