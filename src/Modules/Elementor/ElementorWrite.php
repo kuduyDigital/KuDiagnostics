@@ -53,7 +53,7 @@ final class ElementorWrite implements Tool, Snapshottable {
 	public function description(): string {
 		return match ( $this->mode ) {
 			'edit'   => 'Applies 1–50 operations to one Elementor page and saves once: update (set settings, unset keys; only the named keys change, so other breakpoints keep their values), add (new element or widget under a parent or at the top, at an index), move, duplicate (fresh ids), remove. Settings are checked against the widget schema first (kuduy-elementor-widget-schema). If any operation fails, nothing is saved. Refuses pages with widgets whose plugin is inactive (Elementor would drop them). Snapshot first; undo with kuduy-snapshot-restore. Check the result with kuduy-elementor-verify.',
-			'create' => 'Creates a page or post built with Elementor (draft by default) from an element tree, e.g. a container with heading, text and button widgets. Optional page template "elementor_canvas" (no header/footer) or "elementor_header_footer".',
+			'create' => 'Creates a page or post built with Elementor (draft by default) from an element tree, e.g. a container with heading, text and button widgets. Optional page template "elementor_canvas" (no header/footer) or "elementor_header_footer". With template_type (needs Elementor Pro) it creates a Theme Builder template instead (header, footer, single-post, archive, error-404, …); set where it appears with kuduy-elementor-theme-conditions.',
 			default  => 'Changes the active Kit\'s global colors and fonts: update existing ones by id (see kuduy-elementor-kit), add custom ones (no id), or remove custom ones. Elementor then rebuilds the site\'s CSS files. Snapshot first; undo with kuduy-snapshot-restore.',
 		};
 	}
@@ -127,25 +127,30 @@ final class ElementorWrite implements Tool, Snapshottable {
 			),
 			'create' => array(
 				'properties' => array(
-					'title'     => array(
+					'title'         => array(
 						'type'      => 'string',
 						'minLength' => 1,
 					),
-					'post_type' => array(
+					'post_type'     => array(
 						'type'    => 'string',
 						'enum'    => array( 'page', 'post' ),
 						'default' => 'page',
 					),
-					'status'    => array(
+					'status'        => array(
 						'type'    => 'string',
 						'enum'    => array( 'draft', 'publish', 'pending', 'private' ),
 						'default' => 'draft',
 					),
-					'template'  => array(
+					'template'      => array(
 						'type' => 'string',
 						'enum' => array( 'default', 'elementor_canvas', 'elementor_header_footer' ),
 					),
-					'elements'  => $elements,
+					'template_type' => array(
+						'type'        => 'string',
+						'enum'        => ThemeBuilder::TYPES,
+						'description' => 'Elementor Pro Theme Builder template type; post_type and template are then ignored.',
+					),
+					'elements'      => $elements,
 				),
 				'required'   => array( 'title' ),
 			),
@@ -241,7 +246,7 @@ final class ElementorWrite implements Tool, Snapshottable {
 	public function capability( array $input ): string|array {
 		return match ( $this->mode ) {
 			'edit'   => (int) ( $input['id'] ?? 0 ) > 0 && get_post( (int) $input['id'] ) ? array( 'edit_post', (int) $input['id'] ) : 'edit_posts',
-			'create' => ( Content::post_types()[ $input['post_type'] ?? 'page' ] ?? null )?->cap->create_posts ?? 'edit_posts',
+			'create' => ! empty( $input['template_type'] ) ? 'edit_theme_options' : ( Content::post_types()[ $input['post_type'] ?? 'page' ] ?? null )?->cap->create_posts ?? 'edit_posts',
 			default  => 'manage_options',
 		};
 	}
@@ -468,6 +473,9 @@ final class ElementorWrite implements Tool, Snapshottable {
 	 * @throws ToolError When the post or tree is invalid.
 	 */
 	private function create( array $input ): array {
+		if ( ! empty( $input['template_type'] ) ) {
+			return $this->create_template( $input );
+		}
 		$type = Content::post_type( (string) ( $input['post_type'] ?? 'page' ) );
 		if ( in_array( $input['status'] ?? 'draft', array( 'publish', 'private' ), true ) && ! current_user_can( $type->cap->publish_posts ) ) {
 			throw new ToolError( 'Your account cannot publish this post type; create it as a draft.' );
@@ -500,6 +508,46 @@ final class ElementorWrite implements Tool, Snapshottable {
 		}
 		$doc->set_is_built_with_elementor( true );
 		return $this->save( $doc, $tree, array( 'created ' . $id ) );
+	}
+
+	/**
+	 * Create a Theme Builder template through Elementor's documents manager (it sets the template type and the
+	 * builder flag; Pro supplies the document class).
+	 *
+	 * @param array<string, mixed> $input Arguments.
+	 * @return array<string, mixed>
+	 * @throws ToolError When Pro is missing, the type is not registered or the tree is invalid.
+	 */
+	private function create_template( array $input ): array {
+		ThemeBuilder::module();
+		$type   = (string) $input['template_type'];
+		$status = (string) ( $input['status'] ?? 'draft' );
+		$cpt    = get_post_type_object( 'elementor_library' );
+		if ( ! $cpt || ! \Elementor\Plugin::$instance->documents->get_document_type( $type, false ) ) {
+			throw new ToolError( 'Elementor Pro on this site has no "' . esc_html( $type ) . '" template type.' );
+		}
+		if ( in_array( $status, array( 'publish', 'private' ), true ) && ! current_user_can( $cpt->cap->publish_posts ) ) {
+			throw new ToolError( 'Your account cannot publish templates; create it as a draft.' );
+		}
+		$tree = new Tree( array() );
+		foreach ( (array) ( $input['elements'] ?? array() ) as $element_input ) {
+			$tree->insert( $this->build( $tree, (array) $element_input ), null, null );
+		}
+		$doc = \Elementor\Plugin::$instance->documents->create(
+			$type,
+			wp_slash(
+				array(
+					'post_title'  => (string) $input['title'],
+					'post_status' => $status,
+					'post_author' => get_current_user_id(),
+				)
+			)
+		);
+		if ( is_wp_error( $doc ) || ! is_object( $doc ) || (int) $doc->get_main_id() <= 0 ) {
+			throw new ToolError( 'Elementor could not create the template.' );
+		}
+		AuditLog::target( 'post', (string) $doc->get_main_id() );
+		return $this->save( $doc, $tree, array( 'created ' . $type . ' template ' . $doc->get_main_id() ) );
 	}
 
 	/**

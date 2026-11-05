@@ -62,3 +62,54 @@ namespace Elementor\Core\Base {
 		public function get_edit_url() {}
 	}
 }
+
+namespace ElementorPro\Modules\ThemeBuilder {
+
+	/** Elementor Pro 4.3.2 modules/theme-builder/module.php. */
+	class Module {
+		/** @return static */
+		public static function instance() {}
+		/** @return \ElementorPro\Modules\ThemeBuilder\Classes\Conditions_Manager */
+		public function get_conditions_manager() {}
+		/**
+		 * @param int $post_id Post id.
+		 * @return \ElementorPro\Modules\ThemeBuilder\Documents\Theme_Document|null
+		 */
+		public function get_document( $post_id ) {}
+	}
+}
+
+namespace ElementorPro\Modules\ThemeBuilder\Classes {
+
+	/** Elementor Pro 4.3.2 modules/theme-builder/classes/conditions-manager.php. */
+	class Conditions_Manager {
+		/** @return array<string, array<string, mixed>> */
+		public function get_conditions_config() {}
+		/**
+		 * @param int    $post_id   Post id.
+		 * @param string $condition Condition string.
+		 * @return list<array{template_id:int, template_title:string, edit_url:string}>
+		 */
+		public function get_conditions_conflicts( $post_id, $condition ) {}
+		/**
+		 * @param int                $post_id    Post id.
+		 * @param list<list<string>> $conditions Rows of type, name, sub_name, sub_id.
+		 * @return bool
+		 */
+		public function save_conditions( $post_id, $conditions ) {}
+		/**
+		 * @param object $document Theme document.
+		 * @return list<array{type:string, name:string, sub_name:string, sub_id:string}>
+		 */
+		public function get_document_conditions( $document ) {}
+	}
+}
+
+namespace ElementorPro\Modules\ThemeBuilder\Documents {
+
+	/** Elementor Pro 4.3.2 modules/theme-builder/documents/theme-document.php. */
+	abstract class Theme_Document extends \Elementor\Core\Base\Document {
+		/** @return string */
+		public function get_location() {}
+	}
+}

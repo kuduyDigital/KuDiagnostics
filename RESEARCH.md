@@ -144,7 +144,9 @@ Free Elementor only; Elementor Pro (Theme Builder, custom CSS) is a paid plugin 
 - Conflicts: `get_conditions_conflicts( $post_id, $condition )` → templates of the same location already using that condition (locations that allow multiple templates never conflict).
 - Pro ships its own MCP abilities too: `elementor/list-site-parts`, `elementor/manage-site-parts` (create/update conditions/delete; permission `edit_posts` + per-post checks). Other Pro modules: popup, loop-builder, custom-code, custom-css, display-conditions, woocommerce, mcp.
 
-**Still UNVERIFIED (Phase 5):** Pro behaviour in a running site (not tested yet); popups and loop items; v3 → v4 migration.
+**Verified by test 2026-11-05 (EL8):** creating a header through `documents->create()` gives an `elementor_library` post with `_elementor_template_type`; `save_conditions()` stores the strings and regenerates the cache, so `get_conditions_conflicts()` sees the new template at once (drafts included). `save_conditions()` returns false when the value is unchanged, so KUDUY compares the stored meta instead. Storage format: `general` takes no sub-condition; sub-conditions sit under `singular` / `archive` (e.g. `include/singular/page/42`). Pro 4.3.2 refuses to load on Elementor core below 4.0 (`ELEMENTOR_PRO_REQUIRED_CORE_VERSION`).
+
+**Still UNVERIFIED (Phase 5):** that a live header actually renders on the frontend of a real site (checked with Claude on staging, EL10); popups and loop items; Pro custom CSS; v3 → v4 migration.
 
 ## 9. SEO, WooCommerce, ACF, forms, multilingual
 

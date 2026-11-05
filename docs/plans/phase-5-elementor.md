@@ -2,7 +2,7 @@
 
 Research: `RESEARCH.md` §8 (Elementor 4.3.6 source, 2026-11-05). Status: **D7 decided 2026-11-05 — option C (hybrid)**. Read pass and write pass **done** (tools 1–9, tested on Elementor 4.3.6). Elementor 3.35.9 run done (CI now tests 3.35.9 and 4.3.6); tool 10 done (`kuduy-elementor-v4-globals`, `-v4-classes`, `-v4-variables`). Add-ons done (EL9, no special code needed). Theme Builder research done on Pro 4.3.2 (`RESEARCH.md` §8).
 
-## Theme Builder tools (next)
+## Theme Builder tools (done 2026-11-05, EL8)
 
 Own tools on Pro's public `Conditions_Manager` (not Pro's `manage-site-parts`, which only needs `edit_posts`): changing where a header or footer appears affects the whole site, so writes need `edit_theme_options`, scope `kuduy:admin`, and `edit_post` on the template.
 

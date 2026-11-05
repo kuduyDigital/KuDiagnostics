@@ -9,6 +9,7 @@ Format: user-facing releases first (newest on top), then the dated development h
 - Added (Phase 5): `kuduy-elementor-v4-globals`, `kuduy-elementor-v4-classes`, `kuduy-elementor-v4-variables` — Elementor 4.3+'s own abilities for v4 global classes and variables, behind KUDUY's scopes, permission checks, snapshots and audit.
 - Tested on Elementor 3.35.9 as well as 4.3.6.
 - Tested with the free Elementor add-ons Essential Addons, Ultimate Addons and Premium Addons; the widget list names the plugin each widget comes from.
+- Added (Phase 5, Elementor Pro): `kuduy-elementor-theme-templates` (Theme Builder templates with location, display conditions, live status and conflicts) and `kuduy-elementor-theme-conditions` (set where a template appears; conflicts refused unless allowed; undo). `kuduy-elementor-create` gains `template_type` to create headers, footers, single, archive and 404 templates. Needs `edit_theme_options`.
 
 ## 0.3.0 — 2026-11-05
 
@@ -260,3 +261,10 @@ Format: user-facing releases first (newest on top), then the dated development h
 - `ElementorAddonsTest` (EL9): each add-on's widgets go through discovery, schema, create, edit and render with the generic tools — all pass with no add-on specific code. `kuduy-elementor-widgets` now also returns the plugin's name (`plugin`). JetElements: blocked (paid).
 - Elementor Pro 4.3.2 (licensed ZIP from the user, kept out of git via `.gitignore`, read from a scratch copy): Theme Builder template types, conditions storage and API, conflict check, and Pro's own site-parts abilities recorded in `RESEARCH.md` §8; Theme Builder tool plan in `docs/plans/phase-5-elementor.md`.
 - Tests: 148/148 on WP 7.1.4/PHP 8.3.36 + Elementor 4.3.6 + 3 add-ons; 148 with 8 skips on WP 6.9.11/PHP 8.1.34 + Elementor 3.35.9; smoke 26/26.
+
+### 2026-11-05 — Phase 5: Theme Builder (Elementor Pro)
+
+- New `ThemeBuilder` tools on Pro's public conditions manager (not Pro's own `manage-site-parts` ability, which only needs `edit_posts`): conditions need scope `kuduy:admin`, `edit_theme_options` and `edit_post` on the template. Each condition is checked against Pro's registered conditions; conflicts come from Pro's own check; the previous conditions are snapshotted.
+- `kuduy-elementor-create` with `template_type` goes through `documents->create()`, then the usual checked save.
+- Test runner: `KUDUY_LOCAL_PLUGINS=file.zip,…` installs licensed ZIPs from the repo folder (git-ignored; local only). PHPStan stubs for the Pro classes used.
+- Tests: `ElementorThemeBuilderTest` (EL8, 3 tests). 151 pass / 3 skipped (add-ons not installed) on WP 7.1.4/PHP 8.3.36 and on WP 6.9.11/PHP 8.1.34, both with Elementor 4.3.6 + Pro 4.3.2; 148 with 8 skips on WP 6.9.11 + Elementor 3.35.9 (Pro needs core 4.0+); smoke 26/26.

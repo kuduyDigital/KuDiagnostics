@@ -39,6 +39,7 @@ PHP is not on the Bash PATH by default; prefix with
 | Code style | `php vendor/bin/phpcs -q` (auto-fix: `php vendor/bin/phpcbf -q <files>`) |
 | Static analysis | `php vendor/bin/phpstan analyse --memory-limit=1G` (level 6) |
 | Integration tests | `KUDUY_WP=6.9 KUDUY_PHP=8.1 node scripts/test-integration.mjs` and `KUDUY_WP=7.1 KUDUY_PHP=8.3 …` |
+| Integration with Elementor Pro (local only, ZIP git-ignored in repo root) | `KUDUY_LOCAL_PLUGINS=elementor-pro-4.3.2.zip KUDUY_WP=7.1 KUDUY_PHP=8.3 node scripts/test-integration.mjs` (Pro needs Elementor 4.x: add `KUDUY_ELEMENTOR=4.3.6` on the 6.9 pair) |
 | Real-HTTP smoke incl. full OAuth | `node scripts/smoke-mcp.mjs` (port 9401) |
 | Release ZIP | `php scripts/build-release.php --expect-version=X.Y.Z` then `npm run check:release` |
 | Real GitHub update | `node scripts/check-update.mjs <from> <to>` |

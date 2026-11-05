@@ -108,7 +108,7 @@ Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude cli
 | Discover documents and templates; read structure and settings | Tested (EL1: `kuduy-elementor-documents`, `kuduy-elementor-get` incl. outline, subtree and unregistered types; Elementor 4.3.6) |
 | Create and update documents via `Document::save()` | Tested (`kuduy-elementor-create`, `kuduy-elementor-edit`; snapshot + undo; unregistered-widget guard) |
 | Duplicate whole documents | Not started |
-| Theme Builder templates | Not started |
+| Theme Builder templates (Elementor Pro): create (`kuduy-elementor-create` + `template_type`), list (`kuduy-elementor-theme-templates`), display conditions with conflict check and undo (`kuduy-elementor-theme-conditions`) | Tested (EL8, Elementor Pro 4.3.2, local runs only) |
 | Widget discovery v3 (`get_controls`) and v4 atomic (`get_props_schema`) | Tested (EL2: `kuduy-elementor-widgets`, `kuduy-elementor-widget-schema`; v3 style controls included, responsive keys per active device; v4 JSON Schema per prop) |
 | Add, update, move, duplicate, reorder, remove elements; nested containers; ID/parent validation | Tested (EL3: 1–50 operations per call, all-or-nothing, fresh unique ids, nesting rules, settings checked against the widget schema) |
 | Styling and responsive values (patch per breakpoint) | Tested (EL4: only named keys change; `{control}_{device}` keys; `unset`) |

@@ -40,6 +40,19 @@ for (const entry of (process.env.KUDUY_PLUGINS ?? '').split(',').map((s) => s.tr
   }
   steps.push(install(slug, version));
 }
+// KUDUY_LOCAL_PLUGINS=file.zip,… installs licensed ZIPs kept in the repo folder but git-ignored (e.g. Elementor Pro).
+// Local runs only: CI has no such files. The repo is mounted into the site, so the ZIP is read from there.
+for (const file of (process.env.KUDUY_LOCAL_PLUGINS ?? '').split(',').map((s) => s.trim()).filter(Boolean)) {
+  if (!/^[A-Za-z0-9._-]+\.zip$/.test(file) || !existsSync(join(root, file))) {
+    console.error(`KUDUY_LOCAL_PLUGINS entry "${file}" must be a .zip file name in the repo folder.`);
+    process.exit(1);
+  }
+  steps.push({
+    step: 'installPlugin',
+    pluginData: { resource: 'vfs', path: `/wordpress/wp-content/plugins/kuduy-mcp/${file}` },
+    options: { activate: true },
+  });
+}
 writeFileSync(join(out, 'blueprint.json'), JSON.stringify({ ...blueprint, preferredVersions: { php, wp }, steps: [...steps, ...blueprint.steps] }));
 
 const cli = join(root, 'node_modules', '@wp-playground', 'cli', 'wp-playground.js');

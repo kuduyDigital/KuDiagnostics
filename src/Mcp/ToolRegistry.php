@@ -32,6 +32,7 @@ use Kuduy\Mcp\Modules\Elementor\ElementorAbilities;
 use Kuduy\Mcp\Modules\Elementor\ElementorRead;
 use Kuduy\Mcp\Modules\Elementor\ElementorVerify;
 use Kuduy\Mcp\Modules\Elementor\ElementorWrite;
+use Kuduy\Mcp\Modules\Elementor\ThemeBuilder;
 
 /**
  * Built per request so tools and integrations reflect the current state.
@@ -97,6 +98,9 @@ final class ToolRegistry {
 		$registry->register( new ElementorVerify() );
 		foreach ( array( 'globals', 'classes', 'variables' ) as $mode ) {
 			$registry->register( new ElementorAbilities( $mode ) );
+		}
+		foreach ( array( 'templates', 'conditions' ) as $mode ) {
+			$registry->register( new ThemeBuilder( $mode ) );
 		}
 		do_action( 'kuduy_mcp_register_tools', $registry );
 		return $registry;
