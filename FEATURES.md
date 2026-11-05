@@ -3,7 +3,7 @@
 Status values: `Not started` · `In progress` · `Implemented` (code exists, tests incomplete) · `Tested` (passing tests or recorded manual evidence; IDs refer to `TESTING.md`) · `Blocked`.
 Section numbers follow the KUDUY MCP Master Development Prompt. Updated 2026-11-05 (v0.2.0).
 
-Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude clients are partly verified (claude.ai works; Desktop, Claude Code's own sign-in, refresh and revoke still to observe — O11). Phase 4 in progress: read tools for post types, posts and terms, post create/update/trash, terms, comments, revisions and custom fields, users and roles, classic menus and allow-listed site settings (all with undo where they overwrite) are `Tested`; everything else from §5 onward is `Not started`.
+Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude clients are partly verified (claude.ai works; Desktop, Claude Code's own sign-in, refresh and revoke still to observe — O11). Phase 4 in progress: read tools for post types, posts and terms, post create/update/trash, terms, comments, revisions and custom fields, users and roles, classic menus, allow-listed site settings, plugins and themes (with undo where it is possible, confirm-first where it is not) are `Tested`; everything else from §5 onward is `Not started`.
 
 ## Foundation — MCP and transport (§4)
 
@@ -93,7 +93,8 @@ Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude cli
 | Users and roles: inspect, create, update; capabilities | Tested (C6: `kuduy-user-list`, `kuduy-user-get`, `kuduy-user-create`, `kuduy-user-update`, `kuduy-role-list`; own-role and last-admin guards; undo) |
 | Delete users | Not started — deliberately not offered (content reassignment is a human decision in wp-admin) |
 | Never return passwords, hashes, tokens | Tested (redactor F9; user tools never return hashes or activation keys and never set a known password) |
-| Plugins/themes: list, versions, install, update, activate, deactivate (safety checks) | Not started |
+| Plugins/themes: list, versions, install, update, activate, deactivate (safety checks) | Tested (C7: `kuduy-plugin-list`/`-install`/`-activate`/`-deactivate`/`-update`, `kuduy-theme-list`/`-install`/`-switch`/`-update`; wordpress.org slugs only; deactivate, update and theme switch are confirm-first with an impact report; KUDUY never deactivates or updates itself; undo for activate/deactivate/switch) |
+| Plugins/themes: delete | Not started — deliberately not offered |
 | Theme file inspection, conflict diagnosis | Not started |
 | Registered post types | Tested (`kuduy-post-types`) |
 | Site settings (allow-list) | Tested (C8: `kuduy-settings-get`, `kuduy-settings-update`; URLs, admin email, permalinks, membership and default role read-only; undo) |

@@ -8,6 +8,7 @@ Format: user-facing releases first (newest on top), then the dated development h
 - Added (Phase 4): terms (`kuduy-term-create`, `-update`, `-delete`), comments (`kuduy-comment-list`, `-moderate`, `-reply`), revisions (`kuduy-revision-list`, `-restore`) and public custom fields (`kuduy-post-meta-get`, `-set`), each with the same permission rules as WordPress's own REST API and undo for every overwrite.
 - Added (Phase 4): users and roles (`kuduy-user-list`, `-get`, `-create`, `-update`, `kuduy-role-list`). Passwords are never set to a known value or returned; nobody can change their own role; the last administrator cannot be demoted; deleting users is not offered.
 - Added (Phase 4): classic menus (`kuduy-menu-list`, `-get`, `-create`, `-item-add`, `-item-update`, `-item-delete`, `-assign`) and allow-listed site settings (`kuduy-settings-get`, `-update`), with undo. Site URLs, admin email, permalinks, membership and default role stay read-only.
+- Added (Phase 4): plugins (`kuduy-plugin-list`, `-install`, `-activate`, `-deactivate`, `-update`) and themes (`kuduy-theme-list`, `-install`, `-switch`, `-update`). Installs from wordpress.org by slug only; deactivating, updating and switching themes first report the impact and need `confirm: true`; KUDUY never deactivates or updates itself; deleting is not offered.
 
 ## 0.2.0 — 2026-11-05
 
@@ -197,3 +198,11 @@ Format: user-facing releases first (newest on top), then the dated development h
 - `Menus` (7 modes, `edit_theme_options`): menu items keep every field not given — `wp_update_nav_menu_item()` resets anything not passed, verified in WP 7.1.4 source. Undo for item update/delete and location assignment. Dynamic menu-item properties are read via `get_object_vars()` so PHPStan can check the rest.
 - `Settings` (`manage_options`): allow-list of 17 writable settings; read-only by design: `siteurl`, `home`, `admin_email`, `permalink_structure`, `users_can_register`, `default_role`, `WPLANG`. Undo restores previous values.
 - Tests: `CoreSiteTest` (7 tests); 110/110 on WP 6.9.11/PHP 8.1.34 and WP 7.1.4/PHP 8.3.36; smoke 26/26.
+
+### 2026-11-05 — Phase 4: plugins and themes
+
+- `Packages` (shared): wordpress.org slugs only, refuse when WordPress would need FTP credentials, silent `Automatic_Upgrader_Skin`, confirm-first policy.
+- `Plugins` (5 modes) and `Themes` (4 modes). Impact reports: dependent plugins, page builder / shop / SEO / custom-fields plugins, classic ↔ block theme, assigned menu locations, widgets.
+- **Found in WP 7.1.4 source:** `Plugin_Upgrader::upgrade()` deactivates active plugins unless `wp_doing_cron()` (wp-admin reactivates in a second request to avoid redeclaring classes). The tool runs the upgrade as background updates do, so plugins stay active. This also explains the inactive plugin seen by `check:update` earlier.
+- **Bug caught by the tests:** core initializes `WP_Plugin_Dependencies` only on wp-admin screens, so during an MCP request the dependency check always said "no dependents". The tool now initializes it first.
+- Tests run offline: local ZIPs (ZipArchive) served through `plugins_api` / `themes_api` / `upgrader_pre_download`, through core's real upgraders. `CorePackagesTest` (8 tests); 118/118 on WP 6.9.11/PHP 8.1.34 and WP 7.1.4/PHP 8.3.36; smoke 26/26.

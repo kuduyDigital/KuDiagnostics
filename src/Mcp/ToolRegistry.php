@@ -10,6 +10,7 @@ namespace Kuduy\Mcp\Mcp;
 use Kuduy\Mcp\Modules\Core\CheckUpdate;
 use Kuduy\Mcp\Modules\Core\Comments;
 use Kuduy\Mcp\Modules\Core\Menus;
+use Kuduy\Mcp\Modules\Core\Plugins;
 use Kuduy\Mcp\Modules\Core\PostCreate;
 use Kuduy\Mcp\Modules\Core\PostGet;
 use Kuduy\Mcp\Modules\Core\PostList;
@@ -23,6 +24,7 @@ use Kuduy\Mcp\Modules\Core\SiteInfo;
 use Kuduy\Mcp\Modules\Core\SnapshotList;
 use Kuduy\Mcp\Modules\Core\SnapshotRestore;
 use Kuduy\Mcp\Modules\Core\TermList;
+use Kuduy\Mcp\Modules\Core\Themes;
 use Kuduy\Mcp\Modules\Core\TermWrite;
 use Kuduy\Mcp\Modules\Core\Users;
 
@@ -72,6 +74,12 @@ final class ToolRegistry {
 		}
 		$registry->register( new Settings( 'get' ) );
 		$registry->register( new Settings( 'update' ) );
+		foreach ( array( 'list', 'install', 'activate', 'deactivate', 'update' ) as $mode ) {
+			$registry->register( new Plugins( $mode ) );
+		}
+		foreach ( array( 'list', 'install', 'switch', 'update' ) as $mode ) {
+			$registry->register( new Themes( $mode ) );
+		}
 		do_action( 'kuduy_mcp_register_tools', $registry );
 		return $registry;
 	}
