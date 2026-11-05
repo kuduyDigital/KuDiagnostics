@@ -54,14 +54,16 @@ Only versions listed as **Tested** have passing evidence (see `TESTING.md`). Eve
 
 | Plugin | Version | Status | Notes |
 |---|---|---|---|
-| Elementor | 4.3.6 | **Tested** (EL1–EL7, EL11) | CI: WP 7.1 / PHP 8.3 |
+| Elementor | 4.3.6 | **Tested** (EL1–EL7, EL11; EL10 with claude.ai on Hostinger staging, WP 7.1.4, 2026-11-05) | CI: WP 7.1 / PHP 8.3 |
 | Elementor | 3.35.9 (latest 3.x) | **Tested** (EL1–EL7; v4 tools report unavailable) | CI: WP 6.9 / PHP 8.1 |
 | Essential Addons for Elementor (lite) | 6.8.8 | **Tested** (EL9) | CI: WP 7.1 job |
 | Ultimate Addons for Elementor (header-footer-elementor) | 2.9.6 | **Tested** (EL9) | CI: WP 7.1 job |
 | Premium Addons for Elementor | 4.11.117 | **Tested** (EL9) | CI: WP 7.1 job |
 | JetElements | — | Not tested | Paid; not available |
 | Elementor Pro | 4.3.2 | **Tested** 2026-11-05 (EL8, Theme Builder) with Elementor 4.3.6 on WP 7.1.4/PHP 8.3.36 and WP 6.9.11/PHP 8.1.34. Needs Elementor core 4.0+ | Local tests only (licensed ZIP, never in CI or the repo) |
+| Elementor Pro | 4.0.4 | Partly tested 2026-11-05 on Hostinger staging (EL10, claude.ai): Pro widgets listed with `plugin`, Theme Builder templates listed, draft header created. Conditions not run (no `kuduy:admin` grant) | Real host, with Elementor 4.3.6 |
 | WooCommerce | 11.2.1 | Coexists (smoke, tunnel site) | No Woo tools yet (Phase 7) |
+| WooCommerce | 11.2.2 | Coexists (Hostinger staging, EL10 run, 2026-11-05) | Woo widgets appear in `kuduy-elementor-widgets` via Elementor Pro |
 | Rank Math, Yoast, AIOSEO, SEOPress | — | Not tested | Phase 6 |
 | ACF, CF7, WPForms, Gravity, Fluent, WPML, Polylang | — | Not tested | Phase 7 |
 | Plugins that print output during REST requests | — | **Tested** | Output guard (F2) |

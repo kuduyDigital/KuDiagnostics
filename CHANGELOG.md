@@ -271,6 +271,12 @@ Format: user-facing releases first (newest on top), then the dated development h
 - Test runner: `KUDUY_LOCAL_PLUGINS=file.zip,…` installs licensed ZIPs from the repo folder (git-ignored; local only). PHPStan stubs for the Pro classes used.
 - Tests: `ElementorThemeBuilderTest` (EL8, 3 tests). 151 pass / 3 skipped (add-ons not installed) on WP 7.1.4/PHP 8.3.36 and on WP 6.9.11/PHP 8.1.34, both with Elementor 4.3.6 + Pro 4.3.2; 148 with 8 skips on WP 6.9.11 + Elementor 3.35.9 (Pro needs core 4.0+); smoke 26/26.
 
+### 2026-11-05 — Phase 5: EL10 with claude.ai on staging
+
+- Claude desktop app sessions could not run EL10: their Kuduy connector stayed on a stale entry (33 tools, every call 404; the site's "Recent tool calls" stayed empty) even after the connector URL was changed and re-added in claude.ai. The endpoint itself was fine (POST 200; browser GET 405 because `/mcp` is POST only).
+- Run instead from the claude.ai web chat against Hostinger staging (0.4.0, WP 7.1.4, Elementor 4.3.6, Elementor Pro 4.0.4, WooCommerce 11.2.2): 15 of 16 steps pass — draft landing page from a prompt, desktop-only edit keeps tablet/mobile values, snapshot undo, verify 11/11 ids and 7/7 texts, draft header template (id 404), page trashed. `kuduy-elementor-theme-conditions` was not offered because claude.ai's grant is `kuduy:read kuduy:write`; the tool needs `kuduy:admin`.
+- Findings: v4 heading `align` uses start/center/end/justify; `_title` on containers is refused by validation.
+
 ### 2026-11-05 — Phase 6 research and plan (SEO + media)
 
 - Read the current wordpress.org source of Rank Math 1.0.281, Yoast SEO 28.8, AIOSEO 5.0.5 and SEOPress 10.4, and core's `WP_Ability::execute()` (7.1.4) → `RESEARCH.md` §9. New finding: all four register WordPress Abilities, unevenly (AIOSEO and SEOPress write post SEO; Rank Math reads only; Yoast's exist only on production-mode sites and cannot set the keyphrase). AIOSEO keeps its data in its own table, so raw meta writes would be wrong there.
