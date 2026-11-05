@@ -270,3 +270,9 @@ Format: user-facing releases first (newest on top), then the dated development h
 - `kuduy-elementor-create` with `template_type` goes through `documents->create()`, then the usual checked save.
 - Test runner: `KUDUY_LOCAL_PLUGINS=file.zip,…` installs licensed ZIPs from the repo folder (git-ignored; local only). PHPStan stubs for the Pro classes used.
 - Tests: `ElementorThemeBuilderTest` (EL8, 3 tests). 151 pass / 3 skipped (add-ons not installed) on WP 7.1.4/PHP 8.3.36 and on WP 6.9.11/PHP 8.1.34, both with Elementor 4.3.6 + Pro 4.3.2; 148 with 8 skips on WP 6.9.11 + Elementor 3.35.9 (Pro needs core 4.0+); smoke 26/26.
+
+### 2026-11-05 — Phase 6 research and plan (SEO + media)
+
+- Read the current wordpress.org source of Rank Math 1.0.281, Yoast SEO 28.8, AIOSEO 5.0.5 and SEOPress 10.4, and core's `WP_Ability::execute()` (7.1.4) → `RESEARCH.md` §9. New finding: all four register WordPress Abilities, unevenly (AIOSEO and SEOPress write post SEO; Rank Math reads only; Yoast's exist only on production-mode sites and cannot set the keyphrase). AIOSEO keeps its data in its own table, so raw meta writes would be wrong there.
+- Plan `docs/plans/phase-6-seo.md` approved by the user: 14 tools (SEO status/get/update/verify/audit/bulk; media list/get/update/usage/upload/regenerate; job status/cancel).
+- D8 decided (user): hybrid SEO adapters. D9 decided (user): own `kuduy_jobs` table with Action Scheduler or WP-Cron.

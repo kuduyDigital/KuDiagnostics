@@ -21,6 +21,8 @@ Approved 2026-11-04 (decisions D1–D6); D1 and D2 changed by user decision duri
 | D5 | Updates via core `Update URI` + `update_plugins_github.com`; ZIP + SHA-256 asset verified before install | Built |
 | D6 | Tests: local PHP + Composer for static checks, WordPress Playground CLI for integration, public HTTPS site for real Claude clients | Built (Playground + Cloudflare tunnel; user's Hostinger staging site) |
 | D7 | Elementor editing: own tools on Elementor's public document API, Elementor's own MCP abilities, or a hybrid (see `docs/plans/phase-5-elementor.md`) | **Decided 2026-11-05 (user): hybrid** — own tools on the public document API for documents, v3 + v4 editing, Kit, CSS and verification; Elementor's own abilities for v4 extras (global classes, variables) on 4.3+, behind `is_available()` |
+| D8 | SEO writes: own adapters on each plugin's save path, the plugins' own Abilities, or a hybrid (see `docs/plans/phase-6-seo.md`) | **Decided 2026-11-05 (user): hybrid** — plugin Abilities where complete and always on (AIOSEO, SEOPress, Rank Math reads); the plugin's own save path otherwise (Rank Math `updateMeta`, Yoast `WPSEO_Meta` + Surfaces API); one normalized field set; unsupported fields refused |
+| D9 | Background jobs: own `kuduy_jobs` table + Action Scheduler / WP-Cron runner, or the MCP Tasks extension | **Decided 2026-11-05 (user): own table + runner** — `kuduy_jobs` (DB version 2), Action Scheduler when loaded, else WP-Cron; runs as the starting user, re-checks capability per item, stops on revoke, cancellable |
 
 ## 3. Components
 

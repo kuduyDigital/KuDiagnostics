@@ -148,9 +148,41 @@ Free Elementor only; Elementor Pro (Theme Builder, custom CSS) is a paid plugin 
 
 **Still UNVERIFIED (Phase 5):** that a live header actually renders on the frontend of a real site (checked with Claude on staging, EL10); popups and loop items; Pro custom CSS; v3 → v4 migration.
 
-## 9. SEO, WooCommerce, ACF, forms, multilingual
+## 9. SEO, media, background jobs (Phase 6), WooCommerce, ACF, forms, multilingual
 
-- **UNVERIFIED (Phase 6):** Rank Math public API vs meta (`rank_math_*` keys seen in WSP are not an API contract), Rank Math redirections and schema storage, Yoast `WPSEO_Meta` field list and social/schema settings, AIOSEO and SEOPress models, rendered `<head>` output.
+Source read 2026-11-05 from the current wordpress.org ZIPs (all tested up to WordPress 7.1.4): **Rank Math 1.0.281**, **Yoast SEO 28.8**, **AIOSEO 5.0.5**, **SEOPress 10.4**; WordPress core `abilities-api/class-wp-ability.php` at tag 7.1.4. Only free versions; Pro/Premium behaviour stays **UNVERIFIED**.
+
+**New finding: every one of the four plugins now registers WordPress Abilities** (core Abilities API, WordPress 6.9+), including write abilities for post SEO data in three of them. Abilities are a core public contract (`wp_get_ability( $name )->execute( $input )`); core's `execute()` normalizes and validates the input against the ability's schema, runs its `permission_callback` as the current user (failure → `ability_invalid_permissions`), runs it and validates the output. On 7.1 a `wp_pre_execute_ability` filter can short-circuit any ability (not on 6.9).
+
+**Detection** (constants defined by each plugin's main file): `RANK_MATH_VERSION`, `WPSEO_VERSION`, `AIOSEO_VERSION` (+ `aioseo()`), `SEOPRESS_VERSION`. SEOPress's own sitemap diagnostics detect the others the same way.
+
+**Yoast SEO 28.8** — `inc/class-wpseo-meta.php`, `src/abilities/`, `src/surfaces/`:
+- Storage: post meta `_yoast_wpseo_{key}` (`WPSEO_Meta::$meta_prefix`). Keys: `title`, `metadesc`, `focuskw`, `canonical`, `meta-robots-noindex` (`0` post-type default, `1` noindex, `2` index), `meta-robots-nofollow` (`0`/`1`), `meta-robots-adv` (comma list of `noimageindex`, `noarchive`, `nosnippet`), `bctitle`, `redirect` (Premium UI), `is_cornerstone`, `schema_page_type`, `schema_article_type` (enums `Schema_Types::PAGE_TYPES` / `ARTICLE_TYPES`), and `opengraph-{title,description,image,image-id}` / `twitter-{…}` **only when** the `opengraph` / `twitter` social options are on.
+- API: `WPSEO_Meta::get_value( $key, $post_id )` (default when unset) and `set_value( $key, $value, $post_id )` (slashes, then `update_post_meta`). Every key is registered with `register_meta()` and `sanitize_post_meta()` as sanitize callback; values equal to the default are deleted rather than stored.
+- Read model: the `wp_yoast_indexable` table. `Indexable_Post_Meta_Watcher` collects changed `_yoast_wpseo_*` meta and rebuilds the indexable **at shutdown**, so a read in the same request sees the old indexable. Rendered values: Surfaces API `YoastSEO()->meta->for_post( $id )` (`->title`, `->description`, `->canonical`, `->robots`, `->get_head()`).
+- Abilities `yoast-seo/get-post-seo-data`, `yoast-seo/update-post-seo-data` (patch; fields `seo_title`, `meta_description`, `canonical`, `is_cornerstone`, `noindex` true/false/null, `nofollow`, `noimageindex`, `noarchive`, `nosnippet`, OG/X title + description, schema page/article type; **no focus keyphrase**). Permission `wpseo_edit_advanced_metadata` + edit check per post; it rebuilds the indexable at once. Free Yoast adds an upsell string `ai_generate_hint` to results. **These abilities exist only when indexables are on, which by default means `wp_get_environment_type() === 'production'`** — on staging and local sites they are not registered.
+
+**Rank Math 1.0.281** — `includes/rest/class-shared.php`, `includes/abilities/`, `includes/admin/metabox/class-screen.php`:
+- Storage: post meta `rank_math_{key}` (no underscore). Editor keys (`Screen::get_object_values()`): `title`, `description`, `focus_keyword` (comma list, first = primary), `pillar_content`, `canonical_url`, `breadcrumb_title`, `robots` (array of `index`/`noindex`, `nofollow`, `noarchive`, `nosnippet`, `noimageindex`), `advanced_robots` (array), `facebook_{title,description,image,image_id}`, `twitter_use_facebook`, `twitter_card_type`, `twitter_{title,description,image,image_id}`. Schema: one meta row per schema `rank_math_schema_{Type}`.
+- Write path used by its own editor: REST `POST rankmath/v1/updateMeta` (`objectType`, `objectID`, `meta`), permission `Rest_Helper::can_edit_post()` (accessible post type + `edit_post` **or** `edit_others_posts`); values go through `Sanitize::sanitize()` per key; an empty value **deletes** the key. The handler calls `remove_all_filters( 'is_protected_meta' )` for the rest of the request. Schemas: `rankmath/v1/updateSchemas`; redirects: `rankmath/v1/updateRedirection` (Redirections module).
+- Role manager capabilities (granted per role by Rank Math): `rank_math_onpage_general` (title, description, keyword), `rank_math_onpage_advanced` (robots, canonical), `rank_math_onpage_social`, `rank_math_onpage_snippet` (schema), `rank_math_redirections`, `rank_math_sitemap`. Authors get `onpage_general` but not advanced by default.
+- Abilities (always on with WordPress 6.9+): read `rank-math/get-post-seo-meta` (rendered title, description, focus keyword, effective robots, canonical, OG/X; cap `rank_math_onpage_general`), `rank-math/get-post-schema`, `-get-redirections`, `-get-sitemap-status`, site settings setters. **No ability writes post SEO data.**
+
+**AIOSEO 5.0.5** — `app/Common/Models/Post.php`, `app/Common/Abilities/Abilities.php`, `app/Common/Services/PostSeoService.php`:
+- Storage: own table `{prefix}aioseo_posts` (model `Models\Post`; JSON columns `keyphrases`, `schema`, …) plus mirror post meta `_aioseo_title`, `_aioseo_description`, `_aioseo_og_*`, `_aioseo_twitter_*` for multilingual plugins. Raw meta writes would miss the table, which is what AIOSEO reads.
+- Abilities `aioseo-posts/seo-data-get` and `aioseo-posts/seo-data-update` (patch; `postId`, `title`, `description`, `canonical_url`, `focus_keyphrase`, `additional_keyphrases`, `pillar_content`, `robots{use_default, noindex, nofollow, noarchive, nosnippet, noimageindex, …}`, `social{og_title, og_description, twitter_title, twitter_description}`; schema refused). Permission `aioseo_page_general_settings` and `edit_post` per post; saves through `Models\Post::savePost()` (filter `aioseo_save_post`, action `aioseo_insert_post`). Always on with 6.9+.
+
+**SEOPress 10.4** — `src/Actions/Abilities/AbilitiesApi.php`, `src/Actions/Api/`:
+- Storage: post meta `_seopress_titles_title`, `_seopress_titles_desc`, `_seopress_analysis_target_kw` (comma list), `_seopress_robots_{index,follow,imageindex,snippet}` (`yes` = no-…), `_seopress_robots_canonical`, `_seopress_social_{fb,twitter}_*`, `_seopress_redirections_*`.
+- Abilities `seopress/get-post-title-description`, `-robots-settings`, `-social-settings` and the `update-post-…` counterparts (robots/social take a map of the known meta keys above; unknown keys ignored); permission: edit the post + the role is not blocked from the SEO metabox (Advanced > Security). Writes go through SEOPress's own REST controllers (`processPut`). Always on with 6.9+. No ability for the target keyword (REST `TargetKeywords` controller instead).
+
+**Rendered `<head>`:** all four print through `wp_head` for the main query. Checking it inside one request needs a front-end main query for the post; a live fetch needs the published URL (Playground has no loopback, as for `kuduy-elementor-verify`). **UNVERIFIED until tested:** that `wp_head` output can be produced in-process for each plugin (they set up front-end classes on `wp` / `template_redirect`).
+
+**Media (core):** alt text is post meta `_wp_attachment_image_alt` (core-defined, read by `wp_get_attachment_image()`); title, caption and description are the attachment's `post_title`, `post_excerpt`, `post_content` (`wp_update_post()`); sizes from `wp_get_attachment_metadata()`; regeneration with `wp_generate_attachment_metadata()` (`wp-admin/includes/image.php`); sideload with `download_url()` (safe HTTP API) + `media_handle_sideload()`. MCP `CallToolResult.content` allows `{ "type": "image", "data": <base64>, "mimeType" }` (both schema revisions), so a tool can let Claude look at an image before writing alt text. **UNVERIFIED:** how claude.ai / Desktop / Claude Code show image content returned by a tool.
+
+**Background jobs:** Action Scheduler is bundled by WooCommerce, Rank Math and AIOSEO (`as_enqueue_async_action()` when loaded), otherwise WP-Cron (`wp_schedule_single_event()` + `spawn_cron()`, which needs a loopback request). **UNVERIFIED:** WP-Cron loopback on the Hostinger staging site.
+
+- **UNVERIFIED (Phase 6, later):** Rank Math schema and redirect writes, Yoast/Rank Math term SEO, Pro/Premium features (Yoast redirects, SEOPress PRO), sitemap contents per plugin.
 - **UNVERIFIED (Phase 7):** WooCommerce CRUD + HPOS declaration (`FeaturesUtil::declare_compatibility`), gateway settings masking, ACF `get_field` / `update_field` and field-group APIs, CF7 / WPForms / Gravity / Fluent entry APIs, WPML / Polylang language APIs, Site Editor and Global Styles REST.
 - Rule: each phase starts by reading the integration's own source and docs; nothing is built from guessed meta keys.
 
@@ -174,7 +206,7 @@ KUDUY MCP is GPL-2.0-or-later, written from public specifications and documented
 |---|---|
 | Which MCP revision each Claude surface sends today; real sign-in from claude.ai, Desktop and Claude Code | 3 (O11) |
 | Elementor Pro Theme Builder / custom CSS, add-on schemas, v3 → v4 migration, Elementor 3.x behaviour | 5 |
-| SEO plugin APIs and rendered output | 6 |
+| SEO plugin APIs and rendered output | 6 — APIs read (§9); in-process `<head>`, Pro/Premium, schema/redirect writes still to check |
 | WooCommerce, ACF, forms, multilingual APIs | 7 |
 | WP-CLI command registration for hidden-mode recovery | 8 |
 | MCP Tasks extension for background jobs | later |
