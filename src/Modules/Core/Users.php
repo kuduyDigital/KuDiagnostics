@@ -228,7 +228,8 @@ final class Users implements Tool, Snapshottable {
 		return match ( $this->mode ) {
 			'create' => 'create_users',
 			'update' => $id > 0 ? array( 'edit_user', $id ) : 'edit_users',
-			'get'    => $id > 0 && get_current_user_id() === $id ? 'read' : 'list_users',
+			// Listing (no id): everyone may read their own account, so the tool is shown; each call checks the id.
+			'get'    => 0 === $id || get_current_user_id() === $id ? 'read' : 'list_users',
 			default  => 'list_users',
 		};
 	}

@@ -13,8 +13,8 @@ Only versions listed as **Tested** have passing evidence (see `TESTING.md`). Eve
 
 | WordPress | PHP | Status | Evidence |
 |---|---|---|---|
-| 6.9.11 | 8.1.34 | **Tested** | 118/118 integration tests, 2026-11-05; release ZIP installs (CI) |
-| 7.1.4 | 8.3.36 | **Tested** | 118/118 integration tests, 2026-11-05; smoke 26/26 over real HTTP; real update v0.1.0 → v0.1.1 |
+| 6.9.11 | 8.1.34 | **Tested** | 125/125 integration tests, 2026-11-05; release ZIP installs (CI) |
+| 7.1.4 | 8.3.36 | **Tested** | 125/125 integration tests, 2026-11-05; smoke 26/26 over real HTTP; real update v0.1.0 → v0.1.1 |
 | 7.1.4 | 8.1 | **Tested** (install only) | Release ZIP install check |
 | 7.0.x | any | Not tested | |
 | any | 8.2, 8.4 | Syntax only | `php -l` in CI on 8.1–8.4; no integration run |
@@ -63,7 +63,7 @@ Only versions listed as **Tested** have passing evidence (see `TESTING.md`). Eve
 
 ## Known limitations
 
-- 44 tools on `main` (eight released in 0.2.0): `kuduy-site-info`, `kuduy-snapshot-list`, `kuduy-snapshot-restore`, `kuduy-check-update`, and the read-only `kuduy-post-types`, `kuduy-post-list`, `kuduy-post-get`, `kuduy-term-list` (since 0.2.0), and, unreleased: `kuduy-post-create`, `kuduy-post-update`, `kuduy-post-trash`, `kuduy-term-create`/`-update`/`-delete`, `kuduy-comment-list`/`-moderate`/`-reply`, `kuduy-revision-list`/`-restore`, `kuduy-post-meta-get`/`-set`, `kuduy-user-list`/`-get`/`-create`/`-update`, `kuduy-role-list`, `kuduy-menu-list`/`-get`/`-create`/`-item-add`/`-item-update`/`-item-delete`/`-assign`, `kuduy-settings-get`/`-update`, `kuduy-plugin-list`/`-install`/`-activate`/`-deactivate`/`-update`, `kuduy-theme-list`/`-install`/`-switch`/`-update`.
+- 53 tools on `main` (eight released in 0.2.0): `kuduy-site-info`, `kuduy-snapshot-list`, `kuduy-snapshot-restore`, `kuduy-check-update`, and the read-only `kuduy-post-types`, `kuduy-post-list`, `kuduy-post-get`, `kuduy-term-list` (since 0.2.0), and, unreleased: `kuduy-post-create`, `kuduy-post-update`, `kuduy-post-trash`, `kuduy-term-create`/`-update`/`-delete`, `kuduy-comment-list`/`-moderate`/`-reply`, `kuduy-revision-list`/`-restore`, `kuduy-post-meta-get`/`-set`, `kuduy-user-list`/`-get`/`-create`/`-update`, `kuduy-role-list`, `kuduy-menu-list`/`-get`/`-create`/`-item-add`/`-item-update`/`-item-delete`/`-assign`, `kuduy-settings-get`/`-update`, `kuduy-plugin-list`/`-install`/`-activate`/`-deactivate`/`-update`, `kuduy-theme-list`/`-install`/`-switch`/`-update`, `kuduy-site-health`, `kuduy-cron-list`, `kuduy-rewrite-check`, `kuduy-rewrite-flush`, `kuduy-hooks-inspect`.
 - Of the real Claude clients, only claude.ai (and Claude Code through the synced claude.ai connector) is confirmed; Desktop and Claude Code's own sign-in are not yet observed (O11).
 - Plugin and theme installs/updates need direct file access; sites that ask for FTP credentials get a clear refusal (do it in wp-admin).
 - `Plugin_Upgrader::upgrade()` deactivates active plugins outside cron (wp-admin reactivates them in a second request). KUDUY's update tool runs like WordPress's background updates, so plugins stay active; the earlier `check:update` script used the plain upgrader, which is why it saw the plugin inactive.

@@ -9,6 +9,8 @@ Format: user-facing releases first (newest on top), then the dated development h
 - Added (Phase 4): users and roles (`kuduy-user-list`, `-get`, `-create`, `-update`, `kuduy-role-list`). Passwords are never set to a known value or returned; nobody can change their own role; the last administrator cannot be demoted; deleting users is not offered.
 - Added (Phase 4): classic menus (`kuduy-menu-list`, `-get`, `-create`, `-item-add`, `-item-update`, `-item-delete`, `-assign`) and allow-listed site settings (`kuduy-settings-get`, `-update`), with undo. Site URLs, admin email, permalinks, membership and default role stay read-only.
 - Added (Phase 4): plugins (`kuduy-plugin-list`, `-install`, `-activate`, `-deactivate`, `-update`) and themes (`kuduy-theme-list`, `-install`, `-switch`, `-update`). Installs from wordpress.org by slug only; deactivating, updating and switching themes first report the impact and need `confirm: true`; KUDUY never deactivates or updates itself; deleting is not offered.
+- Added (Phase 4): diagnostics — `kuduy-site-health` (in-process Site Health checks and an environment summary), `kuduy-cron-list`, `kuduy-rewrite-check`, `kuduy-rewrite-flush`, `kuduy-hooks-inspect`.
+- Fixed: `kuduy-user-get` was hidden from users who cannot list others, although everyone may read their own account.
 
 ## 0.2.0 — 2026-11-05
 
@@ -206,3 +208,10 @@ Format: user-facing releases first (newest on top), then the dated development h
 - **Found in WP 7.1.4 source:** `Plugin_Upgrader::upgrade()` deactivates active plugins unless `wp_doing_cron()` (wp-admin reactivates in a second request to avoid redeclaring classes). The tool runs the upgrade as background updates do, so plugins stay active. This also explains the inactive plugin seen by `check:update` earlier.
 - **Bug caught by the tests:** core initializes `WP_Plugin_Dependencies` only on wp-admin screens, so during an MCP request the dependency check always said "no dependents". The tool now initializes it first.
 - Tests run offline: local ZIPs (ZipArchive) served through `plugins_api` / `themes_api` / `upgrader_pre_download`, through core's real upgraders. `CorePackagesTest` (8 tests); 118/118 on WP 6.9.11/PHP 8.1.34 and WP 7.1.4/PHP 8.3.36; smoke 26/26.
+
+### 2026-11-05 — Phase 4 complete: diagnostics, P3 and P4
+
+- `Diagnostics` (5 modes, `manage_options`): Site Health limited to core's in-process checks (`rest_availability` skipped: it makes a loopback request); environment summary; cron with argument counts only; rewrite check and soft flush; hook inspector with priority, callable, relative file/line and source (core, plugin, theme, mu-plugin).
+- P3 test: a subscriber's `tools/list`. It found that `kuduy-user-get` was hidden from subscribers (listing used `list_users`); listing now uses `read` and each call still checks the id.
+- P4 sweep: 11 read tools and 50 audit rows contain no salts/keys, DB password, password hash or application password (plain or hashed); a token-like value in post meta is masked.
+- Phase 4 exit gate met: 125/125 on WP 6.9.11/PHP 8.1.34 and WP 7.1.4/PHP 8.3.36; smoke 26/26; P1–P4 pass. Items moved to their brief phases: block navigation and widgets (7), theme files (7, developer mode), media (6).

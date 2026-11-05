@@ -9,6 +9,7 @@ namespace Kuduy\Mcp\Mcp;
 
 use Kuduy\Mcp\Modules\Core\CheckUpdate;
 use Kuduy\Mcp\Modules\Core\Comments;
+use Kuduy\Mcp\Modules\Core\Diagnostics;
 use Kuduy\Mcp\Modules\Core\Menus;
 use Kuduy\Mcp\Modules\Core\Plugins;
 use Kuduy\Mcp\Modules\Core\PostCreate;
@@ -79,6 +80,9 @@ final class ToolRegistry {
 		}
 		foreach ( array( 'list', 'install', 'switch', 'update' ) as $mode ) {
 			$registry->register( new Themes( $mode ) );
+		}
+		foreach ( array( 'health', 'cron', 'rewrite', 'rewrite-flush', 'hooks' ) as $mode ) {
+			$registry->register( new Diagnostics( $mode ) );
 		}
 		do_action( 'kuduy_mcp_register_tools', $registry );
 		return $registry;

@@ -3,7 +3,7 @@
 Status values: `Not started` · `In progress` · `Implemented` (code exists, tests incomplete) · `Tested` (passing tests or recorded manual evidence; IDs refer to `TESTING.md`) · `Blocked`.
 Section numbers follow the KUDUY MCP Master Development Prompt. Updated 2026-11-05 (v0.2.0).
 
-Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude clients are partly verified (claude.ai works; Desktop, Claude Code's own sign-in, refresh and revoke still to observe — O11). Phase 4 in progress: read tools for post types, posts and terms, post create/update/trash, terms, comments, revisions and custom fields, users and roles, classic menus, allow-listed site settings, plugins and themes (with undo where it is possible, confirm-first where it is not) are `Tested`; everything else from §5 onward is `Not started`.
+Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude clients are partly verified (claude.ai works; Desktop, Claude Code's own sign-in, refresh and revoke still to observe — O11). **Phase 4 (WordPress core, §5) is complete:** content, terms, comments, revisions, custom fields, users and roles, menus, settings, plugins and themes, and diagnostics are `Tested`, with undo where possible and confirm-first where not. The few §5 items left (block-theme navigation, theme file inspection, media) belong to later phases. Everything from §6 onward is `Not started`.
 
 ## Foundation — MCP and transport (§4)
 
@@ -87,7 +87,7 @@ Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude cli
 | Featured images: set/remove | Tested (`featured_media`; must be an image attachment) |
 | Post meta (protected keys blocked) | Tested (C4: `kuduy-post-meta-get`, `kuduy-post-meta-set`; `_` keys never read or written; undo) |
 | Menus and navigation (classic menus) | Tested (C8: `kuduy-menu-list`, `-get`, `-create`, `-item-add`, `-item-update`, `-item-delete`, `-assign`; undo) |
-| Block-theme navigation (`wp_navigation`) | Not started |
+| Block-theme navigation (`wp_navigation`) | Not started — with Site Editor and Global Styles (Phase 7) |
 | Block Editor content inspect/edit | Implemented (raw block markup via get/update; no block-level tools yet) |
 | Elementor-built pages protected from content overwrite | Tested (update refuses `content` on `_elementor_edit_mode = builder`) |
 | Users and roles: inspect, create, update; capabilities | Tested (C6: `kuduy-user-list`, `kuduy-user-get`, `kuduy-user-create`, `kuduy-user-update`, `kuduy-role-list`; own-role and last-admin guards; undo) |
@@ -95,10 +95,11 @@ Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude cli
 | Never return passwords, hashes, tokens | Tested (redactor F9; user tools never return hashes or activation keys and never set a known password) |
 | Plugins/themes: list, versions, install, update, activate, deactivate (safety checks) | Tested (C7: `kuduy-plugin-list`/`-install`/`-activate`/`-deactivate`/`-update`, `kuduy-theme-list`/`-install`/`-switch`/`-update`; wordpress.org slugs only; deactivate, update and theme switch are confirm-first with an impact report; KUDUY never deactivates or updates itself; undo for activate/deactivate/switch) |
 | Plugins/themes: delete | Not started — deliberately not offered |
-| Theme file inspection, conflict diagnosis | Not started |
+| Conflict diagnosis (which plugin hooks what) | Tested (`kuduy-hooks-inspect`) |
+| Theme file inspection | Not started — developer mode (Phase 7, D4) |
 | Registered post types | Tested (`kuduy-post-types`) |
 | Site settings (allow-list) | Tested (C8: `kuduy-settings-get`, `kuduy-settings-update`; URLs, admin email, permalinks, membership and default role read-only; undo) |
-| Site Health, cron, rewrite rules, registered hooks/caps, cache diagnostics | Not started |
+| Site Health, cron, rewrite rules, registered hooks/caps, cache diagnostics | Tested (`kuduy-site-health` in-process checks + environment incl. object cache and opcache, `kuduy-cron-list`, `kuduy-rewrite-check`, `kuduy-rewrite-flush`, `kuduy-hooks-inspect`; capabilities via `kuduy-user-get` / `kuduy-role-list`) |
 
 ## Elementor (§6) — Phase 5
 
@@ -149,7 +150,8 @@ Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude cli
 | Navigation menus | Tested (classic menus, see §5) |
 | Widgets and sidebars | Not started |
 | Block Editor, Site Editor, Global Styles | Not started |
-| WP-Cron; cache and performance plugins | Not started |
+| WP-Cron inspection | Tested (`kuduy-cron-list`, arguments never shown) |
+| Cache and performance plugins | Not started |
 | WPML and Polylang | Not started |
 | Clear "not installed / not supported" messages | Implemented (`is_available()` + executor message, F7); per-integration tests pending |
 
