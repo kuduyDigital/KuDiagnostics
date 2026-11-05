@@ -30,8 +30,8 @@ See `CLAUDE.md` → Commands. Integration: `KUDUY_WP=<6.9|7.1> KUDUY_PHP=<8.1|8.
 | PHPStan level 6 | No errors |
 | `composer audit` | No advisories |
 | `npm audit` | 3 moderate in `@wp-playground/cli` dependencies (dev only, not shipped) |
-| Integration, WordPress 6.9.11 / PHP 8.1.34 | **103 / 103 pass** |
-| Integration, WordPress 7.1.4 / PHP 8.3.36 | **103 / 103 pass** |
+| Integration, WordPress 6.9.11 / PHP 8.1.34 | **110 / 110 pass** |
+| Integration, WordPress 7.1.4 / PHP 8.3.36 | **110 / 110 pass** |
 | Smoke over real HTTP (WP 7.1.4 / PHP 8.3, Elementor 4.3.6 + WooCommerce 11.2.1 active) | **26 / 26 pass** |
 | Security probe (read-only token on core routes, `rest_route` override, PATH_INFO, unticked consent, unauthenticated `initialize`, root AS metadata) | All refused / as expected on 0.1.2 |
 | GitHub CI on `3591d92` | All 9 jobs green; release workflow for `v0.1.2` green |
@@ -104,7 +104,7 @@ Legend: **U** unit, **I** integration (Playground), **E** end-to-end with a real
 | C5 | Featured image set/unset | I |
 | C6 | Users/roles create/update (no password echo) | I — **pass 2026-11-05** (`CoreUsersTest`: subscriber sees only themselves; list/get never contain the password hash or activation key; role list shows caps and assignable roles; editor cannot create users; admin creates an author with a random, never-returned password; unknown role refused; role change + undo; editor cannot promote; nobody changes their own role; last administrator cannot be demoted) |
 | C7 | Plugins/themes list/install/update/activate; essential-plugin guard | I |
-| C8 | Menus, widgets, permalinks, site health | I |
+| C8 | Menus, widgets, permalinks, site health | I — menus and settings **pass 2026-11-05** (`CoreSiteTest`: editors refused; menu with page link, custom link and submenu; drafts and incomplete links refused; item update keeps other fields + undo; delete + undo; location assign + undo; unknown location refused; settings read/update + undo; URLs, admin email, membership, default role and permalinks refused; bad timezone and front page refused). Widgets, permalinks diagnostics and Site Health not run |
 
 ## Elementor
 

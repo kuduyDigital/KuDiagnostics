@@ -9,6 +9,7 @@ namespace Kuduy\Mcp\Mcp;
 
 use Kuduy\Mcp\Modules\Core\CheckUpdate;
 use Kuduy\Mcp\Modules\Core\Comments;
+use Kuduy\Mcp\Modules\Core\Menus;
 use Kuduy\Mcp\Modules\Core\PostCreate;
 use Kuduy\Mcp\Modules\Core\PostGet;
 use Kuduy\Mcp\Modules\Core\PostList;
@@ -17,6 +18,7 @@ use Kuduy\Mcp\Modules\Core\PostTrash;
 use Kuduy\Mcp\Modules\Core\PostTypes;
 use Kuduy\Mcp\Modules\Core\PostUpdate;
 use Kuduy\Mcp\Modules\Core\Revisions;
+use Kuduy\Mcp\Modules\Core\Settings;
 use Kuduy\Mcp\Modules\Core\SiteInfo;
 use Kuduy\Mcp\Modules\Core\SnapshotList;
 use Kuduy\Mcp\Modules\Core\SnapshotRestore;
@@ -65,6 +67,11 @@ final class ToolRegistry {
 		foreach ( array( 'list', 'get', 'create', 'update', 'roles' ) as $mode ) {
 			$registry->register( new Users( $mode ) );
 		}
+		foreach ( array( 'list', 'get', 'create', 'item-add', 'item-update', 'item-delete', 'assign' ) as $mode ) {
+			$registry->register( new Menus( $mode ) );
+		}
+		$registry->register( new Settings( 'get' ) );
+		$registry->register( new Settings( 'update' ) );
 		do_action( 'kuduy_mcp_register_tools', $registry );
 		return $registry;
 	}

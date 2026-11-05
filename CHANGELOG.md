@@ -7,6 +7,7 @@ Format: user-facing releases first (newest on top), then the dated development h
 - Added (Phase 4): `kuduy-post-create`, `kuduy-post-update` and `kuduy-post-trash` for posts, pages and custom post types — status (publish, schedule, unpublish, private), slug, date, parent, order, comments, terms and featured image. Updates and trash take a snapshot first and can be undone with `kuduy-snapshot-restore`. Permanent deletion is not offered. Content of Elementor-built pages is not overwritten.
 - Added (Phase 4): terms (`kuduy-term-create`, `-update`, `-delete`), comments (`kuduy-comment-list`, `-moderate`, `-reply`), revisions (`kuduy-revision-list`, `-restore`) and public custom fields (`kuduy-post-meta-get`, `-set`), each with the same permission rules as WordPress's own REST API and undo for every overwrite.
 - Added (Phase 4): users and roles (`kuduy-user-list`, `-get`, `-create`, `-update`, `kuduy-role-list`). Passwords are never set to a known value or returned; nobody can change their own role; the last administrator cannot be demoted; deleting users is not offered.
+- Added (Phase 4): classic menus (`kuduy-menu-list`, `-get`, `-create`, `-item-add`, `-item-update`, `-item-delete`, `-assign`) and allow-listed site settings (`kuduy-settings-get`, `-update`), with undo. Site URLs, admin email, permalinks, membership and default role stay read-only.
 
 ## 0.2.0 — 2026-11-05
 
@@ -190,3 +191,9 @@ Format: user-facing releases first (newest on top), then the dated development h
 - `Users` (list/get/create/update/roles) mirrors core's REST users controller (`list_users`, `create_users`, `edit_user`, `promote_user`, `get_editable_roles()`, no own-role change). Extra guard: the last administrator cannot be demoted. Create sets a random password that is never returned and sends WordPress's set-password email (optional). Update is snapshotted (profile + roles). Delete is not offered. Changes need scope `kuduy:admin`.
 - PHPStan required an explicit field shape for `wp_insert_user()`.
 - Tests: `CoreUsersTest` (7 tests); 103/103 on WP 6.9.11/PHP 8.1.34 and WP 7.1.4/PHP 8.3.36; smoke 26/26.
+
+### 2026-11-05 — Phase 4: menus and site settings
+
+- `Menus` (7 modes, `edit_theme_options`): menu items keep every field not given — `wp_update_nav_menu_item()` resets anything not passed, verified in WP 7.1.4 source. Undo for item update/delete and location assignment. Dynamic menu-item properties are read via `get_object_vars()` so PHPStan can check the rest.
+- `Settings` (`manage_options`): allow-list of 17 writable settings; read-only by design: `siteurl`, `home`, `admin_email`, `permalink_structure`, `users_can_register`, `default_role`, `WPLANG`. Undo restores previous values.
+- Tests: `CoreSiteTest` (7 tests); 110/110 on WP 6.9.11/PHP 8.1.34 and WP 7.1.4/PHP 8.3.36; smoke 26/26.
