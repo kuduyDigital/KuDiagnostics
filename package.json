@@ -7,7 +7,9 @@
     "playground:check": "wp-playground-cli run-blueprint --wp=7.1 --php=8.3 --blueprint=tests/playground/blueprint.json",
     "tunnel": "node scripts/tunnel.mjs",
     "test:integration": "node scripts/test-integration.mjs",
-    "smoke:mcp": "node scripts/smoke-mcp.mjs"
+    "smoke:mcp": "node scripts/smoke-mcp.mjs",
+    "build:release": "php scripts/build-release.php",
+    "check:release": "node scripts/check-release.mjs"
   },
   "devDependencies": {
     "@wp-playground/cli": "3.1.62"

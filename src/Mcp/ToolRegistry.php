@@ -7,6 +7,7 @@
 
 namespace Kuduy\Mcp\Mcp;
 
+use Kuduy\Mcp\Modules\Core\CheckUpdate;
 use Kuduy\Mcp\Modules\Core\SiteInfo;
 use Kuduy\Mcp\Modules\Core\SnapshotList;
 use Kuduy\Mcp\Modules\Core\SnapshotRestore;
@@ -31,6 +32,7 @@ final class ToolRegistry {
 		$registry->register( new SiteInfo() );
 		$registry->register( new SnapshotList() );
 		$registry->register( new SnapshotRestore() );
+		$registry->register( new CheckUpdate() );
 		do_action( 'kuduy_mcp_register_tools', $registry );
 		return $registry;
 	}

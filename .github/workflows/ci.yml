@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_call:
 
 permissions:
   contents: read
@@ -85,3 +86,24 @@ jobs:
       - run: composer install --no-interaction --no-progress --prefer-dist
       - run: npm ci --no-fund --no-audit
       - run: npm run smoke:mcp
+
+  package:
+    name: Release ZIP installs (WP 6.9 / PHP 8.1)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          tools: composer:v2
+          coverage: none
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --no-fund --no-audit
+      - run: php scripts/build-release.php
+      - run: npm run check:release
+        env:
+          KUDUY_WP: '6.9'
+          KUDUY_PHP: '8.1'

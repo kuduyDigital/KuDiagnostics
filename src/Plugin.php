@@ -15,6 +15,7 @@ use Kuduy\Mcp\Mcp\RestController;
 use Kuduy\Mcp\OAuth\Authorize;
 use Kuduy\Mcp\OAuth\Endpoints;
 use Kuduy\Mcp\OAuth\TokenAuth;
+use Kuduy\Mcp\Update\GitHubUpdater;
 
 /**
  * Plugin entry point.
@@ -64,6 +65,11 @@ final class Plugin {
 		add_action( 'admin_notices', array( self::class, 'permalink_notice' ) );
 		add_action( Cleanup::HOOK, array( Cleanup::class, 'run' ) );
 		add_action( 'admin_menu', array( ConnectionsPage::class, 'menu' ) );
+
+		add_filter( 'update_plugins_github.com', array( GitHubUpdater::class, 'filter_update' ), 10, 3 );
+		add_filter( 'site_transient_update_plugins', array( GitHubUpdater::class, 'inject' ) );
+		add_filter( 'plugins_api', array( GitHubUpdater::class, 'plugins_api' ), 10, 3 );
+		add_filter( 'upgrader_pre_download', array( GitHubUpdater::class, 'pre_download' ), 10, 2 );
 	}
 
 	/**
