@@ -198,6 +198,32 @@ final class UpdaterTest extends TestCase {
 		$this->assertSame( '"abc"', $last[1]['headers']['If-None-Match'] ?? null );
 	}
 
+	public function test_check_again_on_updates_screen_skips_the_cache(): void {
+		$this->latest_is( self::release( 'v9.9.9' ) );
+		$this->assertSame( '9.9.9', $this->offered()?->new_version );
+
+		$this->routes = array_merge( array( 'releases/latest' => array( 200, (string) wp_json_encode( self::release( 'v9.9.10' ) ) ) ), $this->routes );
+		$this->assertSame( '9.9.9', $this->offered()?->new_version, 'normal checks use the cache' );
+
+		$on_updates_screen = static function () {
+			delete_site_transient( 'update_plugins' );
+			wp_update_plugins();
+		};
+		remove_all_actions( 'load-update-core.php' );
+		add_action( 'load-update-core.php', $on_updates_screen );
+
+		do_action( 'load-update-core.php' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WordPress.NamingConventions.ValidHookName.UseUnderscores -- replays the core hook.
+		$this->assertSame( '9.9.9', get_site_transient( 'update_plugins' )->response[ self::FILE ]->new_version ?? null, 'opening the screen alone keeps the cache' );
+
+		$_GET['force-check'] = '1';
+		do_action( 'load-update-core.php' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WordPress.NamingConventions.ValidHookName.UseUnderscores -- replays the core hook.
+		unset( $_GET['force-check'] );
+		$this->assertSame( '9.9.10', get_site_transient( 'update_plugins' )->response[ self::FILE ]->new_version ?? null, '"Check again" asks GitHub' );
+
+		remove_action( 'load-update-core.php', $on_updates_screen );
+		add_action( 'load-update-core.php', 'wp_update_plugins' );
+	}
+
 	public function test_beta_channel_takes_prereleases(): void {
 		add_filter( 'kuduy_mcp_update_channel', static fn() => 'beta' );
 		$this->routes = array(

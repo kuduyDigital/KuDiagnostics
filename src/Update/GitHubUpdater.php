@@ -46,8 +46,17 @@ final class GitHubUpdater {
 		if ( self::basename() !== $plugin_file ) {
 			return $update;
 		}
-		$release = self::latest();
+		$release = self::latest( self::check_again() );
 		return null === $release ? $update : self::update_data( $release );
+	}
+
+	/**
+	 * "Check again" on Dashboard → Updates (update-core.php?force-check=1): skip our 12 h cache too.
+	 * The ETag makes an unchanged answer a 304, which GitHub does not count against the rate limit.
+	 */
+	private static function check_again(): bool {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- core's own link has no nonce; this only re-reads GitHub.
+		return doing_action( 'load-update-core.php' ) && ! empty( $_GET['force-check'] ) && current_user_can( 'update_plugins' );
 	}
 
 	/**

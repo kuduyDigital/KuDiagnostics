@@ -92,3 +92,8 @@
 - Tests: 6 new (route binding, rest_route in query/body, PATH_INFO, unticked consent, logged-out CIMD, write token vs admin snapshot, registration cap): 66/66 on WP 6.9.11/PHP 8.1.34 and WP 7.1.4/PHP 8.3.36. Smoke adds unauthenticated `initialize` → 401 and root AS metadata: 26/26. Re-ran the exploit probe: every case now 401 / denied.
 - The route guard checks only the request's first REST dispatch (the HTTP request); internal `rest_do_request()` calls a tool makes later stay allowed (found when a test reused bearer state).
 - Note: the user's real test site is on Hostinger (`*.hostingersite.com`), which is why the tunnel's database stayed empty. Its endpoints check out from outside; it needs 0.1.2 for the fixes.
+
+## 2026-11-05 — Release v0.1.2; "Check again" skips the release cache
+
+- Published `v0.1.2` (tag on `3591d92`) after CI passed: `kuduy-mcp.zip` (62 427 bytes) + `.sha256`; GitHub lists it as latest.
+- "Check again" on Dashboard → Updates (`update-core.php?force-check=1`, core runs `wp_update_plugins()` on `load-update-core.php`) now re-reads GitHub instead of our 12 h cache, for users who can `update_plugins`. The ETag makes an unchanged answer a 304, which does not count against GitHub's rate limit. Simply opening the screen still uses the cache. Test: 67/67 on both pairs. Ships in the next release (sites on 0.1.2 or older wait up to 12 h, or upload the ZIP).
