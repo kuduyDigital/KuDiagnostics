@@ -201,6 +201,24 @@ final class Elementor {
 	}
 
 	/**
+	 * Human-readable name of the plugin that provides a type (its "Plugin Name" header), or the source label.
+	 *
+	 * @param object $type Type object.
+	 */
+	public static function source_name( object $type ): string {
+		$source = self::source( $type );
+		if ( ! function_exists( 'get_plugins' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+		foreach ( get_plugins() as $file => $data ) {
+			if ( str_starts_with( (string) $file, $source . '/' ) ) {
+				return wp_strip_all_tags( (string) ( $data['Name'] ?? $source ) );
+			}
+		}
+		return $source;
+	}
+
+	/**
 	 * Which plugin (or theme) defines a class: "elementor", "elementor-pro", an add-on folder, or "theme".
 	 *
 	 * @param object $type Type object.

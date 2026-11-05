@@ -136,7 +136,15 @@ Free Elementor only; Elementor Pro (Theme Builder, custom CSS) is a paid plugin 
 - Calling them (verified 4.3.6): `modules_manager->get_modules( 'mcp' )->registry()->find_by_id( $id )`; `execute_guarded()` does **not** check permissions (Elementor's own proxy calls `check_permission()` first); the input schema sits on the protected `definition()`; resource abilities return JSON strings.
 - Global-class capabilities (`elementor_global_classes_update_class`, …) are granted to administrators by a database update that runs on `admin_init` — a site where nobody opened wp-admin since installing/updating Elementor refuses class changes until then.
 
-**Still UNVERIFIED (Phase 5):** Elementor Pro Theme Builder conditions and custom CSS storage; add-on widget schemas (Essential Addons, UAE, Premium Addons, JetElements); v3 → v4 migration; behaviour on Elementor 3.x LTS (test matrix target).
+**Add-ons (tested 2026-11-05):** Essential Addons 6.8.8, Ultimate Addons (`header-footer-elementor`) 2.9.6 and Premium Addons 4.11.117 register ordinary `Widget_Base` widgets; KUDUY's generic discovery, schema (both control lists), save and render work for them unchanged.
+
+**Elementor Pro 4.3.2 (licensed ZIP supplied by the user, read 2026-11-05):**
+- Theme Builder template types (`modules/theme-builder/documents/`): `header`, `footer`, `single`, `single-post`, `single-page`, `archive`, `search-results`, `error-404`, `section`. Created like any document: `documents->create( $type, $post_data )` (core sets `_elementor_template_type` and `_elementor_edit_mode`).
+- Display conditions: `Module::instance()->get_conditions_manager()`. `save_conditions( $post_id, $conditions )` takes rows `[ type, name, sub_name, sub_id ]`, stores them as strings `type/name/sub_name/sub_id` (e.g. `include/general`, `include/singular/page/42`, `exclude/archive/category`) in the template's `_elementor_conditions` meta, and regenerates the conditions cache. `get_document_conditions()` parses them back. Registered conditions and their sub-conditions: `get_conditions_config()` (extensible through `elementor/theme/register_conditions`).
+- Conflicts: `get_conditions_conflicts( $post_id, $condition )` → templates of the same location already using that condition (locations that allow multiple templates never conflict).
+- Pro ships its own MCP abilities too: `elementor/list-site-parts`, `elementor/manage-site-parts` (create/update conditions/delete; permission `edit_posts` + per-post checks). Other Pro modules: popup, loop-builder, custom-code, custom-css, display-conditions, woocommerce, mcp.
+
+**Still UNVERIFIED (Phase 5):** Pro behaviour in a running site (not tested yet); popups and loop items; v3 → v4 migration.
 
 ## 9. SEO, WooCommerce, ACF, forms, multilingual
 

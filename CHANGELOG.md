@@ -8,6 +8,7 @@ Format: user-facing releases first (newest on top), then the dated development h
 - Added (Phase 5): Elementor write tools — `kuduy-elementor-edit` (1–50 patch operations: update, add, move, duplicate, remove; only named settings change, other breakpoints keep their values; all-or-nothing; undo), `kuduy-elementor-create` (new Elementor page from a tree), `kuduy-elementor-kit-update` (global colors and fonts, undo), `kuduy-elementor-verify` (checks the rendered and live page for element ids and texts).
 - Added (Phase 5): `kuduy-elementor-v4-globals`, `kuduy-elementor-v4-classes`, `kuduy-elementor-v4-variables` — Elementor 4.3+'s own abilities for v4 global classes and variables, behind KUDUY's scopes, permission checks, snapshots and audit.
 - Tested on Elementor 3.35.9 as well as 4.3.6.
+- Tested with the free Elementor add-ons Essential Addons, Ultimate Addons and Premium Addons; the widget list names the plugin each widget comes from.
 
 ## 0.3.0 — 2026-11-05
 
@@ -252,3 +253,10 @@ Format: user-facing releases first (newest on top), then the dated development h
 - `ElementorAbilities` (D7 hybrid): runs `elementor/global-classes-resource`, `elementor/global-variables-resource`, `elementor/manage-classes`, `elementor/manage-global-variable` in-process, after Elementor's own `check_permission()` (its `execute_guarded()` does not check), with Elementor's input schema read from the protected definition. Variables are undoable (Kit meta); classes get a copy-only snapshot that says so. Unavailable with a clear reason on Elementor before 4.3 or if the internals change.
 - Found: Elementor grants its global-class capabilities through a database update on `admin_init`; until someone opens wp-admin after installing/updating Elementor, class changes are refused. KUDUY's error now says so; the test runs Elementor's updater like a wp-admin visit would.
 - Tests: `ElementorAbilitiesTest` (4 tests); 145/145 on WP 7.1.4/PHP 8.3.36 + Elementor 4.3.6; 145 with 5 skips on WP 6.9.11/PHP 8.1.34 + Elementor 3.35.9; smoke 26/26.
+
+### 2026-11-05 — Phase 5: add-ons; Elementor Pro research
+
+- Test runner: `KUDUY_PLUGINS=slug@version,…` installs more wordpress.org plugins. CI's WP 7.1 / Elementor 4.3.6 job adds Essential Addons 6.8.8, header-footer-elementor 2.9.6 and Premium Addons 4.11.117.
+- `ElementorAddonsTest` (EL9): each add-on's widgets go through discovery, schema, create, edit and render with the generic tools — all pass with no add-on specific code. `kuduy-elementor-widgets` now also returns the plugin's name (`plugin`). JetElements: blocked (paid).
+- Elementor Pro 4.3.2 (licensed ZIP from the user, kept out of git via `.gitignore`, read from a scratch copy): Theme Builder template types, conditions storage and API, conflict check, and Pro's own site-parts abilities recorded in `RESEARCH.md` §8; Theme Builder tool plan in `docs/plans/phase-5-elementor.md`.
+- Tests: 148/148 on WP 7.1.4/PHP 8.3.36 + Elementor 4.3.6 + 3 add-ons; 148 with 8 skips on WP 6.9.11/PHP 8.1.34 + Elementor 3.35.9; smoke 26/26.

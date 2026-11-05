@@ -50,8 +50,9 @@ jobs:
       matrix:
         # One Elementor major per job: 3.x (most existing sites) and current 4.x.
         include:
-          - { wp: '6.9', php: '8.1', elementor: '3.35.9' }
-          - { wp: '7.1', php: '8.3', elementor: '4.3.6' }
+          - { wp: '6.9', php: '8.1', elementor: '3.35.9', plugins: '' }
+          # Free Elementor add-ons (test matrix EL9), pinned.
+          - { wp: '7.1', php: '8.3', elementor: '4.3.6', plugins: 'essential-addons-for-elementor-lite@6.8.8,header-footer-elementor@2.9.6,premium-addons-for-elementor@4.11.117' }
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2
@@ -70,6 +71,7 @@ jobs:
           KUDUY_WP: ${{ matrix.wp }}
           KUDUY_PHP: ${{ matrix.php }}
           KUDUY_ELEMENTOR: ${{ matrix.elementor }}
+          KUDUY_PLUGINS: ${{ matrix.plugins }}
 
   smoke:
     name: MCP over real HTTP

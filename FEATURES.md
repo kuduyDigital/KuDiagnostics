@@ -116,7 +116,8 @@ Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude cli
 | Kit globals: colors and fonts update | Tested (EL7: `kuduy-elementor-kit-update`, add/update/remove, undo) |
 | v4 global classes and variables | Tested (EL11: `kuduy-elementor-v4-globals`, `-v4-classes`, `-v4-variables` run Elementor's own abilities on 4.3+; variables undoable, classes snapshotted as a copy; unavailable with a clear reason on 3.x) |
 | CSS regeneration, cache clearing, frontend verification | Tested (EL6: `kuduy-elementor-verify` renders with Elementor's front-end renderer and, when published, fetches the live page; CSS is reset by `Document::save()` and rebuilt on the next view). Page-cache purging: Not started |
-| Add-on adapters (Essential Addons, UAE, Premium Addons, JetElements) | Not started |
+| Add-on widgets: Essential Addons 6.8.8, Ultimate Addons (header-footer-elementor) 2.9.6, Premium Addons 4.11.117 | Tested (EL9: discovery with plugin name, schema, create, edit, render through the generic tools; no special code needed) |
+| Add-on widgets: JetElements | Blocked — paid plugin, not available for testing |
 | Legacy / v3 / v4 / mixed-version matrix | In progress — Elementor 3.35.9 and 4.3.6 tested (all tools; v4-only tools skip on 3.x); legacy sections/columns covered by nesting rules; v3 → v4 migration not tested |
 
 ## SEO and image SEO (§7) — Phase 6

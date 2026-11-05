@@ -25,11 +25,21 @@ const php = process.env.KUDUY_PHP ?? '8.3';
 // KUDUY_ELEMENTOR=<version> picks a release from wordpress.org; KUDUY_ELEMENTOR=none runs without it.
 const elementor = process.env.KUDUY_ELEMENTOR ?? '4.3.6';
 const blueprint = JSON.parse(readFileSync(join(root, 'tests', 'integration', 'blueprint.json'), 'utf8'));
-const steps = elementor === 'none' ? [] : [{
+const install = (slug, version) => ({
   step: 'installPlugin',
-  pluginData: { resource: 'url', url: `https://downloads.wordpress.org/plugin/elementor.${elementor}.zip` },
+  pluginData: { resource: 'url', url: `https://downloads.wordpress.org/plugin/${slug}.${version}.zip` },
   options: { activate: true },
-}];
+});
+const steps = elementor === 'none' ? [] : [install('elementor', elementor)];
+// KUDUY_PLUGINS=slug@version,… installs more wordpress.org plugins after Elementor (e.g. Elementor add-ons).
+for (const entry of (process.env.KUDUY_PLUGINS ?? '').split(',').map((s) => s.trim()).filter(Boolean)) {
+  const [slug, version] = entry.split('@');
+  if (!/^[a-z0-9-]+$/.test(slug) || !/^[0-9][0-9.]*$/.test(version ?? '')) {
+    console.error(`KUDUY_PLUGINS entry "${entry}" must be slug@version.`);
+    process.exit(1);
+  }
+  steps.push(install(slug, version));
+}
 writeFileSync(join(out, 'blueprint.json'), JSON.stringify({ ...blueprint, preferredVersions: { php, wp }, steps: [...steps, ...blueprint.steps] }));
 
 const cli = join(root, 'node_modules', '@wp-playground', 'cli', 'wp-playground.js');

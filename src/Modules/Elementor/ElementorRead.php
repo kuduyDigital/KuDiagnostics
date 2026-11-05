@@ -381,6 +381,7 @@ final class ElementorRead implements Tool {
 					'atomic'     => Elementor::is_atomic( $type ),
 					'categories' => array_values( (array) $type->get_categories() ),
 					'source'     => Elementor::source( $type ),
+					'plugin'     => Elementor::source_name( $type ),
 				);
 			}
 		}
