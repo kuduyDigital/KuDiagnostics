@@ -217,3 +217,9 @@ Format: user-facing releases first (newest on top), then the dated development h
 - P3 test: a subscriber's `tools/list`. It found that `kuduy-user-get` was hidden from subscribers (listing used `list_users`); listing now uses `read` and each call still checks the id.
 - P4 sweep: 11 read tools and 50 audit rows contain no salts/keys, DB password, password hash or application password (plain or hashed); a token-like value in post meta is masked.
 - Phase 4 exit gate met: 125/125 on WP 6.9.11/PHP 8.1.34 and WP 7.1.4/PHP 8.3.36; smoke 26/26; P1–P4 pass. Items moved to their brief phases: block navigation and widgets (7), theme files (7, developer mode), media (6).
+
+### 2026-11-05 — Phase 5 research (Elementor 4.3.6)
+
+- Read Elementor 4.3.6 source (wordpress.org ZIP). Findings in `RESEARCH.md` §8: `Document::save()` path (kses, hooks, version, CSS file **deleted** and rebuilt on next view); **unregistered element types are silently dropped on save**; v3 responsive controls are registered once with `is_responsive` when custom breakpoints are on; v4 atomic prop types export JSON Schema with a `$$type` envelope; Kit, global classes and variables storage.
+- New: Elementor ships its own MCP abilities (27, off by default via `elementor_mcp_enabled`), v4-first with only a v3 allowlist.
+- Plan `docs/plans/phase-5-elementor.md`; decision **D7** (own tools vs. wrapping Elementor's abilities vs. hybrid) waits for the user.

@@ -101,11 +101,36 @@ Repository `use-novamira/novamira`, commit `9277ff3` (2026-11-04; first inspecte
 - Updates: `wp-includes/update.php:555` `apply_filters( "update_plugins_{$hostname}", false, $plugin_data, $plugin_file, $locales )`; `wp_update_plugins()` returns at line 488 before the Update URI loop when the wordpress.org check fails. The Updates screen's "Check again" (`update-core.php?force-check=1`) runs `wp_update_plugins()` on `load-update-core.php` with a 1-minute timeout.
 - `wordpress/mcp-adapter` 0.7.x deprecates bundling ("will be removed in a future version") → decision D1 changed (own layer).
 
-## 8. Elementor (source `elementor/elementor`, release 4.3.0 at research time; 4.3.6 runs in the test site)
+## 8. Elementor (source of Elementor **4.3.6**, wordpress.org ZIP, read 2026-11-05 for Phase 5)
 
-- Write path: `Plugin::$instance->documents->get( $id )->save( [ 'elements' => …, 'settings' => … ] )` — checks `is_editable_by_current_user()`, applies `kses_post_deep` without `unfiltered_html`, fires `elementor/document/before_save` / after-save, handles revisions. Per-post CSS: `Elementor\Core\Files\CSS\Post`.
-- v3 widgets expose controls via `get_controls()`; v4 atomic elements (`modules/atomic-widgets/elements/`: `div-block`, `flexbox`, `grid`, `atomic-heading`, `atomic-paragraph`, `atomic-button`, `atomic-image`, …) expose `get_props_schema()` with typed props.
-- **UNVERIFIED (Phase 5):** Kit storage of global classes and variables, the `$$type` prop envelope, v3→v4 migration behaviour, Theme Builder conditions API, add-on widget schemas (Essential Addons, UAE, Premium Addons, JetElements).
+Free Elementor only; Elementor Pro (Theme Builder, custom CSS) is a paid plugin whose source was not available, so Pro behaviour stays **UNVERIFIED**.
+
+**Saving a document** — `core/base/document.php`:
+- `Plugin::$instance->documents->get( $id )->save( [ 'elements' => …, 'settings' => … ] )`: applies the `elementor/document/save/data` filter, refuses unless `is_editable_by_current_user()`, fires `elementor/document/before_save`, runs `Utils::kses_post_deep()` for users without `unfiltered_html`, saves settings, then elements, template type and `_elementor_version`, **deletes** the post's CSS file (`Post_CSS::create( $id )->delete()`; it is regenerated on the next front-end view) and the document cache, then fires `elementor/document/after_save`. Returns `false` when not allowed.
+- `save_elements()` stores `_elementor_data` as slashed JSON through `update_metadata()`, saves a plain-text copy into `post_content` (`db->save_plain_text()`), fires `elementor/db/before_save` and `elementor/editor/after_save`.
+- **Silent data loss risk:** `get_elements_raw_data()` builds each element through `elements_manager->create_element_instance()`; an element whose type is not registered (an add-on that is inactive, a removed widget) returns `null` and is **skipped**. Saving such a document through `save()` drops those elements. KUDUY must refuse to save when the tree contains unregistered element types.
+- Element ids: `Utils::generate_random_string()` = `dechex( rand() )` (short hex, not guaranteed unique). KUDUY must check uniqueness inside the document when it creates ids.
+- `_elementor_edit_mode = builder` marks a post as built with Elementor (`set_is_built_with_elementor()`).
+
+**Classic (v3) widgets** — `includes/base/controls-stack.php`:
+- Widget schema: `get_controls()` per widget type (`widgets_manager->get_widget_types( $name )`).
+- Responsive settings are stored as `{control}` (desktop) and `{control}_{device}` (`tablet`, `mobile`, and with custom breakpoints `mobile_extra`, `tablet_extra`, `laptop`, `widescreen`; keys from `breakpoints->get_active_devices_list()`).
+- With the `additional_custom_breakpoints` experiment active (default in current releases), the server registers **one** control with `is_responsive = true`; the per-device copies exist only in the editor's JavaScript. Schema discovery must expand responsive controls itself.
+
+**Atomic (v4) elements** — `modules/atomic-widgets/`:
+- Elements: `div-block`, `flexbox`, `grid`, `atomic-heading`, `atomic-paragraph`, `atomic-button`, `atomic-image`, `atomic-svg`, `atomic-divider`, `atomic-tabs`, `atomic-accordion`, `atomic-form`, `atomic-list`, `atomic-youtube`, `atomic-self-hosted-video`, `atomic-background-video`, `atomic-collection-loop`.
+- Each declares `define_props_schema()` with typed prop types (e.g. heading: `classes`, `tag` enum h1–h6, `title`, `link`, `attributes`). Values use the envelope `{ "$$type": "<key>", "value": … }`; prop types export JSON Schema (`to_json_schema()`) and have `validate()` / `sanitize()`.
+- Global classes: own post type with meta `_elementor_global_class_data` (`modules/global-classes/`). Global variables: Kit meta `_elementor_global_variables` via a repository (`modules/variables/storage/`).
+
+**Kit (site settings)** — `core/kits/`: active Kit id in option `elementor_active_kit`; `kits_manager->get_active_kit()`; global colors in Kit settings `system_colors` / `custom_colors`, global fonts in `system_typography` / `custom_typography` (repeaters); breakpoints under `viewport_*` settings.
+
+**Elementor's own MCP (new finding)** — `modules/mcp/`:
+- Elementor 4.3 bundles `wordpress/mcp-adapter` and an `elementor-mcp-composer` package and defines 27 abilities (`elementor/get-page-structure`, `elementor/manage-elements`, `elementor/build-composition`, `elementor/get-widget-schema`, `elementor/list-widget-schemas`, `elementor/manage-classes`, `elementor/manage-global-variable`, `elementor/create-page`, `elementor/publish-document`, `elementor/update-page-settings`, …).
+- They are registered with the Abilities API only when the option `elementor_mcp_enabled` is true (**off by default**). The module builds its ability registry in any case (`Module::build_core_registry()`, `Ability_Registry::find_by_id()`); abilities check `edit_posts` and `edit_post` per document; settings are saved through `document->save()`.
+- Coverage: built for **v4 atomic** elements. Classic v3 widgets are editable only from a closed allowlist, with settings merged **without schema validation**; other v3 widgets are rejected (`elementor_v3_not_supported`). Most existing sites are v3, so Elementor's MCP alone cannot edit them.
+- These classes are Elementor internals (not a documented public API) and may change between releases.
+
+**Still UNVERIFIED (Phase 5):** Elementor Pro Theme Builder conditions and custom CSS storage; add-on widget schemas (Essential Addons, UAE, Premium Addons, JetElements); v3 → v4 migration; behaviour on Elementor 3.x LTS (test matrix target).
 
 ## 9. SEO, WooCommerce, ACF, forms, multilingual
 
@@ -132,7 +157,7 @@ KUDUY MCP is GPL-2.0-or-later, written from public specifications and documented
 | Item | Phase |
 |---|---|
 | Which MCP revision each Claude surface sends today; real sign-in from claude.ai, Desktop and Claude Code | 3 (O11) |
-| Elementor Kit/atomic storage, migration, add-on schemas | 5 |
+| Elementor Pro Theme Builder / custom CSS, add-on schemas, v3 → v4 migration, Elementor 3.x behaviour | 5 |
 | SEO plugin APIs and rendered output | 6 |
 | WooCommerce, ACF, forms, multilingual APIs | 7 |
 | WP-CLI command registration for hidden-mode recovery | 8 |
