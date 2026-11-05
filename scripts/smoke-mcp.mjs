@@ -46,7 +46,12 @@ const stop = () => (process.platform === 'win32'
   : server.kill());
 
 const results = [];
-const check = (name, ok, detail = '') => { results.push(ok); console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}${ok ? '' : `  -> ${detail}`}`); };
+const check = (name, ok, detail = '') => {
+  results.push(ok);
+  console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}${ok ? '' : `  -> ${detail}`}`);
+  // Annotations are readable without signing in to GitHub, unlike job logs.
+  if (!ok && process.env.GITHUB_ACTIONS) console.log(`::error title=smoke: ${name.replace(/[:,\n]/g, ' ')}::${String(detail).replace(/\r?\n/g, ' ').slice(0, 900)}`);
+};
 
 try {
   const deadline = Date.now() + 8 * 60_000;
