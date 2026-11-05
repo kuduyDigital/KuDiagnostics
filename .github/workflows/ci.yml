@@ -43,16 +43,23 @@ jobs:
       - run: composer test:static
 
   integration:
-    name: WP ${{ matrix.wp }} / PHP ${{ matrix.php }} / Elementor ${{ matrix.elementor }}
+    name: WP ${{ matrix.wp }} / PHP ${{ matrix.php }} / Elementor ${{ matrix.elementor }} ${{ matrix.label }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         # One Elementor major per job: 3.x (most existing sites) and current 4.x.
         include:
-          - { wp: '6.9', php: '8.1', elementor: '3.35.9', plugins: '' }
+          - { wp: '6.9', php: '8.1', elementor: '3.35.9', plugins: '', label: '' }
           # Free Elementor add-ons (test matrix EL9), pinned.
-          - { wp: '7.1', php: '8.3', elementor: '4.3.6', plugins: 'essential-addons-for-elementor-lite@6.8.8,header-footer-elementor@2.9.6,premium-addons-for-elementor@4.11.117' }
+          - { wp: '7.1', php: '8.3', elementor: '4.3.6', plugins: 'essential-addons-for-elementor-lite@6.8.8,header-footer-elementor@2.9.6,premium-addons-for-elementor@4.11.117', label: '+ add-ons' }
+          # SEO (Phase 6): one SEO plugin per job on both WordPress pairs, plus two at once (conflict, S1).
+          - { wp: '6.9', php: '8.1', elementor: '4.3.6', plugins: 'seo-by-rank-math@1.0.281', label: '+ Rank Math' }
+          - { wp: '7.1', php: '8.3', elementor: '4.3.6', plugins: 'seo-by-rank-math@1.0.281', label: '+ Rank Math' }
+          # Yoast 28.8 needs WordPress 7.0+; 28.7 is the last release for 6.9 (same APIs as 28.8, RESEARCH.md §9).
+          - { wp: '6.9', php: '8.1', elementor: '4.3.6', plugins: 'wordpress-seo@28.7', label: '+ Yoast' }
+          - { wp: '7.1', php: '8.3', elementor: '4.3.6', plugins: 'wordpress-seo@28.8', label: '+ Yoast' }
+          - { wp: '7.1', php: '8.3', elementor: '4.3.6', plugins: 'seo-by-rank-math@1.0.281,wordpress-seo@28.8', label: '+ Rank Math + Yoast (conflict)' }
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2

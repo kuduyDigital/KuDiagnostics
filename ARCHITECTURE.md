@@ -43,7 +43,7 @@ flowchart LR
     subgraph Modules
       C["Core (built: site info, snapshots, update check)"]
       E["Elementor (planned)"]
-      S["SEO + media (planned)"]
+      S["SEO (Rank Math, Yoast) + media (built in part)"]
       W["WooCommerce + integrations (planned)"]
       D["Developer mode (planned)"]
     end
@@ -78,13 +78,16 @@ kuduy-mcp/                       repo root = plugin root
 │  ├─ Audit/                     AuditLog, Redactor
 │  ├─ Admin/                     Connections, ConnectionsPage (Tools > KUDUY MCP)
 │  ├─ Update/GitHubUpdater.php
-│  └─ Modules/Core/              SiteInfo, SnapshotList, SnapshotRestore, CheckUpdate, Content (shared), PostTypes, PostList, PostGet, TermList
+│  ├─ Modules/Core/              SiteInfo, SnapshotList, SnapshotRestore, CheckUpdate, Content (shared), PostTypes, PostList, PostGet, TermList, … (Phase 4 tools)
+│  ├─ Modules/Elementor/         Elementor (shared), ElementorRead, ElementorWrite, ElementorVerify, ElementorAbilities, ThemeBuilder, Tree
+│  ├─ Modules/Seo/               Seo (resolver), SeoAdapter, RankMathAdapter, YoastAdapter, SeoTools
+│  └─ Modules/Media/             MediaTools
 ├─ scripts/                      test-integration, smoke-mcp, tunnel, build-release, check-release, check-update
 ├─ tests/integration/            PHPUnit inside Playground; tests/playground blueprint; tests/phpstan stub
 └─ .github/workflows/            ci.yml, release.yml
 ```
 
-*Planned:* `src/Modules/{Core/*, Elementor/, Seo/, Woo/, Acf/, Forms/, Blocks/, Dev/}`, `src/Jobs/`, `src/Admin/HiddenMode.php`, `src/Admin/Cli.php`, `assets/admin/`, `languages/`. Rule: modules depend on `Mcp\Tool`, `Policy` and `Execution`, never on each other.
+*Planned:* `src/Modules/{Woo/, Acf/, Forms/, Blocks/, Dev/}`, `src/Jobs/`, `src/Admin/HiddenMode.php`, `src/Admin/Cli.php`, `assets/admin/`, `languages/`. Rule: modules depend on `Mcp\Tool`, `Policy` and `Execution`, never on each other — except the shared `Modules\Core\Content` helper (post types with an admin UI, post lookup), which every content module uses.
 
 ## 5. Database schema (DB version 1)
 
@@ -181,8 +184,8 @@ All layers must pass:
 ## 9. Integration adapters (planned, Phases 5–7)
 
 - **Elementor**: schema providers for v3 (`get_controls()`, incl. `_tablet` / `_mobile` keys) and v4 atomic (`get_props_schema()`); add-on adapters declare widget prefixes and non-standard settings. Edits are patches (set/unset keys per breakpoint). Save through `Document::save()`, snapshot first, regenerate that post's CSS, fetch the permalink and confirm the edited element IDs/text appear. Report partial failures.
-- **SEO**: `SeoAdapter` interface (meta, robots, social, schema, sitemap, redirects where supported). A resolver picks exactly one active SEO plugin; two active → writes refused with both names. After writes: re-read through the plugin and check rendered `<head>`.
-- **Image SEO**: attachments, alt/title/caption/description, usage scan, decorative flag (empty alt), thumbnail regeneration and bulk work as jobs; alt text only from actual image content.
+- **SEO** (built, D8): `Modules/Seo/` — `Seo` resolver (detects Rank Math, Yoast, AIOSEO, SEOPress by their version constants; exactly one may receive writes; two or more → refused with every name; an adapter's `ready()` refuses a plugin that is installed but not set up), `SeoAdapter` interface (flat normalized fields `title`, `description`, `focus_keyword`, `additional_keywords`, `canonical`, `cornerstone`, `robots.*`, `og.*`, `twitter.*`; `stored()`, `rendered()`, `missing_caps()`, `write()`, `snapshot()` / `restore()`), `SeoTools` (`kuduy-seo-status`, `-get`, `-update`). Adapters built: Rank Math (reads its editor's meta keys, writes through its own `rankmath/v1/updateMeta` endpoint via `rest_do_request()`, rendered values from its `rank-math/get-post-seo-meta` ability); Yoast (`WPSEO_Meta` get/set/delete, indexable rebuilt at once through its post watcher, rendered values from the Surfaces API). *Planned:* AIOSEO, SEOPress adapters; `kuduy-seo-verify` (live `<head>`), audit, bulk jobs; schema, sitemap, redirects.
+- **Image SEO** (partly built): `Modules/Media/MediaTools` — `kuduy-media-list` (`upload_files`; filters: type, search, unattached, missing alt), `kuduy-media-get` (`read_post`; with `include_image` a stored size ≤ 1024 px, or a temporary downscaled copy, returned as an MCP image block so Claude writes alt text from the image), `kuduy-media-update` (`edit_post`; alt via core's `_wp_attachment_image_alt` sanitized like core's REST controller, title/caption/description via `wp_update_post()`; `decorative` = empty alt; snapshot + undo). Tools may return extra MCP content under the reserved result key `_content`; the executor passes only base64 image blocks of JPEG/PNG/GIF/WebP and keeps them out of `structuredContent`. *Planned:* usage scan, upload from URL, thumbnail regeneration and bulk work as jobs.
 - **WooCommerce**: CRUD objects only, HPOS-compatible, gateway secrets masked, no refunds/charges.
 - **Others** (ACF, CPT, forms, menus, blocks, Site Editor, widgets, cron, cache, WPML/Polylang): one module each, gated by `is_available()` with an actionable message when absent.
 

@@ -4,6 +4,8 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 ## Unreleased
 
+- Added (Phase 6): `kuduy-seo-status`, `kuduy-seo-get`, `kuduy-seo-update` — a post's SEO title, description, focus and extra keywords, canonical, robots, Open Graph and X, through Rank Math's or Yoast SEO's own APIs, with each plugin's own permission rules and undo. Refused while two SEO plugins are active.
+- Added (Phase 6): `kuduy-media-list`, `kuduy-media-get` (can show Claude the image itself, so alt text describes what it shows), `kuduy-media-update` (alt text, decorative images, title, caption, description; undo).
 - Added: the sign-in approval screen offers site administrators an extra, unticked "Manage plugins, themes, users and settings" box when the app did not ask for it. claude.ai asks only for read and write, so until now it could never use admin tools (plugins, themes, users, settings, Elementor Kit and Theme Builder conditions). Tick it only if Claude should manage those; existing connections keep their access until you reconnect.
 
 ## 0.4.0 — 2026-11-05
@@ -284,3 +286,10 @@ Format: user-facing releases first (newest on top), then the dated development h
 - Read the current wordpress.org source of Rank Math 1.0.281, Yoast SEO 28.8, AIOSEO 5.0.5 and SEOPress 10.4, and core's `WP_Ability::execute()` (7.1.4) → `RESEARCH.md` §9. New finding: all four register WordPress Abilities, unevenly (AIOSEO and SEOPress write post SEO; Rank Math reads only; Yoast's exist only on production-mode sites and cannot set the keyphrase). AIOSEO keeps its data in its own table, so raw meta writes would be wrong there.
 - Plan `docs/plans/phase-6-seo.md` approved by the user: 14 tools (SEO status/get/update/verify/audit/bulk; media list/get/update/usage/upload/regenerate; job status/cancel).
 - D8 decided (user): hybrid SEO adapters. D9 decided (user): own `kuduy_jobs` table with Action Scheduler or WP-Cron.
+
+### 2026-11-06 — Phase 6: SEO resolver, Rank Math, Yoast, media tools
+
+- `Modules/Seo`: resolver (version constants; one plugin only; `ready()` refuses Rank Math until its setup wizard is done or skipped — found in tests: it does not boot otherwise), normalized flat fields, `SeoTools`. Rank Math writes through its own `rankmath/v1/updateMeta` (internal `rest_do_request()`; the `is_protected_meta` filters it removes are put back); Yoast through `WPSEO_Meta` with its indexable rebuilt at once.
+- `Modules/Media/MediaTools`; the executor passes image content blocks a tool returns under `_content`.
+- Tests: `SeoRankMathTest`, `SeoYoastTest`, `SeoConflictTest`, `MediaTest`, `RendersHead` (in-process `<head>` from a fresh hook state; resets Rank Math's and Yoast's per-request caches, test-only). The runner skips Rank Math's wizard as an admin would. CI gets Rank Math (6.9, 7.1), Yoast (28.7 on 6.9 because 28.8 needs WordPress 7.0; 28.8 on 7.1) and a conflict job.
+- Fixed the integration runner's pass/fail counting (`TESTING.md` §3). Smoke 26/26.

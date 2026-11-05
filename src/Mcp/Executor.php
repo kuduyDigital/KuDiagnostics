@@ -76,16 +76,21 @@ final class Executor {
 			return self::error( __( 'The tool failed unexpectedly. Details are in the site error log.', 'kuduy-mcp' ), 'error', 'exception' );
 		}
 
+		$extra = self::extra_content( $result['_content'] ?? array() );
+		unset( $result['_content'] );
 		if ( null !== $snapshot ) {
 			$result['_snapshot_id'] = $snapshot;
 		}
 		return array(
 			array(
-				'content'           => array(
+				'content'           => array_merge(
 					array(
-						'type' => 'text',
-						'text' => (string) wp_json_encode( $result, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ),
+						array(
+							'type' => 'text',
+							'text' => (string) wp_json_encode( $result, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ),
+						),
 					),
+					$extra
 				),
 				'structuredContent' => $result ? $result : new \stdClass(),
 				'isError'           => false,
@@ -105,6 +110,29 @@ final class Executor {
 		$cap = $tool->capability( $input );
 		$cap = is_array( $cap ) ? array_values( $cap ) : array( $cap );
 		return is_string( $cap[0] ?? null ) && current_user_can( ...$cap );
+	}
+
+	/**
+	 * Extra MCP content blocks a tool returns under `_content` (e.g. an image for Claude to look at). Only image
+	 * blocks with base64 data and a raster image MIME type pass; anything else is dropped.
+	 *
+	 * @param mixed $blocks Blocks from the tool.
+	 * @return list<array{type:string, data:string, mimeType:string}>
+	 */
+	private static function extra_content( mixed $blocks ): array {
+		$out = array();
+		foreach ( is_array( $blocks ) ? $blocks : array() as $block ) {
+			if ( is_array( $block ) && 'image' === ( $block['type'] ?? '' )
+				&& in_array( $block['mimeType'] ?? '', array( 'image/jpeg', 'image/png', 'image/gif', 'image/webp' ), true )
+				&& is_string( $block['data'] ?? null ) && '' !== $block['data'] && false !== base64_decode( $block['data'], true ) ) { // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- validates image data, nothing is executed.
+				$out[] = array(
+					'type'     => 'image',
+					'data'     => $block['data'],
+					'mimeType' => $block['mimeType'],
+				);
+			}
+		}
+		return $out;
 	}
 
 	/**

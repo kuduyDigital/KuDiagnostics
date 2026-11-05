@@ -39,6 +39,10 @@ for (const entry of (process.env.KUDUY_PLUGINS ?? '').split(',').map((s) => s.tr
     process.exit(1);
   }
   steps.push(install(slug, version));
+  if (slug === 'seo-by-rank-math') {
+    // Rank Math stays inert until its account is connected or its setup wizard is skipped; do what "Skip" does.
+    steps.push({ step: 'setSiteOptions', options: { rank_math_registration_skip: '1' } });
+  }
 }
 // KUDUY_LOCAL_PLUGINS=file.zip,… installs licensed ZIPs kept in the repo folder but git-ignored (e.g. Elementor Pro).
 // Local runs only: CI has no such files. The repo is mounted into the site, so the ZIP is read from there.
@@ -69,8 +73,10 @@ if (!existsSync(report)) {
 }
 
 const xml = readFileSync(report, 'utf8');
-const attr = (name) => Number(xml.match(new RegExp(`<testsuite [^>]*${name}="(\\d+)"`))?.[1] ?? 0);
-const [tests, failures, errors, skipped] = ['tests', 'failures', 'errors', 'skipped'].map(attr);
+// Count the elements themselves: suite totals are missing or misattributed in PHPUnit 10's report when a class
+// skips in setUpBeforeClass(), so the first <testsuite> attributes can hide failures elsewhere.
+const count = (tag) => (xml.match(new RegExp(`<${tag}[\\s>/]`, 'g')) ?? []).length;
+const [tests, failures, errors, skipped] = ['testcase', 'failure', 'error', 'skipped'].map(count);
 for (const m of xml.matchAll(/<testcase name="([^"]+)"[^>]*>\s*<(failure|error)[^>]*>([\s\S]*?)<\/\2>/g)) {
   console.error(`\n✗ ${m[1]} (${m[2]})\n${m[3].replace(/&quot;/g, '"').replace(/&#039;/g, "'").replace(/&gt;/g, '>').replace(/&lt;/g, '<').trim()}`);
 }

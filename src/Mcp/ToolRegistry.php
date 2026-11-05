@@ -33,6 +33,8 @@ use Kuduy\Mcp\Modules\Elementor\ElementorRead;
 use Kuduy\Mcp\Modules\Elementor\ElementorVerify;
 use Kuduy\Mcp\Modules\Elementor\ElementorWrite;
 use Kuduy\Mcp\Modules\Elementor\ThemeBuilder;
+use Kuduy\Mcp\Modules\Media\MediaTools;
+use Kuduy\Mcp\Modules\Seo\SeoTools;
 
 /**
  * Built per request so tools and integrations reflect the current state.
@@ -101,6 +103,12 @@ final class ToolRegistry {
 		}
 		foreach ( array( 'templates', 'conditions' ) as $mode ) {
 			$registry->register( new ThemeBuilder( $mode ) );
+		}
+		foreach ( array( 'status', 'get', 'update' ) as $mode ) {
+			$registry->register( new SeoTools( $mode ) );
+		}
+		foreach ( array( 'list', 'get', 'update' ) as $mode ) {
+			$registry->register( new MediaTools( $mode ) );
 		}
 		do_action( 'kuduy_mcp_register_tools', $registry );
 		return $registry;

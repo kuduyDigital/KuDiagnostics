@@ -1,0 +1,87 @@
+<?php
+/**
+ * SEO plugins are not dependencies; this declares only the SEO plugin API KUDUY calls (RESEARCH.md §9),
+ * plus the Rank Math per-request caches the integration tests reset (tests/integration/RendersHead.php).
+ */
+
+namespace RankMath {
+	class Helper {
+		public static function is_invalid_registration(): bool {}
+	}
+	class Metadata {}
+}
+
+namespace RankMath\Paper {
+	class Paper {}
+}
+
+namespace {
+	class WPSEO_Meta {
+		/** @var string */
+		public static $meta_prefix = '_yoast_wpseo_';
+		/** @return mixed */
+		public static function get_value( string $key, int $postid = 0 ) {}
+		/** @param mixed $meta_value */
+		public static function set_value( string $key, $meta_value, int $post_id ): bool {}
+		public static function delete( string $key, int $post_id ): bool {}
+	}
+	class WPSEO_Options {
+		/**
+		 * @param mixed         $default_value
+		 * @param array<string> $option_groups
+		 * @return mixed
+		 */
+		public static function get( string $key, $default_value = null, array $option_groups = array() ) {}
+	}
+	class WPSEO_Capability_Utils {
+		public static function current_user_can( string $capability ): bool {}
+	}
+	function YoastSEO(): \Yoast\WP\SEO\Main {}
+}
+
+namespace Yoast\WP\SEO {
+	class Main {
+		/** @var \Yoast\WP\SEO\Surfaces\Meta_Surface */
+		public $meta;
+		/** @var \Yoast\WP\SEO\Surfaces\Classes_Surface */
+		public $classes;
+	}
+}
+
+namespace Yoast\WP\SEO\Surfaces {
+	class Meta_Surface {
+		/** @return \Yoast\WP\SEO\Surfaces\Values\Meta|false */
+		public function for_post( int $id ) {}
+	}
+	class Classes_Surface {
+		/** @return object|null */
+		public function get( string $class_name ) {}
+	}
+}
+
+namespace Yoast\WP\SEO\Surfaces\Values {
+	/**
+	 * @property string                $title
+	 * @property string                $description
+	 * @property string                $canonical
+	 * @property array<string, string> $robots
+	 * @property string                $open_graph_title
+	 * @property string                $open_graph_description
+	 * @property string                $twitter_title
+	 * @property string                $twitter_description
+	 */
+	class Meta {}
+}
+
+namespace Yoast\WP\SEO\Memoizers {
+	class Meta_Tags_Context_Memoizer {
+		/** @param mixed $indexable */
+		public function clear( $indexable = null ): void {}
+	}
+}
+
+namespace Yoast\WP\SEO\Integrations\Watchers {
+	class Indexable_Post_Watcher {
+		public function build_indexable( int $post_id ): void {}
+	}
+}

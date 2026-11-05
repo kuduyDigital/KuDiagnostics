@@ -8,6 +8,7 @@ parameters:
   # Elementor is not a dependency; this declares only the Elementor API KUDUY calls.
   scanFiles:
     - tests/phpstan/elementor.stub
+    - tests/phpstan/seo.stub
   paths:
     - kuduy-mcp.php
     - uninstall.php

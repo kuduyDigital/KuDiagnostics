@@ -125,15 +125,18 @@ Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude cli
 
 | Feature | Status |
 |---|---|
-| Active SEO plugin detection; conflict refusal | Not started |
-| Rank Math: title, description, keywords, canonical, robots, OG/Twitter, schema, sitemap, redirects | Not started |
-| Yoast: title, description, keyphrase, canonical, robots, social, schema, sitemap | Not started |
+| Active SEO plugin detection; conflict refusal | Tested (`kuduy-seo-status`; Rank Math + Yoast active → writes refused naming both, nothing changed; Rank Math not set up → refused with what to do) |
+| Rank Math: title, description, keywords, canonical, robots, OG/Twitter | Tested (`kuduy-seo-get`, `kuduy-seo-update` through Rank Math's own `updateMeta`; WP 6.9 + 7.1) |
+| Rank Math: schema, sitemap, redirects | Not started |
+| Yoast: title, description, keyphrase, canonical, robots, social | Tested (`WPSEO_Meta` + Surfaces API; Yoast 28.8 on WP 7.1, 28.7 on 6.9) |
+| Yoast: schema type, sitemap; related keyphrases (Premium) | Not started |
 | AIOSEO and SEOPress adapters | Not started |
 | Bulk metadata inspect/update | Not started |
-| Media: list, inspect, alt/title/caption/description, featured image, usage scan | Not started |
+| Media: list, inspect, alt/title/caption/description | Tested (`kuduy-media-list`, `-get`, `-update`, undo) |
+| Media: usage scan | Not started |
 | Social images, optimization via installed tools, thumbnail regeneration, safe rename | Not started |
-| Alt text from actual image content; decorative images | Not started |
-| SEO verification in rendered `<head>` and sitemap | Not started |
+| Alt text from actual image content; decorative images | Implemented — `kuduy-media-get` returns the image as MCP image content and `decorative` sets an empty alt (both tested); how Claude clients show tool images is not verified yet |
+| SEO verification in rendered `<head>` and sitemap | In progress — round trip into `<head>` tested in-process for Rank Math and Yoast; `kuduy-seo-verify` (live page) and sitemap not built |
 
 ## WooCommerce (§8) — Phase 7
 

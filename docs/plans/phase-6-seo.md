@@ -55,6 +55,10 @@ Jobs:
 
 Later in Phase 6 (after the above is tested): Rank Math schema and redirects (research the `updateSchemas` / `updateRedirection` routes in tests first), term SEO, replace-image (keeps the original, updates references), social images.
 
+## Progress
+
+- 2026-11-06: steps 1–3 done (resolver, `kuduy-seo-status` / `-get` / `-update`, Rank Math and Yoast adapters; S1–S4 in-process) and media tools 7–9 (S5, S6). Found in tests: Rank Math does not boot until its setup wizard is done or skipped; Yoast 28.8 needs WordPress 7.0 (6.9 is tested with 28.7). `kuduy-seo-verify`, audit and bulk tools come after the AIOSEO and SEOPress adapters.
+
 ## Order
 
 1. Resolver + `kuduy-seo-status` (conflict detection; S1).
