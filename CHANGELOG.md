@@ -2,7 +2,9 @@
 
 Format: user-facing releases first (newest on top), then the dated development history. Versions follow semantic versioning; tags `vX.Y.Z` publish a GitHub Release that installed sites receive through the built-in updater.
 
-## Unreleased
+## 0.3.0 — 2026-11-05
+
+**Phase 4: WordPress core administration (45 new tools).**
 
 - Added (Phase 4): `kuduy-post-create`, `kuduy-post-update` and `kuduy-post-trash` for posts, pages and custom post types — status (publish, schedule, unpublish, private), slug, date, parent, order, comments, terms and featured image. Updates and trash take a snapshot first and can be undone with `kuduy-snapshot-restore`. Permanent deletion is not offered. Content of Elementor-built pages is not overwritten.
 - Added (Phase 4): terms (`kuduy-term-create`, `-update`, `-delete`), comments (`kuduy-comment-list`, `-moderate`, `-reply`), revisions (`kuduy-revision-list`, `-restore`) and public custom fields (`kuduy-post-meta-get`, `-set`), each with the same permission rules as WordPress's own REST API and undo for every overwrite.

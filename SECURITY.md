@@ -1,6 +1,6 @@
 # KUDUY MCP — Security
 
-Covers v0.2.0 (Phase 3 foundation, HTTPS enforcement, early-auth fix, first Phase 4 read tools). Planned controls for later phases are marked *planned*.
+Covers v0.3.0 (Phase 3 foundation and all Phase 4 WordPress core tools). Planned controls for later phases are marked *planned*.
 
 ## Reporting a vulnerability
 

@@ -1,7 +1,7 @@
 # KUDUY MCP — Features
 
 Status values: `Not started` · `In progress` · `Implemented` (code exists, tests incomplete) · `Tested` (passing tests or recorded manual evidence; IDs refer to `TESTING.md`) · `Blocked`.
-Section numbers follow the KUDUY MCP Master Development Prompt. Updated 2026-11-05 (v0.2.0).
+Section numbers follow the KUDUY MCP Master Development Prompt. Updated 2026-11-05 (v0.3.0).
 
 Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude clients are partly verified (claude.ai works; Desktop, Claude Code's own sign-in, refresh and revoke still to observe — O11). **Phase 4 (WordPress core, §5) is complete:** content, terms, comments, revisions, custom fields, users and roles, menus, settings, plugins and themes, and diagnostics are `Tested`, with undo where possible and confirm-first where not. The few §5 items left (block-theme navigation, theme file inspection, media) belong to later phases. Everything from §6 onward is `Not started`.
 
