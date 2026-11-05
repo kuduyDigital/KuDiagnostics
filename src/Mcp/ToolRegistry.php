@@ -22,6 +22,7 @@ use Kuduy\Mcp\Modules\Core\SnapshotList;
 use Kuduy\Mcp\Modules\Core\SnapshotRestore;
 use Kuduy\Mcp\Modules\Core\TermList;
 use Kuduy\Mcp\Modules\Core\TermWrite;
+use Kuduy\Mcp\Modules\Core\Users;
 
 /**
  * Built per request so tools and integrations reflect the current state.
@@ -61,6 +62,9 @@ final class ToolRegistry {
 		$registry->register( new Revisions( 'restore' ) );
 		$registry->register( new PostMeta( 'get' ) );
 		$registry->register( new PostMeta( 'set' ) );
+		foreach ( array( 'list', 'get', 'create', 'update', 'roles' ) as $mode ) {
+			$registry->register( new Users( $mode ) );
+		}
 		do_action( 'kuduy_mcp_register_tools', $registry );
 		return $registry;
 	}

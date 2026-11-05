@@ -6,6 +6,7 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 - Added (Phase 4): `kuduy-post-create`, `kuduy-post-update` and `kuduy-post-trash` for posts, pages and custom post types — status (publish, schedule, unpublish, private), slug, date, parent, order, comments, terms and featured image. Updates and trash take a snapshot first and can be undone with `kuduy-snapshot-restore`. Permanent deletion is not offered. Content of Elementor-built pages is not overwritten.
 - Added (Phase 4): terms (`kuduy-term-create`, `-update`, `-delete`), comments (`kuduy-comment-list`, `-moderate`, `-reply`), revisions (`kuduy-revision-list`, `-restore`) and public custom fields (`kuduy-post-meta-get`, `-set`), each with the same permission rules as WordPress's own REST API and undo for every overwrite.
+- Added (Phase 4): users and roles (`kuduy-user-list`, `-get`, `-create`, `-update`, `kuduy-role-list`). Passwords are never set to a known value or returned; nobody can change their own role; the last administrator cannot be demoted; deleting users is not offered.
 
 ## 0.2.0 — 2026-11-05
 
@@ -183,3 +184,9 @@ Format: user-facing releases first (newest on top), then the dated development h
 - Test helper trait `tests/integration/CallsTools.php` (loaded with `require_once`: PHPUnit only loads `*Test.php`, and the folder is lower-case).
 - Learned while testing: WordPress stores a revision of the **new** content on each update and none on creation, so the oldest restorable state is the first update.
 - Tests: `CoreEditorialTest` (7 tests); 96/96 on WP 6.9.11/PHP 8.1.34 and WP 7.1.4/PHP 8.3.36; smoke 26/26.
+
+### 2026-11-05 — Phase 4: users and roles
+
+- `Users` (list/get/create/update/roles) mirrors core's REST users controller (`list_users`, `create_users`, `edit_user`, `promote_user`, `get_editable_roles()`, no own-role change). Extra guard: the last administrator cannot be demoted. Create sets a random password that is never returned and sends WordPress's set-password email (optional). Update is snapshotted (profile + roles). Delete is not offered. Changes need scope `kuduy:admin`.
+- PHPStan required an explicit field shape for `wp_insert_user()`.
+- Tests: `CoreUsersTest` (7 tests); 103/103 on WP 6.9.11/PHP 8.1.34 and WP 7.1.4/PHP 8.3.36; smoke 26/26.

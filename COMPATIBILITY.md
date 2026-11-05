@@ -13,8 +13,8 @@ Only versions listed as **Tested** have passing evidence (see `TESTING.md`). Eve
 
 | WordPress | PHP | Status | Evidence |
 |---|---|---|---|
-| 6.9.11 | 8.1.34 | **Tested** | 96/96 integration tests, 2026-11-05; release ZIP installs (CI) |
-| 7.1.4 | 8.3.36 | **Tested** | 96/96 integration tests, 2026-11-05; smoke 26/26 over real HTTP; real update v0.1.0 → v0.1.1 |
+| 6.9.11 | 8.1.34 | **Tested** | 103/103 integration tests, 2026-11-05; release ZIP installs (CI) |
+| 7.1.4 | 8.3.36 | **Tested** | 103/103 integration tests, 2026-11-05; smoke 26/26 over real HTTP; real update v0.1.0 → v0.1.1 |
 | 7.1.4 | 8.1 | **Tested** (install only) | Release ZIP install check |
 | 7.0.x | any | Not tested | |
 | any | 8.2, 8.4 | Syntax only | `php -l` in CI on 8.1–8.4; no integration run |
@@ -63,7 +63,7 @@ Only versions listed as **Tested** have passing evidence (see `TESTING.md`). Eve
 
 ## Known limitations
 
-- 21 tools on `main` (eight released in 0.2.0): `kuduy-site-info`, `kuduy-snapshot-list`, `kuduy-snapshot-restore`, `kuduy-check-update`, and the read-only `kuduy-post-types`, `kuduy-post-list`, `kuduy-post-get`, `kuduy-term-list` (since 0.2.0), and, unreleased: `kuduy-post-create`, `kuduy-post-update`, `kuduy-post-trash`, `kuduy-term-create`/`-update`/`-delete`, `kuduy-comment-list`/`-moderate`/`-reply`, `kuduy-revision-list`/`-restore`, `kuduy-post-meta-get`/`-set`.
+- 26 tools on `main` (eight released in 0.2.0): `kuduy-site-info`, `kuduy-snapshot-list`, `kuduy-snapshot-restore`, `kuduy-check-update`, and the read-only `kuduy-post-types`, `kuduy-post-list`, `kuduy-post-get`, `kuduy-term-list` (since 0.2.0), and, unreleased: `kuduy-post-create`, `kuduy-post-update`, `kuduy-post-trash`, `kuduy-term-create`/`-update`/`-delete`, `kuduy-comment-list`/`-moderate`/`-reply`, `kuduy-revision-list`/`-restore`, `kuduy-post-meta-get`/`-set`, `kuduy-user-list`/`-get`/`-create`/`-update`, `kuduy-role-list`.
 - Of the real Claude clients, only claude.ai (and Claude Code through the synced claude.ai connector) is confirmed; Desktop and Claude Code's own sign-in are not yet observed (O11).
 - A programmatic `Plugin_Upgrader` run in tests left the plugin inactive; the normal WordPress update on Hostinger kept it active.
 - Update checksum proves integrity, not authorship (no signature yet).
