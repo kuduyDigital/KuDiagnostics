@@ -35,7 +35,7 @@ Only versions listed as **Tested** have passing evidence (see `TESTING.md`). Eve
 |---|---|---|
 | claude.ai (web) | **Tested** 2026-11-05 | Custom connector, "Sign in now", OAuth (DCR) against Hostinger staging; tools listed and called on 0.1.2 and 0.2.0. v0.1.1 was mis-detected as "No sign-in" (fixed in 0.1.2, O14). |
 | Claude Desktop | Not verified directly | Uses the claude.ai connector; not yet observed in the Desktop chat. |
-| Claude Code | Partly | Uses the synced claude.ai connector: **tested** (tools called from a Claude Code desktop session). Its own sign-in (`claude mcp add`, CIMD + loopback) is tested only with simulated clients (O3, O6). |
+| Claude Code | Partly | Uses the synced claude.ai connector: **tested** (tools called from a Claude Code desktop session). Its own sign-in (`claude mcp add`, CIMD + loopback) is tested only with simulated clients (O3, O6). On 2026-11-08 a running session kept the 42-tool list from before 0.5.0 after reconnect, revoke and an off/on toggle, so new tools may not reach Claude Code sessions straight away; claude.ai web showed all 74. |
 | Other MCP clients with OAuth 2.1 + PKCE, or with Application Passwords | Expected to work | Not tested |
 
 ## Hosting
@@ -69,7 +69,7 @@ Only versions listed as **Tested** have passing evidence (see `TESTING.md`). Eve
 | All in One SEO | 5.0.5 | **Tested** 2026-11-08 on WP 7.1.4 and 6.9.11 | Through its own abilities (WordPress 6.9+). CI |
 | SEOPress | 10.4 | **Tested** 2026-11-08 on WP 7.1.4 and 6.9.11 | Through its own abilities (WordPress 6.9+); no forced index, noarchive or cornerstone. CI |
 | Two SEO plugins at once | Rank Math + Yoast | **Tested**: SEO changes refused | CI |
-| SEO plugins on a real host (live `<head>` via `kuduy-seo-verify`) | — | Not tested | Next: staging |
+| SEO plugins on a real host (live `<head>` via `kuduy-seo-verify`) | Yoast SEO 28.8 | **Tested** 2026-11-08 on Hostinger staging (KUDUY 0.5.0, WP 7.1.4/PHP 8.3.36, LiteSpeed + `hcdn`), claude.ai web | Site fetches itself (200), live head matches the written title, description, og:title; no stale cache seen. WP-Cron ran a KUDUY job within a minute. Robots mismatch open (`TESTING.md` S4). Rank Math, AIOSEO, SEOPress: not run on a real host |
 | ACF, CF7, WPForms, Gravity, Fluent, WPML, Polylang | — | Not tested | Phase 7 |
 | Plugins that print output during REST requests | — | **Tested** | Output guard (F2) |
 

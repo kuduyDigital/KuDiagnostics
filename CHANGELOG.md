@@ -313,3 +313,9 @@ Format: user-facing releases first (newest on top), then the dated development h
 - Found in tests: AIOSEO keeps the first title and SEOPress registers its head output once per PHP request, so in-process head checks run once per test class; Rank Math's bundled Action Scheduler receives KUDUY's jobs.
 - Plan change: one `kuduy-job-start` instead of separate bulk tools.
 - Results: `TESTING.md` §3.
+
+### 2026-11-08 — Phase 6 end-to-end on staging (claude.ai)
+
+- Ran on Hostinger staging (KUDUY 0.5.0, WP 7.1.4/PHP 8.3.36, Yoast 28.8) from claude.ai web: SEO update/get/verify on a test post, `kuduy-media-get` with the image shown to Claude, alt text for 2 images through `kuduy-job-start` (WP-Cron ran it unforced in under a minute), `kuduy-seo-audit`, then full cleanup through snapshots and trash. All steps pass (`TESTING.md` §3, S4, S6, S9; `COMPATIBILITY.md`).
+- Open: live robots `noindex, nofollow` vs Yoast's rendered `noindex, follow` with no noindex stored, likely the site's "Discourage search engines" setting (since switched off by the user), UNVERIFIED. `kuduy-job-status` items lack the item id; `kuduy-seo-audit`'s `total` is easy to misread.
+- Claude Code desktop sessions stayed on the 42-tool connector list after reconnect, revoke and an off/on toggle, so the run was done in claude.ai web.
