@@ -21,6 +21,7 @@ final class Uninstaller {
 	 */
 	public static function run( bool $delete_data ): void {
 		wp_clear_scheduled_hook( Cleanup::HOOK );
+		wp_unschedule_hook( \Kuduy\Mcp\Jobs\Jobs::HOOK );
 		if ( ! $delete_data ) {
 			return;
 		}

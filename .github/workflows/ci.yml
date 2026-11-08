@@ -59,6 +59,10 @@ jobs:
           # Yoast 28.8 needs WordPress 7.0+; 28.7 is the last release for 6.9 (same APIs as 28.8, RESEARCH.md §9).
           - { wp: '6.9', php: '8.1', elementor: '4.3.6', plugins: 'wordpress-seo@28.7', label: '+ Yoast' }
           - { wp: '7.1', php: '8.3', elementor: '4.3.6', plugins: 'wordpress-seo@28.8', label: '+ Yoast' }
+          - { wp: '6.9', php: '8.1', elementor: '4.3.6', plugins: 'all-in-one-seo-pack@5.0.5', label: '+ AIOSEO' }
+          - { wp: '7.1', php: '8.3', elementor: '4.3.6', plugins: 'all-in-one-seo-pack@5.0.5', label: '+ AIOSEO' }
+          - { wp: '6.9', php: '8.1', elementor: '4.3.6', plugins: 'wp-seopress@10.4', label: '+ SEOPress' }
+          - { wp: '7.1', php: '8.3', elementor: '4.3.6', plugins: 'wp-seopress@10.4', label: '+ SEOPress' }
           - { wp: '7.1', php: '8.3', elementor: '4.3.6', plugins: 'seo-by-rank-math@1.0.281,wordpress-seo@28.8', label: '+ Rank Math + Yoast (conflict)' }
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0

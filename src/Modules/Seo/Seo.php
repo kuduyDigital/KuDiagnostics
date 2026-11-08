@@ -17,13 +17,13 @@ use Kuduy\Mcp\Mcp\ToolError;
 final class Seo {
 
 	/**
-	 * Known SEO plugins: slug => [ name, version constant, adapter class or '' when not built yet ].
+	 * Known SEO plugins: slug => [ name, version constant, adapter class ].
 	 */
 	private const PLUGINS = array(
 		'rank-math' => array( 'Rank Math SEO', 'RANK_MATH_VERSION', RankMathAdapter::class ),
 		'yoast'     => array( 'Yoast SEO', 'WPSEO_VERSION', YoastAdapter::class ),
-		'aioseo'    => array( 'All in One SEO', 'AIOSEO_VERSION', '' ),
-		'seopress'  => array( 'SEOPress', 'SEOPRESS_VERSION', '' ),
+		'aioseo'    => array( 'All in One SEO', 'AIOSEO_VERSION', AioseoAdapter::class ),
+		'seopress'  => array( 'SEOPress', 'SEOPRESS_VERSION', SeopressAdapter::class ),
 	);
 
 	/**
@@ -50,16 +50,15 @@ final class Seo {
 	/**
 	 * Active SEO plugins.
 	 *
-	 * @return array<string, array{name:string, version:string, supported:bool}>
+	 * @return array<string, array{name:string, version:string}>
 	 */
 	public static function detected(): array {
 		$found = array();
-		foreach ( self::PLUGINS as $slug => [ $name, $constant, $adapter ] ) {
+		foreach ( self::PLUGINS as $slug => [ $name, $constant ] ) {
 			if ( defined( $constant ) ) {
 				$found[ $slug ] = array(
-					'name'      => $name,
-					'version'   => (string) constant( $constant ),
-					'supported' => '' !== $adapter,
+					'name'    => $name,
+					'version' => (string) constant( $constant ),
 				);
 			}
 		}
@@ -78,7 +77,7 @@ final class Seo {
 	/**
 	 * The adapter of the one active SEO plugin.
 	 *
-	 * @throws ToolError When none, several, or an unsupported one is active.
+	 * @throws ToolError When none or several are active, or the plugin is not set up.
 	 */
 	public static function adapter(): SeoAdapter {
 		$found = self::detected();
@@ -90,12 +89,8 @@ final class Seo {
 			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- returned as JSON text, never HTML.
 			throw new ToolError( 'Several SEO plugins are active: ' . implode( ', ', $names ) . '. Each prints its own tags, so KUDUY does not change SEO data until only one is active. Nothing was changed.' );
 		}
-		$slug  = (string) array_key_first( $found );
-		$class = self::PLUGINS[ $slug ][2];
-		if ( '' === $class ) {
-			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- returned as JSON text, never HTML.
-			throw new ToolError( self::name( $slug ) . ' is active, but KUDUY does not support it yet.' );
-		}
+		$slug    = (string) array_key_first( $found );
+		$class   = self::PLUGINS[ $slug ][2];
 		$adapter = new $class();
 		$ready   = $adapter->ready();
 		if ( true !== $ready ) {
@@ -150,6 +145,29 @@ final class Seo {
 			}
 		}
 		return $out;
+	}
+
+	/**
+	 * Run an SEO plugin's own WordPress Ability as the current user (core validates the input, checks the ability's
+	 * permission and validates the output).
+	 *
+	 * @param string               $name  Ability name.
+	 * @param array<string, mixed> $input Input.
+	 * @return array<string, mixed>
+	 * @throws ToolError When the ability is missing or refuses.
+	 */
+	public static function ability( string $name, array $input ): array {
+		$ability = function_exists( 'wp_get_ability' ) ? wp_get_ability( $name ) : null;
+		if ( ! $ability ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- returned as JSON text, never HTML.
+			throw new ToolError( 'The SEO plugin\'s ability ' . $name . ' is not registered on this site.' );
+		}
+		$result = $ability->execute( $input );
+		if ( is_wp_error( $result ) ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- returned as JSON text, never HTML.
+			throw new ToolError( 'The SEO plugin refused: ' . wp_strip_all_tags( $result->get_error_message() ) );
+		}
+		return is_array( $result ) ? $result : array();
 	}
 
 	/**

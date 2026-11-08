@@ -114,6 +114,20 @@ final class SeoRankMathTest extends TestCase {
 		$this->assertSame( 'Kuduy OG title', self::meta_tag( $head, 'og:title' ) );
 		$this->assertSame( 'Kuduy X description', self::meta_tag( $head, 'twitter:description' ) );
 
+		// kuduy-seo-verify reads the same tags from the live page.
+		$verified = $this->verify_live(
+			$id,
+			$head,
+			array(
+				'title'       => 'Kuduy custom title',
+				'description' => 'Kuduy custom description.',
+				'noindex'     => true,
+				'og'          => array( 'title' => 'Kuduy OG title' ),
+			)
+		);
+		$this->assertSame( array(), $verified['mismatches'], (string) wp_json_encode( $verified ) );
+		$this->assertTrue( $verified['ok'] );
+
 		// null clears; untouched fields stay.
 		$this->ok(
 			'kuduy-seo-update',

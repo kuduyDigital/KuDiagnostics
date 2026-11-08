@@ -17,5 +17,6 @@ final class Deactivator {
 	 */
 	public static function run(): void {
 		wp_clear_scheduled_hook( Cleanup::HOOK );
+		wp_unschedule_hook( \Kuduy\Mcp\Jobs\Jobs::HOOK );
 	}
 }

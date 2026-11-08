@@ -37,6 +37,41 @@ namespace {
 		public static function current_user_can( string $capability ): bool {}
 	}
 	function YoastSEO(): \Yoast\WP\SEO\Main {}
+	function aioseo(): \AIOSEO\Plugin\AIOSEO {}
+	function seopress_metabox_role_is_blocked( string $type ): bool {}
+}
+
+namespace AIOSEO\Plugin {
+	class AIOSEO {
+		/** @var object{title: \AIOSEO\Plugin\Common\Meta\Title, description: \AIOSEO\Plugin\Common\Meta\Description} */
+		public $meta;
+		/** @var \AIOSEO\Plugin\Common\Utils\Access */
+		public $access;
+	}
+}
+
+namespace AIOSEO\Plugin\Common\Meta {
+	class Title {
+		public function getPostTitle( \WP_Post $post, bool $default = false ): string {}
+	}
+	class Description {
+		public function getPostDescription( \WP_Post $post, bool $default = false ): string {}
+	}
+}
+
+namespace AIOSEO\Plugin\Common\Utils {
+	class Access {
+		/** @param string|array<string> $access */
+		public function hasAccess( $access ): bool {}
+	}
+}
+
+namespace AIOSEO\Plugin\Common\Models {
+	class Post {
+		/** @var string|null */
+		public $title;
+		public static function getPost( int $postId ): self {}
+	}
 }
 
 namespace Yoast\WP\SEO {

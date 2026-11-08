@@ -4,6 +4,9 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 ## Unreleased
 
+- Added (Phase 6): All in One SEO and SEOPress support for the SEO tools (through each plugin's own abilities), `kuduy-seo-verify` (reads the live page's SEO tags and compares them with what you expect) and `kuduy-seo-audit` (posts without their own SEO title, description or keyword).
+- Added (Phase 6): `kuduy-media-usage` (where an image is used), `kuduy-media-upload` (add an image from an HTTPS URL), `kuduy-media-regenerate` (rebuild thumbnail sizes).
+- Added (Phase 6): background jobs — `kuduy-job-start` runs `kuduy-seo-update`, `kuduy-media-update` or `kuduy-media-regenerate` over up to 500 items, `kuduy-job-status`, `kuduy-job-cancel`. Each item is checked like a single call and keeps its own undo. New database table `kuduy_jobs` (created automatically on update).
 - Added (Phase 6): `kuduy-seo-status`, `kuduy-seo-get`, `kuduy-seo-update` — a post's SEO title, description, focus and extra keywords, canonical, robots, Open Graph and X, through Rank Math's or Yoast SEO's own APIs, with each plugin's own permission rules and undo. Refused while two SEO plugins are active.
 - Added (Phase 6): `kuduy-media-list`, `kuduy-media-get` (can show Claude the image itself, so alt text describes what it shows), `kuduy-media-update` (alt text, decorative images, title, caption, description; undo).
 
@@ -296,3 +299,13 @@ Format: user-facing releases first (newest on top), then the dated development h
 - `Modules/Media/MediaTools`; the executor passes image content blocks a tool returns under `_content`.
 - Tests: `SeoRankMathTest`, `SeoYoastTest`, `SeoConflictTest`, `MediaTest`, `RendersHead` (in-process `<head>` from a fresh hook state; resets Rank Math's and Yoast's per-request caches, test-only). The runner skips Rank Math's wizard as an admin would. CI gets Rank Math (6.9, 7.1), Yoast (28.7 on 6.9 because 28.8 needs WordPress 7.0; 28.8 on 7.1) and a conflict job.
 - Fixed the integration runner's pass/fail counting (`TESTING.md` §3). Smoke 26/26.
+
+### 2026-11-08 — Phase 6: AIOSEO, SEOPress, verify, audit, media library, jobs
+
+- `AioseoAdapter` (abilities only: its data is in its own table) and `SeopressAdapter` (abilities + target-keywords route); `Seo::ability()` runs a plugin ability as the current user. The resolver's "not supported yet" branch is gone.
+- `SeoVerify` parses the live head with `WP_HTML_Tag_Processor`; `SeoAudit` reads through the adapter.
+- `MediaLibrary`: usage, upload (`download_url` + `media_handle_sideload`), regenerate.
+- `Jobs` + `JobTools` (D9); DB version 2 adds `kuduy_jobs`; cleanup drops finished jobs after 30 days; deactivate/uninstall unschedule the hook.
+- Found in tests: AIOSEO keeps the first title and SEOPress registers its head output once per PHP request, so in-process head checks run once per test class; Rank Math's bundled Action Scheduler receives KUDUY's jobs.
+- Plan change: one `kuduy-job-start` instead of separate bulk tools.
+- Results: `TESTING.md` §3.

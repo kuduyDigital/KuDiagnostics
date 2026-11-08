@@ -12,7 +12,7 @@ namespace Kuduy\Mcp\Lifecycle;
  */
 final class Migrations {
 
-	public const DB_VERSION = 1;
+	public const DB_VERSION = 2;
 
 	public const OPTION = 'kuduy_mcp_db_version';
 
@@ -27,6 +27,7 @@ final class Migrations {
 		'kuduy_oauth_tokens',
 		'kuduy_audit_log',
 		'kuduy_snapshots',
+		'kuduy_jobs',
 	);
 
 	/**
@@ -127,6 +128,25 @@ payload longtext NOT NULL,
 restored_at datetime NULL,
 PRIMARY KEY  (id),
 KEY object (object_type,object_id)
+) {$collate};",
+			"CREATE TABLE {$p}kuduy_jobs (
+id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+created_at datetime NOT NULL,
+updated_at datetime NOT NULL,
+user_id bigint(20) unsigned NOT NULL,
+client_id varchar(191) NOT NULL DEFAULT '',
+scopes varchar(255) NOT NULL DEFAULT '',
+tool varchar(64) NOT NULL,
+status varchar(16) NOT NULL,
+total int(10) unsigned NOT NULL DEFAULT 0,
+done int(10) unsigned NOT NULL DEFAULT 0,
+failed int(10) unsigned NOT NULL DEFAULT 0,
+error varchar(255) NOT NULL DEFAULT '',
+items longtext NOT NULL,
+results longtext NOT NULL,
+PRIMARY KEY  (id),
+KEY user_status (user_id,status),
+KEY updated_at (updated_at)
 ) {$collate};",
 		);
 	}

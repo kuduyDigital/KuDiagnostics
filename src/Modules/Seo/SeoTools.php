@@ -144,10 +144,9 @@ final class SeoTools implements Tool, Snapshottable {
 						'items' => array(
 							'type'       => 'object',
 							'properties' => array(
-								'slug'      => array( 'type' => 'string' ),
-								'name'      => array( 'type' => 'string' ),
-								'version'   => array( 'type' => 'string' ),
-								'supported' => array( 'type' => 'boolean' ),
+								'slug'    => array( 'type' => 'string' ),
+								'name'    => array( 'type' => 'string' ),
+								'version' => array( 'type' => 'string' ),
 							),
 						),
 					),

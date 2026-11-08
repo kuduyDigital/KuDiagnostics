@@ -9,6 +9,7 @@ namespace Kuduy\Mcp;
 
 use Kuduy\Mcp\Admin\ConnectionsPage;
 use Kuduy\Mcp\Http\OutputGuard;
+use Kuduy\Mcp\Jobs\Jobs;
 use Kuduy\Mcp\Lifecycle\Cleanup;
 use Kuduy\Mcp\Lifecycle\Migrations;
 use Kuduy\Mcp\Mcp\RestController;
@@ -65,6 +66,7 @@ final class Plugin {
 		add_action( 'init', array( Endpoints::class, 'well_known' ), 0 );
 		add_action( 'admin_notices', array( self::class, 'permalink_notice' ) );
 		add_action( Cleanup::HOOK, array( Cleanup::class, 'run' ) );
+		add_action( Jobs::HOOK, array( Jobs::class, 'run' ) );
 		add_action( 'admin_menu', array( ConnectionsPage::class, 'menu' ) );
 
 		add_filter( 'update_plugins_github.com', array( GitHubUpdater::class, 'filter_update' ), 10, 3 );

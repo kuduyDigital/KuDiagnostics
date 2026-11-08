@@ -111,6 +111,20 @@ final class SeoYoastTest extends TestCase {
 		$this->assertSame( 'Kuduy Yoast OG', self::meta_tag( $head, 'og:title' ) );
 		$this->assertSame( 'Kuduy Yoast X', self::meta_tag( $head, 'twitter:description' ) );
 
+		// kuduy-seo-verify reads the same tags from the live page.
+		$verified = $this->verify_live(
+			$id,
+			$head,
+			array(
+				'title'       => 'Kuduy Yoast title',
+				'description' => 'Kuduy Yoast description.',
+				'noindex'     => true,
+				'og'          => array( 'title' => 'Kuduy Yoast OG' ),
+			)
+		);
+		$this->assertSame( array(), $verified['mismatches'], (string) wp_json_encode( $verified ) );
+		$this->assertTrue( $verified['ok'] );
+
 		// null clears; noindex false forces index; untouched fields stay.
 		$this->ok(
 			'kuduy-seo-update',

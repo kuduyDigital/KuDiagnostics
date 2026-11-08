@@ -65,6 +65,47 @@ trait RendersHead {
 	}
 
 	/**
+	 * Run kuduy-seo-verify with this head served as the live page (Playground has no loopback HTTP).
+	 * Call it with the head from the class's first head() render: some SEO plugins (AIOSEO's title, SEOPress's
+	 * head output) set themselves up once per process, so a second in-process render is not a fresh request.
+	 *
+	 * @param int                  $id     Post id.
+	 * @param string               $head   Head HTML.
+	 * @param array<string, mixed> $expect Expected values.
+	 * @return array<string, mixed>
+	 */
+	private function verify_live( int $id, string $head, array $expect ): array {
+		$body   = '<!doctype html><html><head>' . $head . '</head><body></body></html>';
+		$filter = static function ( mixed $pre, array $args, string $url ) use ( $body ): mixed {
+			if ( ! str_starts_with( $url, home_url() ) ) {
+				return $pre;
+			}
+			return array(
+				'headers'  => array(),
+				'body'     => $body,
+				'response' => array(
+					'code'    => 200,
+					'message' => 'OK',
+				),
+				'cookies'  => array(),
+				'filename' => null,
+			);
+		};
+		add_filter( 'pre_http_request', $filter, 10, 3 );
+		try {
+			return $this->ok(
+				'kuduy-seo-verify',
+				array(
+					'post_id' => $id,
+					'expect'  => $expect,
+				)
+			);
+		} finally {
+			remove_filter( 'pre_http_request', $filter, 10 );
+		}
+	}
+
+	/**
 	 * Copy of a hook table (WP_Hook objects are mutable).
 	 *
 	 * @param array<string, \WP_Hook> $hooks Hooks.

@@ -42,6 +42,17 @@ See `CLAUDE.md` → Commands. Integration: `KUDUY_WP=<6.9|7.1> KUDUY_PHP=<8.1|8.
 | Integration: WP 6.9.11/PHP 8.1.34 + Elementor 4.3.6 + Yoast 28.7 | **156 pass, 5 skipped** |
 | Integration: WP 7.1.4/PHP 8.3.36 + Elementor 4.3.6 + Rank Math + Yoast (conflict) | **153 pass, 4 skipped** |
 | Integration: WP 6.9.11/PHP 8.1.34 + Elementor 3.35.9, no SEO plugin (CI pairing) | **153 pass, 9 skipped** |
+| Integration (local, 2026-11-08, Phase 6 complete code): WP 7.1.4/PHP 8.3.36 + Elementor 4.3.6 + Rank Math 1.0.281 | **163 pass, 5 skipped** |
+| Integration: WP 6.9.11/PHP 8.1.34 + Elementor 4.3.6 + Rank Math 1.0.281 | **163 pass, 5 skipped** |
+| Integration: WP 7.1.4/PHP 8.3.36 + Elementor 4.3.6 + Yoast 28.8 | **162 pass, 5 skipped** |
+| Integration: WP 6.9.11/PHP 8.1.34 + Elementor 4.3.6 + Yoast 28.7 | **162 pass, 5 skipped** |
+| Integration: WP 7.1.4/PHP 8.3.36 + Elementor 4.3.6 + AIOSEO 5.0.5 | **161 pass, 5 skipped** |
+| Integration: WP 6.9.11/PHP 8.1.34 + Elementor 4.3.6 + AIOSEO 5.0.5 | **161 pass, 5 skipped** |
+| Integration: WP 7.1.4/PHP 8.3.36 + Elementor 4.3.6 + SEOPress 10.4 | **161 pass, 5 skipped** |
+| Integration: WP 6.9.11/PHP 8.1.34 + Elementor 4.3.6 + SEOPress 10.4 | **161 pass, 5 skipped** |
+| Integration: WP 7.1.4/PHP 8.3.36 + Rank Math + Yoast (conflict) | **158 pass, 4 skipped** |
+| Integration: WP 6.9.11/PHP 8.1.34 + Elementor 3.35.9, no SEO plugin | **158 pass, 9 skipped** |
+| Smoke over real HTTP (2026-11-08) | **26 / 26 pass** |
 | Runner fix (2026-11-06) | `test-integration.mjs` now counts the `<testcase>`, `<failure>`, `<error>`, `<skipped>` elements. It used to read the first `<testsuite>` attributes, which PHPUnit 10 leaves off the root when a class skips in `setUpBeforeClass()`, so a failure in another class could have passed unnoticed |
 | Smoke over real HTTP (2026-11-06, after the executor change) | **26 / 26 pass** |
 | Smoke over real HTTP (WP 7.1.4 / PHP 8.3, Elementor 4.3.6 + WooCommerce 11.2.1 active) | **26 / 26 pass** |
@@ -143,12 +154,14 @@ Legend: **U** unit, **I** integration (Playground), **E** end-to-end with a real
 | S1 | Resolver picks the single active plugin; two active → refuses writes | I — **pass 2026-11-06** (`SeoConflictTest` with Rank Math 1.0.281 + Yoast 28.8 on WP 7.1.4: status shows the conflict, update refused naming both, post meta unchanged; without an SEO plugin only `kuduy-seo-status` is available) |
 | S2 | Rank Math: title, description, focus + extra keywords, canonical, robots, OG/Twitter, schema, redirects | I — **pass 2026-11-06** for title, description, keywords, canonical, robots, OG/X, cornerstone (`SeoRankMathTest`, Rank Math 1.0.281 on WP 7.1.4/PHP 8.3.36 and WP 6.9.11/PHP 8.1.34: stored as its editor stores them, read back through its own ability, null clears, undo, authors refused for robots without `rank_math_onpage_advanced`, others' posts refused, bad canonical refused). Schema, redirects: not built |
 | S3 | Yoast: title, metadesc, focus keyphrase, canonical, robots, social, schema | I — **pass 2026-11-06** except schema (`SeoYoastTest`, Yoast 28.8 on WP 7.1.4, 28.7 on WP 6.9.11: stored in `_yoast_wpseo_*` through `WPSEO_Meta`, rendered values current right after the write, noindex true/false/null, advanced robots, null clears, undo, `wpseo_edit_advanced_metadata` enforced for authors, related keyphrases refused) |
-| S4 | Output appears in rendered `<head>` | I — **pass 2026-11-06** in-process for Rank Math and Yoast (`RendersHead`: main query + `wp` + `wp_head` from a fresh hook state: title, description, robots, og:title, twitter:description). E (live page on staging): not run |
+| S4 | Output appears in rendered `<head>` | I — **pass 2026-11-08** for all four plugins: in-process head (`RendersHead`) has title, description, robots, og:title, and `kuduy-seo-verify` reads the same head as the live page with no mismatches (`SeoVerifyTest` + each plugin test). E (live page on staging): not run |
 | S5 | Media list, dimensions, metadata; alt/title/caption/description updates | I — **pass 2026-11-06** (`MediaTest`: list filters by type and missing alt; 1600 × 900 PNG returned as an MCP image block ≤ 1024 px with matching MIME; alt/caption update keeps the title; undo; alt null removes; kses strips `<script>` for authors; others' media and contributors refused) |
 | S6 | Decorative flag → empty alt; no invented alt text | I — decorative → empty alt and not "missing", decorative + alt refused: **pass 2026-11-06**. M (Claude looks at the image before writing alt text): not run |
-| S7 | Image usage scan (content, Elementor, featured, Woo gallery) | I |
-| S8 | Replace image keeps original, updates references; thumbnail regen job | I |
-| S9 | Bulk operations run as jobs with progress | I |
+| S7 | Image usage scan (content, Elementor, featured, Woo gallery) | I — **pass 2026-11-08** for featured image, block content, Elementor data; authors do not see uses in posts they cannot read (`MediaLibraryTest`). Woo gallery, site icon/logo: code path not exercised |
+| S8 | Replace image keeps original, updates references; thumbnail regen job | I — regenerate restores a missing size: **pass 2026-11-08**; upload from URL (mocked download) with alt/title/parent, plain HTTP, non-image and contributors refused: **pass**. Replace image: not built |
+| S9 | Bulk operations run as jobs with progress | I — **pass 2026-11-08** (`JobsTest`: every item validated before start, only listed tools, queued on WP-Cron or Action Scheduler (Rank Math/AIOSEO), batch runs each item as the owner — the item on someone else's image fails, others succeed with their own undo snapshot; owner/site manager only; cancel; revoked connection and read-only scope stop the job) |
+| S10 | AIOSEO and SEOPress adapters | I — **pass 2026-11-08** (`SeoAioseoTest`: saved in AIOSEO's own table, explicit index vs default, undo; `SeoSeopressTest`: stored in its meta keys through its abilities, target keywords, unsupported cornerstone refused, undo, ownership) |
+| S11 | `kuduy-seo-audit` lists posts missing SEO data | I — **pass 2026-11-08** with each SEO plugin (`SeoAuditTest`) |
 
 ## WooCommerce
 

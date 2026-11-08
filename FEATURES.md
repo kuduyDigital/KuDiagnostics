@@ -19,7 +19,7 @@ Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude cli
 | Tool discovery filtered by availability, scope and capability | Tested | F7 |
 | Tool execution, schema validation, structured errors | Tested | F8 |
 | Output schema per tool (§14) | Tested | F13: every tool declares `outputSchema`; results validated against it |
-| Background processing / jobs | Not started | ARCHITECTURE §12 |
+| Background processing / jobs | Tested | `kuduy-job-start` / `-status` / `-cancel`; Action Scheduler or WP-Cron (D9) |
 | Real Claude clients: claude.ai | Tested | O11 — claude.ai custom connector on the user's Hostinger staging site (OAuth done by claude.ai), synced into a Claude Code desktop session: tools listed (4 on 0.1.2) and `kuduy-site-info` + `kuduy-check-update` called as user `admin`, on 0.1.2 and again on 0.2.0 (2026-11-05) |
 | Real Claude clients: Claude Desktop, Claude Code's own sign-in (CIMD), refresh after 1 h, revoke | In progress | O11 — need the user's clients and a Revoke click |
 
@@ -45,7 +45,7 @@ Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude cli
 | Rate limiting | Tested | F11 |
 | Request validation, sanitization, escaping | Tested | F5, F8, PHPCS (WPCS) clean |
 | HTTPS enforcement | Tested | O17: token, registration, authorize and bearer refused over plain HTTP unless the site is local (filter `kuduy_mcp_require_https`) |
-| Safe uploads and paths | Not started | Comes with media and developer tools |
+| Safe uploads and paths | Tested (media) | `kuduy-media-upload`: HTTPS only, `wp_safe_remote_get`, content-checked raster images ≤ 10 MB; developer-mode paths: Phase 7 |
 | Backup and recovery for destructive changes | Tested | F10, snapshot scope test |
 
 ## Data storage and audit (§13)
@@ -130,13 +130,14 @@ Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude cli
 | Rank Math: schema, sitemap, redirects | Not started |
 | Yoast: title, description, keyphrase, canonical, robots, social | Tested (`WPSEO_Meta` + Surfaces API; Yoast 28.8 on WP 7.1, 28.7 on 6.9) |
 | Yoast: schema type, sitemap; related keyphrases (Premium) | Not started |
-| AIOSEO and SEOPress adapters | Not started |
-| Bulk metadata inspect/update | Not started |
+| AIOSEO and SEOPress adapters | Tested (AIOSEO through its abilities and own table; SEOPress through its abilities + target-keywords route; WP 6.9 + 7.1) |
+| Bulk metadata inspect/update | Tested (`kuduy-seo-audit` lists posts missing title/description/keyword; `kuduy-job-start` with `kuduy-seo-update` for many posts) |
 | Media: list, inspect, alt/title/caption/description | Tested (`kuduy-media-list`, `-get`, `-update`, undo) |
-| Media: usage scan | Not started |
-| Social images, optimization via installed tools, thumbnail regeneration, safe rename | Not started |
+| Media: usage scan | Tested (`kuduy-media-usage`: featured, content, Elementor, Woo gallery, site icon/logo; Woo gallery and icon/logo paths not exercised by a test) |
+| Thumbnail regeneration; upload from URL | Tested (`kuduy-media-regenerate`; `kuduy-media-upload`) |
+| Social images, optimization via installed tools, replace image, safe rename | Not started |
 | Alt text from actual image content; decorative images | Implemented — `kuduy-media-get` returns the image as MCP image content and `decorative` sets an empty alt (both tested); how Claude clients show tool images is not verified yet |
-| SEO verification in rendered `<head>` and sitemap | In progress — round trip into `<head>` tested in-process for Rank Math and Yoast; `kuduy-seo-verify` (live page) and sitemap not built |
+| SEO verification in rendered `<head>` and sitemap | Tested for `<head>` (`kuduy-seo-verify` parses the live page; each plugin's real head checked through it in tests); live fetch on staging and sitemap: not verified |
 
 ## WooCommerce (§8) — Phase 7
 
