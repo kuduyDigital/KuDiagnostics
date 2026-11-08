@@ -4,6 +4,8 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 ## Unreleased
 
+## 0.5.1 — 2026-11-08
+
 - Changed: `kuduy-job-status` results now name each item (`index` in the job, `object_id` of the post or image it acted on), next to its undo snapshot.
 - Added: `kuduy-seo-status` and `kuduy-seo-verify` warn while Settings → Reading discourages search engines, because WordPress then adds noindex, nofollow to every page whatever the SEO plugin says.
 - Changed: `kuduy-seo-audit` explains that `total` counts all published posts of the type (for paging), not the posts with missing data.
