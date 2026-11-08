@@ -111,6 +111,14 @@ final class JobTools implements Tool {
 					'items' => array(
 						'type'       => 'object',
 						'properties' => array(
+							'index'       => array(
+								'type'        => 'integer',
+								'description' => 'Position of the item in the items given to kuduy-job-start (0-based).',
+							),
+							'object_id'   => array(
+								'type'        => 'integer',
+								'description' => 'The post or attachment the item acted on (its id or post_id).',
+							),
 							'ok'          => array( 'type' => 'boolean' ),
 							'error'       => array( 'type' => 'string' ),
 							'snapshot_id' => array( 'type' => 'integer' ),
@@ -225,7 +233,28 @@ final class JobTools implements Tool {
 			'done'    => (int) $job['done'],
 			'failed'  => (int) $job['failed'],
 			'error'   => (string) ( $job['error'] ?? '' ),
-			'results' => array_values( (array) $job['results'] ),
+			'results' => self::results( $job ),
 		);
+	}
+
+	/**
+	 * Per-item results, each naming its item: position in the job and the object it acted on.
+	 *
+	 * @param array<string, mixed> $job Job row.
+	 * @return list<array<string, mixed>>
+	 */
+	private static function results( array $job ): array {
+		$items = array_values( (array) $job['items'] );
+		$out   = array();
+		foreach ( array_values( (array) $job['results'] ) as $index => $result ) {
+			$item  = (array) ( $items[ $index ] ?? array() );
+			$entry = array( 'index' => $index ) + (array) $result;
+			$id    = $item['id'] ?? $item['post_id'] ?? null;
+			if ( is_int( $id ) || ( is_string( $id ) && ctype_digit( $id ) ) ) {
+				$entry['object_id'] = (int) $id;
+			}
+			$out[] = $entry;
+		}
+		return $out;
 	}
 }

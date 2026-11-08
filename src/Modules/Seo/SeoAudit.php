@@ -37,7 +37,7 @@ final class SeoAudit implements Tool {
 	 * {@inheritDoc}
 	 */
 	public function description(): string {
-		return 'Lists published posts of one type that have no SEO title, description or focus keyword of their own in the active SEO plugin (the plugin\'s template then applies). Paged; fix them with kuduy-seo-update, or many at once with kuduy-job-start.';
+		return 'Lists published posts of one type that have no SEO title, description or focus keyword of their own in the active SEO plugin (the plugin\'s template then applies). Only posts with something missing are listed; total counts all published posts of the type, for paging. Paged; fix them with kuduy-seo-update, or many at once with kuduy-job-start.';
 	}
 
 	/**
@@ -85,7 +85,10 @@ final class SeoAudit implements Tool {
 			'type'       => 'object',
 			'properties' => array(
 				'plugin'      => array( 'type' => 'string' ),
-				'checked'     => array( 'type' => 'integer' ),
+				'checked'     => array(
+					'type'        => 'integer',
+					'description' => 'Posts on this page that were checked (those the user can edit).',
+				),
 				'posts'       => array(
 					'type'  => 'array',
 					'items' => array(
@@ -101,7 +104,10 @@ final class SeoAudit implements Tool {
 						),
 					),
 				),
-				'total'       => array( 'type' => 'integer' ),
+				'total'       => array(
+					'type'        => 'integer',
+					'description' => 'Published posts of this type, for paging; not the number with missing data (that is the length of posts).',
+				),
 				'total_pages' => array( 'type' => 'integer' ),
 				'page'        => array( 'type' => 'integer' ),
 			),

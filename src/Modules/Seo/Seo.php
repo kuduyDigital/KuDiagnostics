@@ -101,6 +101,17 @@ final class Seo {
 	}
 
 	/**
+	 * Warning while Settings → Reading discourages search engines: WordPress core (`wp_robots_noindex()`) then adds
+	 * noindex, nofollow to every page on top of what the SEO plugin stores or renders.
+	 */
+	public static function visibility_note(): ?string {
+		if ( get_option( 'blog_public' ) ) {
+			return null;
+		}
+		return 'Search engines are discouraged (Settings → Reading), so WordPress adds noindex, nofollow to every page, whatever the SEO plugin stores or renders.';
+	}
+
+	/**
 	 * True when at least one known SEO plugin is active, else why not.
 	 */
 	public static function available(): bool|string {

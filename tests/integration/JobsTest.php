@@ -125,6 +125,8 @@ final class JobsTest extends TestCase {
 		$this->assertSame( 1, $status['failed'] );
 		$this->assertTrue( $status['results'][0]['ok'] );
 		$this->assertFalse( $status['results'][1]['ok'], 'the author cannot edit the admin\'s image' );
+		$this->assertSame( array( 0, 1, 2 ), array_column( $status['results'], 'index' ), 'each result names its item' );
+		$this->assertSame( array( $own[0], $admins, $own[1] ), array_column( $status['results'], 'object_id' ) );
 		$this->assertSame( 'First', get_post_meta( $own[0], '_wp_attachment_image_alt', true ) );
 		$this->assertSame( 'Second', get_post_meta( $own[1], '_wp_attachment_image_alt', true ) );
 		$this->assertFalse( metadata_exists( 'post', $admins, '_wp_attachment_image_alt' ) );

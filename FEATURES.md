@@ -3,7 +3,7 @@
 Status values: `Not started` · `In progress` · `Implemented` (code exists, tests incomplete) · `Tested` (passing tests or recorded manual evidence; IDs refer to `TESTING.md`) · `Blocked`.
 Section numbers follow the KUDUY MCP Master Development Prompt. Updated 2026-11-05 (v0.4.0).
 
-Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude clients are partly verified (claude.ai works; Desktop, Claude Code's own sign-in, refresh and revoke still to observe — O11). **Phase 4 (WordPress core, §5) is complete:** content, terms, comments, revisions, custom fields, users and roles, menus, settings, plugins and themes, and diagnostics are `Tested`, with undo where possible and confirm-first where not. The few §5 items left (block-theme navigation, theme file inspection, media) belong to later phases. Everything from §6 onward is `Not started`.
+Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude clients are partly verified (claude.ai works; Desktop, Claude Code's own sign-in, refresh and revoke still to observe — O11). **Phase 4 (WordPress core, §5) is complete:** content, terms, comments, revisions, custom fields, users and roles, menus, settings, plugins and themes, and diagnostics are `Tested`, with undo where possible and confirm-first where not. The few §5 items left (block-theme navigation, theme file inspection, media) belong to later phases. **Phase 5 (Elementor, §6)** passed its exit test with claude.ai on staging; **Phase 6 (SEO and image SEO, §7) is done** (2026-11-08, Playground and staging). Everything from §8 onward is `Not started`.
 
 ## Foundation — MCP and transport (§4)
 
@@ -19,7 +19,7 @@ Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude cli
 | Tool discovery filtered by availability, scope and capability | Tested | F7 |
 | Tool execution, schema validation, structured errors | Tested | F8 |
 | Output schema per tool (§14) | Tested | F13: every tool declares `outputSchema`; results validated against it |
-| Background processing / jobs | Tested | `kuduy-job-start` / `-status` / `-cancel`; Action Scheduler or WP-Cron (D9) |
+| Background processing / jobs | Tested | `kuduy-job-start` / `-status` / `-cancel`; Action Scheduler or WP-Cron (D9); WP-Cron ran a job unforced on Hostinger staging (2026-11-08). Results name each item (`index`, `object_id`) |
 | Real Claude clients: claude.ai | Tested | O11 — claude.ai custom connector on the user's Hostinger staging site (OAuth done by claude.ai), synced into a Claude Code desktop session: tools listed (4 on 0.1.2) and `kuduy-site-info` + `kuduy-check-update` called as user `admin`, on 0.1.2 and again on 0.2.0 (2026-11-05) |
 | Real Claude clients: Claude Desktop, Claude Code's own sign-in (CIMD), refresh after 1 h, revoke | In progress | O11 — need the user's clients and a Revoke click |
 
@@ -136,8 +136,8 @@ Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude cli
 | Media: usage scan | Tested (`kuduy-media-usage`: featured, content, Elementor, Woo gallery, site icon/logo; Woo gallery and icon/logo paths not exercised by a test) |
 | Thumbnail regeneration; upload from URL | Tested (`kuduy-media-regenerate`; `kuduy-media-upload`) |
 | Social images, optimization via installed tools, replace image, safe rename | Not started |
-| Alt text from actual image content; decorative images | Implemented — `kuduy-media-get` returns the image as MCP image content and `decorative` sets an empty alt (both tested); how Claude clients show tool images is not verified yet |
-| SEO verification in rendered `<head>` and sitemap | Tested for `<head>` (`kuduy-seo-verify` parses the live page; each plugin's real head checked through it in tests); live fetch on staging and sitemap: not verified |
+| Alt text from actual image content; decorative images | Tested — `kuduy-media-get` returns the image as MCP image content and `decorative` sets an empty alt (integration); claude.ai web shows the image to Claude, which wrote alt text from it (staging, 2026-11-08, S6 M) |
+| SEO verification in rendered `<head>` and sitemap | Tested for `<head>` (`kuduy-seo-verify` parses the live page; each plugin's real head checked through it in tests; live self-fetch on Hostinger staging with Yoast 28.8, 2026-11-08, S4 E). `kuduy-seo-status` and `-verify` warn while search engines are discouraged. Sitemap: not verified |
 
 ## WooCommerce (§8) — Phase 7
 

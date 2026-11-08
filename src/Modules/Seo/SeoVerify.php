@@ -207,6 +207,10 @@ final class SeoVerify implements Tool {
 		if ( $mismatches ) {
 			$notes[] = 'Some tags differ from what was expected. A page cache may still serve the old version; clear it and check again.';
 		}
+		$visibility = Seo::visibility_note();
+		if ( null !== $visibility ) {
+			$notes[] = $visibility;
+		}
 		return array(
 			'post_id'      => $post->ID,
 			'url'          => $url,

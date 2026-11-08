@@ -4,6 +4,10 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 ## Unreleased
 
+- Changed: `kuduy-job-status` results now name each item (`index` in the job, `object_id` of the post or image it acted on), next to its undo snapshot.
+- Added: `kuduy-seo-status` and `kuduy-seo-verify` warn while Settings → Reading discourages search engines, because WordPress then adds noindex, nofollow to every page whatever the SEO plugin says.
+- Changed: `kuduy-seo-audit` explains that `total` counts all published posts of the type (for paging), not the posts with missing data.
+
 ## 0.5.0 — 2026-11-08
 
 **Phase 6: SEO and media (14 new tools).** Works with Rank Math, Yoast SEO, All in One SEO and SEOPress; SEO changes are refused while two SEO plugins are active.
@@ -319,3 +323,8 @@ Format: user-facing releases first (newest on top), then the dated development h
 - Ran on Hostinger staging (KUDUY 0.5.0, WP 7.1.4/PHP 8.3.36, Yoast 28.8) from claude.ai web: SEO update/get/verify on a test post, `kuduy-media-get` with the image shown to Claude, alt text for 2 images through `kuduy-job-start` (WP-Cron ran it unforced in under a minute), `kuduy-seo-audit`, then full cleanup through snapshots and trash. All steps pass (`TESTING.md` §3, S4, S6, S9; `COMPATIBILITY.md`).
 - Open: live robots `noindex, nofollow` vs Yoast's rendered `noindex, follow` with no noindex stored, likely the site's "Discourage search engines" setting. Re-check after the user switched it off: `blog_public` is 1 and live pages serve `index, follow`; the post-level check was not repeated. `kuduy-seo-get`'s rendered robots does not include core's `wp_robots` output. `kuduy-job-status` items lack the item id; `kuduy-seo-audit`'s `total` is easy to misread.
 - Claude Code desktop sessions stayed on the 42-tool connector list after reconnect, revoke and an off/on toggle, so the run was done in claude.ai web.
+
+### 2026-11-08 — Phase 6 closed
+
+- Exit gate passed in Playground and on staging, so `ROADMAP.md` marks Phase 6 done and `FEATURES.md` marks alt text from the image and the live `<head>` check `Tested`.
+- Fixed the three issues found on staging (Unreleased above). Tests first (`JobsTest`, `SeoVerifyTest`), then code. Results: `TESTING.md` §3.

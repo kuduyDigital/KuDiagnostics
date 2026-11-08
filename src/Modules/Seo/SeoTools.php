@@ -363,6 +363,10 @@ final class SeoTools implements Tool, Snapshottable {
 				$notes[] = $e->getMessage();
 			}
 		}
+		$visibility = Seo::visibility_note();
+		if ( null !== $visibility ) {
+			$notes[] = $visibility;
+		}
 		return array(
 			'plugins'  => $plugins,
 			'active'   => $active,

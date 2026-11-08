@@ -109,4 +109,24 @@ final class SeoVerifyTest extends TestCase {
 		$this->assertFalse( $draft['live_checked'] );
 		$this->assertNull( $draft['head'] );
 	}
+
+	public function test_notes_when_search_engines_are_discouraged(): void {
+		// WordPress core (wp_robots_noindex) adds noindex, nofollow to every page while blog_public is 0, whatever the
+		// SEO plugin stores or renders, so both tools say so.
+		$id         = self::post( 'publish' );
+		$this->body = '<!doctype html><html><head><title>T</title><meta name="robots" content="noindex, nofollow"></head></html>';
+		$previous   = get_option( 'blog_public' );
+		update_option( 'blog_public', '0' );
+		try {
+			$verify = $this->ok( 'kuduy-seo-verify', array( 'post_id' => $id ) );
+			$status = $this->ok( 'kuduy-seo-status' );
+		} finally {
+			update_option( 'blog_public', $previous );
+		}
+		$this->assertStringContainsString( 'Search engines are discouraged', implode( ' ', $verify['notes'] ) );
+		$this->assertStringContainsString( 'Search engines are discouraged', implode( ' ', $status['notes'] ) );
+
+		$public = $this->ok( 'kuduy-seo-status' );
+		$this->assertStringNotContainsString( 'Search engines are discouraged', implode( ' ', $public['notes'] ) );
+	}
 }
