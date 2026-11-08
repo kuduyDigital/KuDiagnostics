@@ -330,3 +330,9 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 - Exit gate passed in Playground and on staging, so `ROADMAP.md` marks Phase 6 done and `FEATURES.md` marks alt text from the image and the live `<head>` check `Tested`.
 - Fixed the three issues found on staging (Unreleased above). Tests first (`JobsTest`, `SeoVerifyTest`), then code. Results: `TESTING.md` §3.
+
+### 2026-11-08 — Phase 7 started: WooCommerce research and plan
+
+- Read WooCommerce 11.2.2 (staging's version) from source: CRUD for products, variations, orders, coupons, customers, reviews, shipping, tax; `wc-analytics` reports; HPOS (`OrderUtil`, option switch, capability mapping, compatibility declaration); capabilities and WooCommerce's REST permission functions; secrets and personal data (`RESEARCH.md` §10). 11.2.x needs WordPress 7.0, so the 6.9 test pair will use 11.0.1.
+- Found: WooCommerce registers 7 abilities of its own (products query/create/update/delete, orders query, status, note), plus REST-bridge abilities only on its own experimental MCP endpoint. Its `wc/v3/payment_gateways` returns gateway secrets in clear text, and KUDUY's `Redactor` misses `api_signature` / `consumer_key` and type-based masking. Core post tools can currently write products and coupons with `wp_update_post`, skipping WooCommerce's lookup tables; the plan adds a guard.
+- Plan `docs/plans/phase-7-woocommerce.md`: 29 `kuduy-woo-*` tools, scopes, per-object capability checks, snapshots, redaction, HPOS on/off tests, Playground setup (`KUDUY_WOO`, `KUDUY_HPOS`). D10–D13 proposed in `ARCHITECTURE.md` (CRUD path, no money-moving actions, PII masked by default, existing scopes). No code until the user approves.

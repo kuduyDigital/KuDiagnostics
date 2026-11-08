@@ -186,10 +186,52 @@ Source read 2026-11-05 from the current wordpress.org ZIPs (all tested up to Wor
 **Background jobs:** Action Scheduler is bundled by WooCommerce, Rank Math and AIOSEO (`as_enqueue_async_action()` when loaded), otherwise WP-Cron (`wp_schedule_single_event()` + `spawn_cron()`, which needs a loopback request). **UNVERIFIED:** WP-Cron loopback on the Hostinger staging site.
 
 - **UNVERIFIED (Phase 6, later):** Rank Math schema and redirect writes, Yoast/Rank Math term SEO, Pro/Premium features (Yoast redirects, SEOPress PRO), sitemap contents per plugin.
-- **UNVERIFIED (Phase 7):** WooCommerce CRUD + HPOS declaration (`FeaturesUtil::declare_compatibility`), gateway settings masking, ACF `get_field` / `update_field` and field-group APIs, CF7 / WPForms / Gravity / Fluent entry APIs, WPML / Polylang language APIs, Site Editor and Global Styles REST.
+- **UNVERIFIED (Phase 7, later in the phase):** ACF `get_field` / `update_field` and field-group APIs, CF7 / WPForms / Gravity / Fluent entry APIs, WPML / Polylang language APIs, Site Editor and Global Styles REST. WooCommerce: §10.
 - Rule: each phase starts by reading the integration's own source and docs; nothing is built from guessed meta keys.
 
-## 10. Licensing and dependencies
+## 10. WooCommerce (Phase 7)
+
+Source read 2026-11-08 from the wordpress.org ZIP of **WooCommerce 11.2.2** (the version on staging; "Requires at least: 7.0", tested up to 7.1.4). Plugin directory API and SVN tags: **11.0.1 is the last release for WordPress 6.9** (`Requires at least: 6.9` in 10.9.4 and 11.0.1; 11.1.2 needs 7.0), so the 6.9 test pair uses 11.0.1, as for Yoast 28.7 in Phase 6. Nothing below has run in a test yet; every API is **UNVERIFIED in behaviour** until the Phase 7 tests pass.
+
+**Detection:** constant `WC_VERSION`, function `WC()`; `class-woocommerce.php` boots its container services (abilities, MCP adapter, HPOS controller) on `plugins_loaded`.
+
+**Abilities (core Abilities API) — WooCommerce registers its own:**
+- Always (on `wp_abilities_api_init`, since 10.9.0, `src/Internal/Abilities/AbilitiesLoader.php`): `woocommerce/products-query`, `woocommerce/product-create`, `woocommerce/product-update`, `woocommerce/product-delete` (`force: true` deletes permanently), `woocommerce/orders-query`, `woocommerce/order-update-status`, `woocommerce/order-add-note`. Category `woocommerce`; meta `mcp.public: true`. Permission callbacks are WooCommerce's own REST checks: `wc_rest_check_post_permissions( 'product' | 'shop_order', read/create/edit/delete, $id )`; product update also needs `publish_products` to publish. Order output includes `billing_email`, `payment_method`, line items.
+- Only on WooCommerce's own MCP endpoint (`/wp-json/woocommerce/mcp`, feature `mcp_integration`, experimental, off by default; `AbilitiesRestBridge` checks the request URI): `woocommerce/products-list|get|create|update|delete`, `woocommerce/orders-list|get|create|update`, wrapping the `wc/v3` REST controllers. They never exist in a KUDUY request.
+- Coverage is thin: no variations, coupons, customers, reviews, shipping, tax, reports, stock or refunds. Same CRUD underneath.
+
+**CRUD (data stores hide the storage, so the same calls work with HPOS on or off):**
+- Products: `wc_get_product( $id )`, `wc_get_products( $args )`; classes `WC_Product_Simple|Variable|Grouped|External`, `WC_Product_Variation`; setters + `save()`; `set_sku()` throws `WC_Data_Exception` `product_invalid_sku` on a duplicate; `validate_props()` before save. Variations: `$variable->get_children()`, `WC_Product_Variable::sync( $product )` and `sync_stock_status()` after variation changes; `wc_get_product_variation_attributes()`. Stock: `wc_update_product_stock( $product, $qty, 'set'|'increase'|'decrease' )` (the data store writes `_stock` with its own SQL instead of a full product save; increase/decrease read the current value first), `wc_update_product_stock_status()`. Trash/delete: `WC_Data::delete( $force )` (false = trash); variations follow the parent (`untrash_variations`). `product` and `product_variation` both use capability type `product`.
+- Orders: `wc_get_order()`, `wc_get_orders( $args )` (both stores), `wc_create_order()`; `$order->update_status( $status, $note, $manual )` fires `woocommerce_order_status_{status}` — **customer emails are sent** from those hooks (e.g. completed: `woocommerce_order_status_completed_notification`); `add_order_note( $note, $is_customer_note )` emails the customer when `$is_customer_note`. `wc_create_refund( [ amount, reason, order_id, line_items, refund_payment => false, restock_items => false ] )`; `refund_payment: true` calls the payment gateway (**moves money**). Trash: `$order->delete( false )`, restore: `WC_Order::untrash()` (both stores).
+- Coupons: `WC_Coupon` (by id or code), `wc_get_coupon_id_by_code( $code, $exclude )`; post type `shop_coupon`.
+- Customers: `WC_Customer( $user_id )` (billing/shipping fields, `get_order_count()`, `get_total_spent()`), users with role `customer`.
+- Reviews: comments of type `review` on products; comment meta `rating` (1–5) and `verified`; `WC_Comments::clear_transients( $product_id )` refreshes the cached average and counts (`get_average_rating_for_product`, `get_rating_counts_for_product`).
+- Shipping (read): `WC_Shipping_Zones::get_zones()`, `get_zone( $id )`, zone → `get_shipping_methods()` (instance settings), `wc_shipping_enabled()`.
+- Tax (read): `wc_tax_enabled()`, `WC_Tax::get_tax_classes()`, `get_tax_class_slugs()`, `get_rates_for_tax_class( $class )`, `find_rates( $args )`.
+- Reports: Analytics REST `wc-analytics/reports/*` (revenue/orders/products/variations/categories/coupons/taxes/stock/customers/downloads stats; `GenericController extends WC_REST_Reports_Controller`), read internally with `rest_do_request()`. Data comes from lookup tables (`wc_order_stats`, …) filled by an import that is scheduled (option `woocommerce_analytics_scheduled_import`, renamed in 10.5.0) — reports can lag orders. Analytics can be switched off (`woocommerce_analytics_enabled`). Legacy `wc/v3/reports/*` still exists.
+
+**HPOS:**
+- `Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled()` reads option `woocommerce_custom_orders_table_enabled` (`yes`/`no`); `custom_orders_table_data_sync_is_enabled()` for compatibility sync; `get_order_type( $id )`, `is_order( $id )`, `get_table_for_orders()`.
+- Changing the option creates the tables when missing and **throws** while orders are pending sync (`CustomOrdersTableController::process_pre_update_option`). New shops get HPOS on at install (`WC_Install::maybe_enable_hpos()`) when there are no orders and no active "WooCommerce-aware" plugin is incompatible or uncertain.
+- Capabilities under HPOS: with sync off, `map_meta_cap` translates `edit_post` / `delete_post` / `read_post` for order ids (no post, or a `shop_order_placehold` post) through `HposOrderCapabilityHelper`, so `current_user_can( 'edit_post', $order_id )` keeps working. Order post types stay registered.
+- Compatibility declaration: `FeaturesUtil::declare_compatibility( 'custom_order_tables', $plugin_file, true )` must run inside `before_woocommerce_init`. HPOS's default plugin compatibility is **incompatible**, but only for "WooCommerce-aware" plugins (`PluginUtil::is_woocommerce_aware_plugin()`: a non-empty `WC tested up to` header). KUDUY has no such header today, so it is ignored; adding the header needs the declaration in the same change.
+
+**Capabilities** (`WC_Install::get_core_capabilities()`; given to `administrator` and `shop_manager`): `manage_woocommerce`, `view_woocommerce_reports`, `create_customers`, and for each of `product`, `shop_order`, `shop_coupon` the full post-type set (`edit_*`, `read_*`, `delete_*`, `edit_others_*s`, `publish_*s`, `read_private_*s`, …) plus `manage|edit|delete|assign_*_terms`. WooCommerce's REST checks, which KUDUY mirrors so the `woocommerce_rest_check_permissions` filter still applies:
+- `wc_rest_check_post_permissions( $type, $context, $id )`: read → `read_private_{type}s`, create → `publish_{type}s`, edit → `edit_post` (meta cap, per object), delete → `delete_post`, batch → `edit_others_{type}s`.
+- `wc_rest_check_user_permissions()`: read `list_users`, create `create_customers`, edit `edit_users`; a shop manager may only edit `customer` users (filter `woocommerce_shop_manager_editable_roles`) or themself; multisite users outside the site refused.
+- `wc_rest_check_manager_permissions()`: reports → `view_woocommerce_reports`; settings, system status, shipping methods, payment gateways, webhooks → `manage_woocommerce`; attributes → `manage_product_terms`.
+- `wc_rest_check_product_reviews_permissions()`: read `moderate_comments`, write `edit_products`; the comment must be of type `review`.
+
+**Secrets and personal data:**
+- Payment gateways: settings live in options `woocommerce_{gateway_id}_settings`; secret fields are form fields of type `password` (core PayPal: `identity_token`, `api_password`, `api_signature`, sandbox variants; MaxMind integration `license_key`; extensions such as Stripe use their own names, e.g. `secret_key`, `webhook_secret` — **UNVERIFIED** per extension). WooCommerce's own `wc/v3/payment_gateways` returns every setting **value in clear text** (`get_settings()`), so KUDUY cannot pass that through. The present `Redactor` key pattern misses `api_signature` and `consumer_key`, and values sit in `{ id, type, value }` lists where key-based masking does not apply — masking must use the field `type`.
+- REST API keys: table `woocommerce_api_keys` (`consumer_key` hashed, `consumer_secret` plain, `truncated_key`). Webhooks: `WC_Webhook::get_secret()` (REST exposes it in `edit` context).
+- Payment tokens: table `woocommerce_payment_tokens` (`token` = gateway reference). Order key (`get_order_key()`, `wc_order_…`) opens the order-received/payment page without login — treat as secret.
+- Customer PII: billing/shipping name, address, email, phone (orders and `WC_Customer`), `get_customer_ip_address()`, `get_customer_user_agent()`, customer notes; `WC_Privacy` registers WordPress personal-data exporters/erasers for it.
+- Note for staging checks: new installs set `woocommerce_coming_soon` = `yes`, which hides store pages from visitors.
+
+**Still UNVERIFIED (Phase 7):** staging's HPOS state; that `setSiteOptions` in a Playground blueprint switches HPOS on a fresh shop; analytics import timing in Playground (Action Scheduler without loopback); behaviour of gateway extensions' settings; WooCommerce subscriptions/bookings extensions (out of scope).
+
+## 11. Licensing and dependencies
 
 | Component | License (verified) | Use in KUDUY |
 |---|---|---|
@@ -203,13 +245,14 @@ Source read 2026-11-05 from the current wordpress.org ZIPs (all tested up to Wor
 
 KUDUY MCP is GPL-2.0-or-later, written from public specifications and documented APIs.
 
-## 11. Open research items
+## 12. Open research items
 
 | Item | Phase |
 |---|---|
 | Which MCP revision each Claude surface sends today; real sign-in from claude.ai, Desktop and Claude Code | 3 (O11) |
 | Elementor Pro Theme Builder / custom CSS, add-on schemas, v3 → v4 migration, Elementor 3.x behaviour | 5 |
 | SEO plugin APIs and rendered output | 6 — APIs read (§9); in-process `<head>`, Pro/Premium, schema/redirect writes still to check |
-| WooCommerce, ACF, forms, multilingual APIs | 7 |
+| WooCommerce APIs | 7 — read from 11.2.2 source (§10); behaviour, HPOS switching in Playground and staging's HPOS state still to check |
+| ACF, forms, multilingual, Site Editor APIs | 7 (later in the phase) |
 | WP-CLI command registration for hidden-mode recovery | 8 |
 | MCP Tasks extension for background jobs | later |
