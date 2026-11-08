@@ -106,6 +106,9 @@ final class PostUpdate implements Tool, Snapshottable {
 	 */
 	public function snapshot( array $input ): ?array {
 		$post = Content::post( (int) $input['id'] );
+		if ( null !== $post ) {
+			Content::assert_writable( $post->post_type );
+		}
 		return null === $post ? null : array(
 			'object_type' => 'post',
 			'object_id'   => (string) $post->ID,
@@ -133,6 +136,7 @@ final class PostUpdate implements Tool, Snapshottable {
 		if ( null === $post ) {
 			throw new ToolError( 'Post ' . (int) $input['id'] . ' was not found (or is not a content post type).' );
 		}
+		Content::assert_writable( $post->post_type );
 		$type = Content::post_type( $post->post_type );
 		$need = PostWriter::status_cap( $type, $input['status'] ?? null );
 		if ( null !== $need && $input['status'] !== $post->post_status && ! current_user_can( $need ) ) {

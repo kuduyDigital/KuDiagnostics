@@ -146,6 +146,9 @@ final class PostMeta implements Tool, Snapshottable {
 	 */
 	public function snapshot( array $input ): ?array {
 		$post = Content::post( (int) $input['post_id'] );
+		if ( null !== $post && 'set' === $this->mode ) {
+			Content::assert_writable( $post->post_type );
+		}
 		return null === $post || 'set' !== $this->mode ? null : array(
 			'object_type' => 'post',
 			'object_id'   => (string) $post->ID,
@@ -187,6 +190,9 @@ final class PostMeta implements Tool, Snapshottable {
 			throw new ToolError( 'Post ' . (int) $input['post_id'] . ' was not found (or is not a content post type).' );
 		}
 		AuditLog::target( 'post', (string) $post->ID );
+		if ( 'set' === $this->mode ) {
+			Content::assert_writable( $post->post_type );
+		}
 		$key = isset( $input['key'] ) ? (string) $input['key'] : null;
 		if ( null !== $key && is_protected_meta( $key, 'post' ) ) {
 			throw new ToolError( 'This is a protected field used by WordPress or a plugin; it cannot be read or changed with this tool.' );

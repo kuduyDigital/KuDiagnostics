@@ -40,7 +40,7 @@ Please do not open a public issue. Report privately to the maintainer (KUDUY Dig
 | Claude (model) mistakes | Destroy data | Snapshots before destructive tools; audit log; rate limit 120/min; *planned:* confirm policy for disruptive actions |
 | Other plugins | Break JSON responses, leak notices | Output guard on our routes |
 | Compromised GitHub Action / release | Push a malicious update | Actions pinned to commit SHAs; release requires CI + install check; SHA-256 verified before install. Limit: checksum from the same release proves integrity, not authorship |
-| Logs and audit rows | Leak secrets | Redactor on results and audit arguments (secret-looking keys, bearer values, `kmcp_` tokens, password hashes); exceptions logged as class/file/line only |
+| Logs and audit rows | Leak secrets | Redactor on results and audit arguments (secret-looking keys incl. WooCommerce `signature`, `consumer_key`, `order_key`, `cart_hash`, `payment_token`; the `value` of any settings field of type `password`; bearer values, `kmcp_` tokens, password hashes); exceptions logged as class/file/line only |
 
 ## 3. Controls by layer (code paths)
 

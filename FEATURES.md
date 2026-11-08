@@ -148,7 +148,8 @@ Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude cli
 | Customers, coupons, reviews | Not started |
 | Shipping zones/methods, store settings, tax (read + safe writes) | Not started |
 | Reports and diagnostics | Not started |
-| Gateway secrets and customer data protected; no refunds/charges without explicit policy | Not started |
+| Gateway secrets and customer data protected; no refunds/charges without explicit policy | In progress (D11/D12 decided; Redactor masks WooCommerce secret keys and `password`-type settings fields, W2 Redactor part tested; tool-level masking comes with the tools) |
+| Core post tools refuse WooCommerce objects (writes go through WooCommerce CRUD) | Tested (W1, `WooGuardsTest`, HPOS on and off) |
 
 ## Additional integrations (§9) — Phase 7
 

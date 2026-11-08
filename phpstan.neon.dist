@@ -9,6 +9,7 @@ parameters:
   scanFiles:
     - tests/phpstan/elementor.stub
     - tests/phpstan/seo.stub
+    - tests/phpstan/woocommerce.stub
   paths:
     - kuduy-mcp.php
     - uninstall.php

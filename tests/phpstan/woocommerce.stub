@@ -1,0 +1,30 @@
+<?php
+/**
+ * WooCommerce is not a dependency; this declares only the WooCommerce API KUDUY and its tests call (RESEARCH.md §10).
+ */
+
+namespace Automattic\WooCommerce\Utilities {
+	class OrderUtil {
+		public static function custom_orders_table_usage_is_enabled(): bool {}
+		public static function custom_orders_table_data_sync_is_enabled(): bool {}
+	}
+}
+
+namespace {
+	abstract class WC_Data {
+		public function save(): int {}
+		public function get_id(): int {}
+	}
+	class WC_Product extends WC_Data {
+		public function get_name( string $context = 'view' ): string {}
+		public function set_name( string $name ): void {}
+		public function set_regular_price( string $price ): void {}
+		public function set_status( string $status ): void {}
+	}
+	class WC_Product_Simple extends WC_Product {}
+	/**
+	 * @param mixed $the_product
+	 * @return WC_Product|null|false
+	 */
+	function wc_get_product( $the_product = false ) {}
+}

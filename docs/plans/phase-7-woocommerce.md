@@ -105,6 +105,10 @@ Not offered (D11 A): refunds, order creation or item edits, payment changes, gat
 - Reports: analytics import is scheduled; tests run the import for their orders directly (WooCommerce's own importer, **UNVERIFIED** call — read in tests first) before asserting report numbers.
 - CI: four new jobs — WP 6.9/PHP 8.1 + WooCommerce 11.0.1 and WP 7.1/PHP 8.3 + 11.2.2, each with `KUDUY_HPOS=on` and `off`. Tests skip when WooCommerce is not active.
 
+## Progress
+
+- 2026-11-09: step 1 done — core post tools refuse WooCommerce types (W1), `Redactor` masks WooCommerce secret keys and `password`-type settings fields (W2 Redactor part), runner `KUDUY_HPOS`, four CI jobs. Found in tests: with WooCommerce active a non-administrator can never edit an administrator (`wc_modify_map_meta_cap`), so `CoreUsersTest`'s last-admin case is refused by the capability check first; WordPress started a background update of the older WooCommerce 11.0.1 on 6.9 and left `.maintenance`, so the runner now sets `AUTOMATIC_UPDATER_DISABLED`. HPOS switching through `setSiteOptions` on a fresh shop works (verified by `WooGuardsTest`).
+
 ## Order
 
 1. Guards in core post tools + `Redactor` additions (W1, W2).

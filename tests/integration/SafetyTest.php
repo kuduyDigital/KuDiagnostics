@@ -244,6 +244,43 @@ final class SafetyTest extends TestCase {
 		$this->assertSame( 'seo keywords stay', $out['keywords'] );
 	}
 
+	/**
+	 * WooCommerce secrets (W2): gateway credentials, REST API keys, order keys, payment tokens, and any settings
+	 * field of type `password` whatever its name (WooCommerce returns gateway settings as `{ id, type, value }`).
+	 */
+	public function test_redactor_masks_woocommerce_secrets(): void {
+		$out = Redactor::redact(
+			array(
+				'api_signature'   => 'AFcWxV21C7fd0v3bYYYRCpSSRl31A',
+				'consumer_key'    => 'ck_0123456789abcdef',
+				'order_key'       => 'wc_order_AbC123',
+				'cart_hash'       => 'd41d8cd98f00b204e9800998ecf8427e',
+				'payment_token'   => 'tok_visa',
+				'settings'        => array(
+					'merchant_pin' => array(
+						'id'    => 'merchant_pin',
+						'type'  => 'password',
+						'value' => '4711',
+					),
+					'title'        => array(
+						'id'    => 'title',
+						'type'  => 'text',
+						'value' => 'Card',
+					),
+				),
+				'billing_country' => 'DE',
+			)
+		);
+
+		foreach ( array( 'api_signature', 'consumer_key', 'order_key', 'cart_hash', 'payment_token' ) as $key ) {
+			$this->assertSame( Redactor::MASK, $out[ $key ], $key );
+		}
+		$this->assertSame( Redactor::MASK, $out['settings']['merchant_pin']['value'] );
+		$this->assertSame( 'password', $out['settings']['merchant_pin']['type'] );
+		$this->assertSame( 'Card', $out['settings']['title']['value'] );
+		$this->assertSame( 'DE', $out['billing_country'] );
+	}
+
 	public function test_every_call_is_audited_with_redacted_arguments(): void {
 		$response = $this->call(
 			'test-secrets',

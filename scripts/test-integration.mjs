@@ -1,6 +1,6 @@
 // Runs tests/integration with PHPUnit inside Playground's WordPress and fails on the JUnit report,
 // not on Playground's exit code (PHPUnit's exit() inside runPHP is not a reliable signal).
-// Env: KUDUY_WP (default 7.1), KUDUY_PHP (default 8.3).
+// Env: KUDUY_WP (default 7.1), KUDUY_PHP (default 8.3), KUDUY_HPOS (on|off, default on; only with WooCommerce).
 import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -30,7 +30,11 @@ const install = (slug, version) => ({
   pluginData: { resource: 'url', url: `https://downloads.wordpress.org/plugin/${slug}.${version}.zip` },
   options: { activate: true },
 });
-const steps = elementor === 'none' ? [] : [install('elementor', elementor)];
+// Test sites never update themselves: with an older pinned plugin (WooCommerce 11.0.1 on WordPress 6.9) WordPress
+// started a background update during the blueprint and left `.maintenance` behind, so every later request got the
+// maintenance page and PHPUnit never ran (found 2026-11-09).
+const steps = [{ step: 'defineWpConfigConsts', consts: { AUTOMATIC_UPDATER_DISABLED: true } }];
+if (elementor !== 'none') steps.push(install('elementor', elementor));
 // KUDUY_PLUGINS=slug@version,… installs more wordpress.org plugins after Elementor (e.g. Elementor add-ons).
 for (const entry of (process.env.KUDUY_PLUGINS ?? '').split(',').map((s) => s.trim()).filter(Boolean)) {
   const [slug, version] = entry.split('@');
@@ -42,6 +46,20 @@ for (const entry of (process.env.KUDUY_PLUGINS ?? '').split(',').map((s) => s.tr
   if (slug === 'seo-by-rank-math') {
     // Rank Math stays inert until its account is connected or its setup wizard is skipped; do what "Skip" does.
     steps.push({ step: 'setSiteOptions', options: { rank_math_registration_skip: '1' } });
+  }
+  if (slug === 'woocommerce') {
+    // KUDUY_HPOS=on|off picks the order storage (fresh shop, no orders yet, so WooCommerce accepts the switch).
+    // kuduy_test_hpos tells the tests which mode was asked for, so a silent fallback fails them.
+    const hpos = process.env.KUDUY_HPOS ?? 'on';
+    if (!['on', 'off'].includes(hpos)) {
+      console.error('KUDUY_HPOS must be on or off.');
+      process.exit(1);
+    }
+    steps.push({ step: 'setSiteOptions', options: {
+      woocommerce_coming_soon: 'no',
+      woocommerce_custom_orders_table_enabled: hpos === 'on' ? 'yes' : 'no',
+      kuduy_test_hpos: hpos,
+    } });
   }
 }
 // KUDUY_LOCAL_PLUGINS=file.zip,… installs licensed ZIPs kept in the repo folder but git-ignored (e.g. Elementor Pro).

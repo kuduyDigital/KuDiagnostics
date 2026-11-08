@@ -106,6 +106,9 @@ final class PostTrash implements Tool, Snapshottable {
 	 */
 	public function snapshot( array $input ): ?array {
 		$post = Content::post( (int) $input['id'] );
+		if ( null !== $post ) {
+			Content::assert_writable( $post->post_type );
+		}
 		return null === $post || 'trash' === $post->post_status ? null : array(
 			'object_type' => 'post',
 			'object_id'   => (string) $post->ID,
@@ -150,6 +153,7 @@ final class PostTrash implements Tool, Snapshottable {
 		if ( null === $post ) {
 			throw new ToolError( 'Post ' . (int) $input['id'] . ' was not found (or is not a content post type).' );
 		}
+		Content::assert_writable( $post->post_type );
 		if ( 'trash' === $post->post_status ) {
 			throw new ToolError( 'This post is already in the trash.' );
 		}

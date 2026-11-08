@@ -4,6 +4,9 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 ## Unreleased
 
+- Changed: while WooCommerce is active, `kuduy-post-create`, `-update`, `-trash` and `kuduy-post-meta-set` refuse products, variations, orders and coupons and name the WooCommerce tools to use instead (plain post writes would skip WooCommerce's own data handling). Reading them still works.
+- Security: results and audit rows also mask WooCommerce secrets (`api_signature`, `consumer_key`, `order_key`, `cart_hash`, `payment_token`) and the value of any settings field of type `password`.
+
 ## 0.5.1 — 2026-11-08
 
 - Changed: `kuduy-job-status` results now name each item (`index` in the job, `object_id` of the post or image it acted on), next to its undo snapshot.
@@ -340,3 +343,10 @@ Format: user-facing releases first (newest on top), then the dated development h
 ### 2026-11-08 — Phase 7 WooCommerce plan approved
 
 - The user approved `docs/plans/phase-7-woocommerce.md` and decided D10–D13: option A for each (WooCommerce CRUD only, with WooCommerce's own permission functions; no refunds, order creation, payment changes or permanent deletes, and customer emails confirm-first; customer data masked by default; existing scopes).
+
+### 2026-11-09 — Phase 7 step 1: guards, redaction, WooCommerce test runs
+
+- `Content::assert_writable()` in the core post tools (in `snapshot()` too, so a refused call leaves no snapshot); `Redactor` key additions and type-based masking. Tests: `WooGuardsTest` (W1), `SafetyTest::test_redactor_masks_woocommerce_secrets` (W2). The code edits landed before the first Playground run executed the tests, so the failing-first step was not observed.
+- Runner: `KUDUY_HPOS=on|off` with WooCommerce (sets `woocommerce_custom_orders_table_enabled`, `woocommerce_coming_soon: no`, and `kuduy_test_hpos` for the tests to check); `AUTOMATIC_UPDATER_DISABLED` on every test site (a background update of WooCommerce 11.0.1 on WordPress 6.9 left `.maintenance` and PHPUnit never ran). CI: WooCommerce 11.0.1 on 6.9 and 11.2.2 on 7.1, each with HPOS on and off.
+- `CoreUsersTest`: with WooCommerce active the last-admin demotion is refused by WooCommerce's own capability rule before KUDUY's; the test accepts that refusal.
+- Local disk: C: was full (Playground leaves ~300 MB per run in the system temp folder); local runs used `TMP`/`TEMP` under `build/tmp` on D:. Results: `TESTING.md` §3.

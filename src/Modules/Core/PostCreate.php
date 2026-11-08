@@ -109,6 +109,7 @@ final class PostCreate implements Tool {
 	 */
 	public function execute( array $input ): array {
 		$type = Content::post_type( (string) ( $input['post_type'] ?? 'post' ) );
+		Content::assert_writable( $type->name );
 		if ( ! current_user_can( $type->cap->create_posts ) ) {
 			throw new ToolError( 'Your account cannot create this post type.' );
 		}

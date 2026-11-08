@@ -14,7 +14,7 @@ final class Redactor {
 
 	public const MASK = '[redacted]';
 
-	private const SECRET_KEY = '/(pass(word|wd)?$|^pwd$|user_pass|secret|token|api[_-]?key|private[_-]?key|auth[_-]?key|^salt$|_salt$|nonce_key|logged_in_key|cookie|authorization|credential|license[_-]?key)/i';
+	private const SECRET_KEY = '/(pass(word|wd)?$|^pwd$|user_pass|secret|token|api[_-]?key|private[_-]?key|auth[_-]?key|^salt$|_salt$|nonce_key|logged_in_key|cookie|authorization|credential|license[_-]?key|signature|consumer[_-]?key|order[_-]?key|cart[_-]?hash|payment[_-]?token)/i';
 
 	/**
 	 * Bearer credentials, our own access/refresh tokens, WordPress/bcrypt/argon2 password hashes.
@@ -50,6 +50,10 @@ final class Redactor {
 			$value = get_object_vars( $value );
 		}
 		if ( is_array( $value ) ) {
+			// A settings field of type password (WooCommerce gateways and integrations: { id, type, value }), whatever its name.
+			if ( 'password' === ( $value['type'] ?? null ) && array_key_exists( 'value', $value ) && is_scalar( $value['value'] ) && '' !== $value['value'] ) {
+				$value['value'] = self::MASK;
+			}
 			$out = array();
 			foreach ( $value as $key => $item ) {
 				$out[ $key ] = is_string( $key ) && preg_match( self::SECRET_KEY, $key ) && ! is_array( $item ) && ! is_object( $item )

@@ -43,6 +43,32 @@ final class Content {
 	}
 
 	/**
+	 * WooCommerce post types and the KUDUY tools that write them through WooCommerce's CRUD API.
+	 */
+	private const WOO_TYPES = array(
+		'product'              => 'kuduy-woo-product-*',
+		'product_variation'    => 'kuduy-woo-variation-*',
+		'shop_order'           => 'kuduy-woo-order-*',
+		'shop_order_refund'    => 'kuduy-woo-order-*',
+		'shop_order_placehold' => 'kuduy-woo-order-*',
+		'shop_coupon'          => 'kuduy-woo-coupon-*',
+	);
+
+	/**
+	 * Refuse writes to WooCommerce objects while WooCommerce is active: wp_update_post() and raw meta writes skip
+	 * its lookup tables, caches and hooks (RESEARCH.md §10, D10). Reads stay allowed.
+	 *
+	 * @param string $type Post type.
+	 * @throws ToolError When the type belongs to WooCommerce.
+	 */
+	public static function assert_writable( string $type ): void {
+		if ( defined( 'WC_VERSION' ) && isset( self::WOO_TYPES[ $type ] ) ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- returned as JSON text, never HTML.
+			throw new ToolError( 'WooCommerce ' . $type . ' objects are changed through WooCommerce, not as plain posts. Use the ' . self::WOO_TYPES[ $type ] . ' tools.' );
+		}
+	}
+
+	/**
 	 * Taxonomies the content tools work with.
 	 *
 	 * @return array<string, \WP_Taxonomy>

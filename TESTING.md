@@ -56,6 +56,11 @@ See `CLAUDE.md` → Commands. Integration: `KUDUY_WP=<6.9|7.1> KUDUY_PHP=<8.1|8.
 | Integration (local, 2026-11-08, after the Phase 6 close-out fixes: job results name their item, search-visibility note, audit `total` described): WP 7.1.4/PHP 8.3.36 + Elementor 4.3.6 + Yoast 28.8 | **158 pass, 5 skipped** (163 tests). Before the fix the two new assertions failed as expected; that run also had one `LifecycleTest` uninstall failure (`kuduy_oauth_clients still exists`) that did not repeat in any later run |
 | Integration: WP 6.9.11/PHP 8.1.34 + Elementor 4.3.6 + Yoast 28.7 | **158 pass, 5 skipped** |
 | Integration: WP 6.9.11/PHP 8.1.34 + Elementor 4.3.6, no SEO plugin | **155 pass, 4 skipped** |
+| Integration (local, 2026-11-09, Phase 7 step 1): WP 7.1.4/PHP 8.3.36 + Elementor 4.3.6 + WooCommerce 11.2.2, HPOS on | **162 pass, 4 skipped** (166 tests; `WooGuardsTest` 6/6). First run: one `CoreUsersTest` failure (WooCommerce refuses non-admins editing admins before KUDUY's last-admin rule; test adjusted) |
+| Integration: WP 7.1.4/PHP 8.3.36 + Elementor 4.3.6 + WooCommerce 11.2.2, HPOS off | **162 pass, 4 skipped** |
+| Integration: WP 6.9.11/PHP 8.1.34 + Elementor 4.3.6 + WooCommerce 11.0.1, HPOS on | **162 pass, 4 skipped** (after `AUTOMATIC_UPDATER_DISABLED`; before it, a background update left `.maintenance` and PHPUnit never ran) |
+| Integration: WP 6.9.11/PHP 8.1.34 + Elementor 4.3.6 + WooCommerce 11.0.1, HPOS off | **162 pass, 4 skipped** |
+| Integration: WP 7.1.4/PHP 8.3.36 and WP 6.9.11/PHP 8.1.34 + Elementor 4.3.6, no WooCommerce | **156 pass, 4 skipped** each (`WooGuardsTest` skips; run before the `AUTOMATIC_UPDATER_DISABLED` step, which the WooCommerce runs cover) |
 | Runner fix (2026-11-06) | `test-integration.mjs` now counts the `<testcase>`, `<failure>`, `<error>`, `<skipped>` elements. It used to read the first `<testsuite>` attributes, which PHPUnit 10 leaves off the root when a class skips in `setUpBeforeClass()`, so a failure in another class could have passed unnoticed |
 | Smoke over real HTTP (2026-11-06, after the executor change) | **26 / 26 pass** |
 | Smoke over real HTTP (WP 7.1.4 / PHP 8.3, Elementor 4.3.6 + WooCommerce 11.2.1 active) | **26 / 26 pass** |
@@ -170,13 +175,24 @@ Legend: **U** unit, **I** integration (Playground), **E** end-to-end with a real
 
 ## WooCommerce
 
+Ids from `docs/plans/phase-7-woocommerce.md`. Every order test runs with HPOS on and off (`KUDUY_HPOS`).
+
 | # | Feature | Type |
 |---|---|---|
-| W1 | Products simple/variable CRUD, attributes, stock, prices, images | I |
-| W2 | Orders list/read/status/notes on HPOS on and off | I |
-| W3 | Coupons, customers, reviews, shipping zones/methods, tax read | I |
-| W4 | Gateway settings masked; no refunds or charges possible | I |
-| W5 | Sales report numbers match WooCommerce analytics | I |
+| W1 | Core post tools refuse WooCommerce types for writes; reads and plain posts unchanged; the run's HPOS mode is the one asked for | I — **pass 2026-11-08** (`WooGuardsTest`, 6 tests: `kuduy-post-update` / `-create` (product, coupon) / `-trash` / `-meta-set` refused naming the `kuduy-woo-*` tools, product unchanged; `kuduy-post-get` on a product and updates of plain posts still work) on WP 7.1.4 + WooCommerce 11.2.2 with HPOS on and off; 6.9 pair: see §3 |
+| W2 | Secrets never in results, errors or audit rows (gateway credentials, API keys, webhook secrets, payment tokens, order keys; fields of type `password` whatever their name) | I — Redactor part **pass 2026-11-08** (`SafetyTest::test_redactor_masks_woocommerce_secrets`); end-to-end through the Woo tools with W13 |
+| W3 | Product CRUD round trip through `wc_get_product()`, lookup table updated | I |
+| W4 | Variations + parent sync | I |
+| W5 | Stock set/increase/decrease + undo | I |
+| W6 | Order read and PII masking, HPOS on and off | I |
+| W7 | Order status confirm-first, emails captured, undo | I |
+| W8 | Per-object order capabilities (shop manager yes, editor and author no), HPOS on and off | I |
+| W9 | Coupons: unique code, undo | I |
+| W10 | Customer address update; shop manager limited to customers | I |
+| W11 | Reviews moderation + rating cache | I |
+| W12 | Shipping and tax read | I |
+| W13 | Gateway settings masked by field type | I |
+| W14 | Report numbers match the fixture orders | I |
 
 ## Advanced + Developer mode
 
