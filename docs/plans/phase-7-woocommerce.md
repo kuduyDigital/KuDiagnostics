@@ -1,6 +1,6 @@
 # Phase 7a — WooCommerce (plan)
 
-Research: `RESEARCH.md` §10 (WooCommerce 11.2.2 source, read 2026-11-08; 11.0.1 for WordPress 6.9). Status: **plan proposed 2026-11-08, waiting for approval; D10–D13 open.** Integrations (ACF, forms, blocks, Site Editor, widgets, cache, WPML/Polylang) and developer mode (D4) get their own plans later in Phase 7, each after its own research.
+Research: `RESEARCH.md` §10 (WooCommerce 11.2.2 source, read 2026-11-08; 11.0.1 for WordPress 6.9). Status: **plan approved 2026-11-08; D10–D13 decided (user): option A for each** — CRUD only, no money-moving actions, PII masked by default, existing scopes. No `kuduy-woo-order-refund`. Integrations (ACF, forms, blocks, Site Editor, widgets, cache, WPML/Polylang) and developer mode (D4) get their own plans later in Phase 7, each after its own research.
 
 Exit gate (`ROADMAP.md`, WooCommerce part): every tool passes with HPOS **on** and **off**; secrets (gateway credentials, API keys, webhook secrets, payment tokens, order keys) are never returned or logged; customer personal data only reaches users allowed to see it.
 
