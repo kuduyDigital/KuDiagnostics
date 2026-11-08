@@ -109,6 +109,8 @@ Not offered (D11 A): refunds, order creation or item edits, payment changes, gat
 
 - 2026-11-09: step 1 done — core post tools refuse WooCommerce types (W1), `Redactor` masks WooCommerce secret keys and `password`-type settings fields (W2 Redactor part), runner `KUDUY_HPOS`, four CI jobs. Found in tests: with WooCommerce active a non-administrator can never edit an administrator (`wc_modify_map_meta_cap`), so `CoreUsersTest`'s last-admin case is refused by the capability check first; WordPress started a background update of the older WooCommerce 11.0.1 on 6.9 and left `.maintenance`, so the runner now sets `AUTOMATIC_UPDATER_DISABLED`. HPOS switching through `setSiteOptions` on a fresh shop works (verified by `WooGuardsTest`).
 
+- 2026-11-09: step 2 done — `kuduy-woo-status`, `kuduy-woo-product-list` / `-get` / `-create` / `-update` / `-stock` / `-trash`, `kuduy-woo-variation-list` / `-create` / `-update` (W3–W5, `WooProductsTest`). Plan change: creates (5, 7) keep no snapshot, like `kuduy-post-create` — a product is created as a draft and removed with `kuduy-woo-product-trash` (undoable); a variation can be disabled with `status: private`. Found in tests: `WC_Data::delete()` resets the object id to 0; the parent's variation price range is formatted with the store decimals ("30.00").
+
 ## Order
 
 1. Guards in core post tools + `Redactor` additions (W1, W2).

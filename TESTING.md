@@ -53,6 +53,7 @@ See `CLAUDE.md` → Commands. Integration: `KUDUY_WP=<6.9|7.1> KUDUY_PHP=<8.1|8.
 | Integration: WP 7.1.4/PHP 8.3.36 + Rank Math + Yoast (conflict) | **158 pass, 4 skipped** |
 | Integration: WP 6.9.11/PHP 8.1.34 + Elementor 3.35.9, no SEO plugin | **158 pass, 9 skipped** |
 | Smoke over real HTTP (2026-11-08) | **26 / 26 pass** |
+| Smoke over real HTTP (2026-11-09, after Phase 7 step 2) | **26 / 26 pass** |
 | Integration (local, 2026-11-08, after the Phase 6 close-out fixes: job results name their item, search-visibility note, audit `total` described): WP 7.1.4/PHP 8.3.36 + Elementor 4.3.6 + Yoast 28.8 | **158 pass, 5 skipped** (163 tests). Before the fix the two new assertions failed as expected; that run also had one `LifecycleTest` uninstall failure (`kuduy_oauth_clients still exists`) that did not repeat in any later run |
 | Integration: WP 6.9.11/PHP 8.1.34 + Elementor 4.3.6 + Yoast 28.7 | **158 pass, 5 skipped** |
 | Integration: WP 6.9.11/PHP 8.1.34 + Elementor 4.3.6, no SEO plugin | **155 pass, 4 skipped** |
@@ -61,6 +62,9 @@ See `CLAUDE.md` → Commands. Integration: `KUDUY_WP=<6.9|7.1> KUDUY_PHP=<8.1|8.
 | Integration: WP 6.9.11/PHP 8.1.34 + Elementor 4.3.6 + WooCommerce 11.0.1, HPOS on | **162 pass, 4 skipped** (after `AUTOMATIC_UPDATER_DISABLED`; before it, a background update left `.maintenance` and PHPUnit never ran) |
 | Integration: WP 6.9.11/PHP 8.1.34 + Elementor 4.3.6 + WooCommerce 11.0.1, HPOS off | **162 pass, 4 skipped** |
 | Integration: WP 7.1.4/PHP 8.3.36 and WP 6.9.11/PHP 8.1.34 + Elementor 4.3.6, no WooCommerce | **156 pass, 4 skipped** each (`WooGuardsTest` skips; run before the `AUTOMATIC_UPDATER_DISABLED` step, which the WooCommerce runs cover) |
+| Integration (local, 2026-11-09, Phase 7 step 2: status + product tools): WP 7.1.4/PHP 8.3.36 + Elementor 4.3.6 + WooCommerce 11.2.2, HPOS on / off | **172 pass, 4 skipped** each (176 tests). Before the tools were registered all 10 `WooProductsTest` tests failed and nothing else did; the first green run found the trash id bug (`WC_Data::delete()` resets the id) and a formatted parent price |
+| Integration: WP 6.9.11/PHP 8.1.34 + Elementor 4.3.6 + WooCommerce 11.0.1, HPOS on / off | **172 pass, 4 skipped** each |
+| Integration: WP 7.1.4/PHP 8.3.36 + Elementor 4.3.6, no WooCommerce; WP 6.9.11/PHP 8.1.34 + Elementor 3.35.9, no WooCommerce | **156 pass, 4 skipped**; **151 pass, 9 skipped** (Woo tests skip) |
 | Runner fix (2026-11-06) | `test-integration.mjs` now counts the `<testcase>`, `<failure>`, `<error>`, `<skipped>` elements. It used to read the first `<testsuite>` attributes, which PHPUnit 10 leaves off the root when a class skips in `setUpBeforeClass()`, so a failure in another class could have passed unnoticed |
 | Smoke over real HTTP (2026-11-06, after the executor change) | **26 / 26 pass** |
 | Smoke over real HTTP (WP 7.1.4 / PHP 8.3, Elementor 4.3.6 + WooCommerce 11.2.1 active) | **26 / 26 pass** |
@@ -181,9 +185,9 @@ Ids from `docs/plans/phase-7-woocommerce.md`. Every order test runs with HPOS on
 |---|---|---|
 | W1 | Core post tools refuse WooCommerce types for writes; reads and plain posts unchanged; the run's HPOS mode is the one asked for | I — **pass 2026-11-08** (`WooGuardsTest`, 6 tests: `kuduy-post-update` / `-create` (product, coupon) / `-trash` / `-meta-set` refused naming the `kuduy-woo-*` tools, product unchanged; `kuduy-post-get` on a product and updates of plain posts still work) on WP 7.1.4 + WooCommerce 11.2.2 with HPOS on and off; 6.9 pair: see §3 |
 | W2 | Secrets never in results, errors or audit rows (gateway credentials, API keys, webhook secrets, payment tokens, order keys; fields of type `password` whatever their name) | I — Redactor part **pass 2026-11-08** (`SafetyTest::test_redactor_masks_woocommerce_secrets`); end-to-end through the Woo tools with W13 |
-| W3 | Product CRUD round trip through `wc_get_product()`, lookup table updated | I |
-| W4 | Variations + parent sync | I |
-| W5 | Stock set/increase/decrease + undo | I |
+| W3 | Product CRUD round trip through `wc_get_product()`, lookup table updated | I — **pass 2026-11-09** on WP 7.1.4 + WooCommerce 11.2.2 and WP 6.9.11 + 11.0.1, HPOS on and off (`WooProductsTest`: create as draft, read back through `wc_get_product()`, SKU and price in `wc_product_meta_lookup`; duplicate SKU refused with nothing created; update patches only sent fields, undo restores name, sale price, short description and status; list by SKU, get, non-product refused; trash + undo restores status and variations; editor and author refused; create and publish need `publish_products`) |
+| W4 | Variations + parent sync | I — **pass 2026-11-09** on WP 7.1.4 + WooCommerce 11.2.2 and WP 6.9.11 + 11.0.1, HPOS on and off (`WooProductsTest`: custom attribute with variation flag, two variations, parent price range synced after create and update, undo, unknown option refused) |
+| W5 | Stock set/increase/decrease + undo | I — **pass 2026-11-09** on WP 7.1.4 + WooCommerce 11.2.2 and WP 6.9.11 + 11.0.1, HPOS on and off (`WooProductsTest`: refused while stock is not managed; set 10, decrease 3 → 7; undo → 10) |
 | W6 | Order read and PII masking, HPOS on and off | I |
 | W7 | Order status confirm-first, emails captured, undo | I |
 | W8 | Per-object order capabilities (shop manager yes, editor and author no), HPOS on and off | I |

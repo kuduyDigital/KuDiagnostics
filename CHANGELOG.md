@@ -4,6 +4,8 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 ## Unreleased
 
+- Added (Phase 7): WooCommerce products — `kuduy-woo-status` (version, order storage, currency, tax/shipping/coupon/review settings, coming-soon mode), `kuduy-woo-product-list`, `-get`, `-create`, `-update`, `-stock`, `-trash`, `kuduy-woo-variation-list`, `-create`, `-update`. Everything goes through WooCommerce's own product API with WooCommerce's own permission rules; changes, stock and trash can be undone; nothing is deleted permanently. Products are created as drafts; publishing needs permission to publish products.
+
 - Changed: while WooCommerce is active, `kuduy-post-create`, `-update`, `-trash` and `kuduy-post-meta-set` refuse products, variations, orders and coupons and name the WooCommerce tools to use instead (plain post writes would skip WooCommerce's own data handling). Reading them still works.
 - Security: results and audit rows also mask WooCommerce secrets (`api_signature`, `consumer_key`, `order_key`, `cart_hash`, `payment_token`) and the value of any settings field of type `password`.
 
@@ -350,3 +352,10 @@ Format: user-facing releases first (newest on top), then the dated development h
 - Runner: `KUDUY_HPOS=on|off` with WooCommerce (sets `woocommerce_custom_orders_table_enabled`, `woocommerce_coming_soon: no`, and `kuduy_test_hpos` for the tests to check); `AUTOMATIC_UPDATER_DISABLED` on every test site (a background update of WooCommerce 11.0.1 on WordPress 6.9 left `.maintenance` and PHPUnit never ran). CI: WooCommerce 11.0.1 on 6.9 and 11.2.2 on 7.1, each with HPOS on and off.
 - `CoreUsersTest`: with WooCommerce active the last-admin demotion is refused by WooCommerce's own capability rule before KUDUY's; the test accepts that refusal.
 - Local disk: C: was full (Playground leaves ~300 MB per run in the system temp folder); local runs used `TMP`/`TEMP` under `build/tmp` on D:. Results: `TESTING.md` §3.
+
+### 2026-11-09 — Phase 7 step 2: WooCommerce status and product tools
+
+- `Modules/Woo`: `Woo` (one field map for read, write and undo; attributes; variation attribute checks; WooCommerce permission wrapper), `WooStatus`, `ProductRead`, `ProductWrite`, `VariationWrite`; 10 tools, only listed while WooCommerce is active. WPCS learns WooCommerce's capabilities; PHPStan stub extended.
+- TDD: `WooProductsTest` (10 tests) failed with the tools unregistered, then passed after two fixes found by the first green run (the trash tool read the product id after `delete()` had reset it to 0; the parent price range is formatted with the store decimals, so the test compares amounts).
+- Plan change: creates keep no snapshot (like `kuduy-post-create`); a created product is undone with `kuduy-woo-product-trash`.
+- Results: `TESTING.md` §3 (WooCommerce 11.2.2 on 7.1 and 11.0.1 on 6.9, HPOS on and off; runs without WooCommerce unchanged).

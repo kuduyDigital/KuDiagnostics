@@ -39,6 +39,10 @@ use Kuduy\Mcp\Modules\Media\MediaTools;
 use Kuduy\Mcp\Modules\Seo\SeoAudit;
 use Kuduy\Mcp\Modules\Seo\SeoTools;
 use Kuduy\Mcp\Modules\Seo\SeoVerify;
+use Kuduy\Mcp\Modules\Woo\ProductRead;
+use Kuduy\Mcp\Modules\Woo\ProductWrite;
+use Kuduy\Mcp\Modules\Woo\VariationWrite;
+use Kuduy\Mcp\Modules\Woo\WooStatus;
 
 /**
  * Built per request so tools and integrations reflect the current state.
@@ -121,6 +125,16 @@ final class ToolRegistry {
 		}
 		foreach ( array( 'start', 'status', 'cancel' ) as $mode ) {
 			$registry->register( new JobTools( $mode ) );
+		}
+		$registry->register( new WooStatus() );
+		foreach ( array( 'list', 'get', 'variations' ) as $mode ) {
+			$registry->register( new ProductRead( $mode ) );
+		}
+		foreach ( array( 'create', 'update', 'stock', 'trash' ) as $mode ) {
+			$registry->register( new ProductWrite( $mode ) );
+		}
+		foreach ( array( 'create', 'update' ) as $mode ) {
+			$registry->register( new VariationWrite( $mode ) );
 		}
 		do_action( 'kuduy_mcp_register_tools', $registry );
 		return $registry;

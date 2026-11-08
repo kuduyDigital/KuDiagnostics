@@ -11,20 +11,120 @@ namespace Automattic\WooCommerce\Utilities {
 }
 
 namespace {
+	define( 'WC_VERSION', '11.2.2' );
+	class WC_Data_Exception extends Exception {}
+	class WC_DateTime extends DateTime {
+		public function date( string $format ): string {}
+	}
+	class WC_Countries {
+		public function get_base_country(): string {}
+	}
+	class WooCommerce {
+		/** @var WC_Countries */
+		public $countries;
+	}
+	function WC(): WooCommerce {}
+
 	abstract class WC_Data {
 		public function save(): int {}
 		public function get_id(): int {}
+		public function delete( bool $force_delete = false ): bool {}
+	}
+	class WC_Product_Download {
+		public function get_name(): string {}
+		public function get_file(): string {}
+	}
+	class WC_Product_Attribute {
+		public function set_id( int $value ): void {}
+		public function set_name( string $value ): void {}
+		/** @param array<int|string> $value */
+		public function set_options( array $value ): void {}
+		public function set_position( int $value ): void {}
+		public function set_visible( bool $value ): void {}
+		public function set_variation( bool $value ): void {}
+		public function get_name(): string {}
+		/** @return array<int|string> */
+		public function get_options(): array {}
+		public function get_visible(): bool {}
+		public function get_variation(): bool {}
+		public function is_taxonomy(): bool {}
 	}
 	class WC_Product extends WC_Data {
+		public function get_type(): string {}
 		public function get_name( string $context = 'view' ): string {}
+		public function get_status( string $context = 'view' ): string {}
+		public function get_sku( string $context = 'view' ): string {}
+		public function get_price( string $context = 'view' ): string {}
+		public function get_regular_price( string $context = 'view' ): string {}
+		public function get_sale_price( string $context = 'view' ): string {}
+		public function get_short_description( string $context = 'view' ): string {}
+		public function get_stock_status( string $context = 'view' ): string {}
+		public function get_manage_stock( string $context = 'view' ): bool {}
+		public function get_stock_quantity( string $context = 'view' ): ?int {}
+		public function get_parent_id( string $context = 'view' ): int {}
+		/** @return array<int> */
+		public function get_category_ids( string $context = 'view' ): array {}
+		/** @return array<string, mixed> */
+		public function get_attributes( string $context = 'view' ): array {}
+		/** @return array<string, WC_Product_Download> */
+		public function get_downloads( string $context = 'view' ): array {}
+		public function get_date_created( string $context = 'view' ): ?WC_DateTime {}
+		public function get_date_modified( string $context = 'view' ): ?WC_DateTime {}
+		public function get_average_rating( string $context = 'view' ): string {}
+		public function get_review_count( string $context = 'view' ): int {}
+		public function get_total_sales( string $context = 'view' ): int {}
+		/** @return array<int> */
+		public function get_children(): array {}
+		public function is_on_sale( string $context = 'view' ): bool {}
+		public function managing_stock(): bool {}
+		public function get_stock_managed_by_id(): int {}
 		public function set_name( string $name ): void {}
 		public function set_regular_price( string $price ): void {}
 		public function set_status( string $status ): void {}
+		/** @param array<mixed> $raw_attributes */
+		public function set_attributes( array $raw_attributes ): void {}
 	}
 	class WC_Product_Simple extends WC_Product {}
+	class WC_Product_Grouped extends WC_Product {}
+	class WC_Product_External extends WC_Product {}
+	class WC_Product_Variable extends WC_Product {
+		/** @param int|WC_Product $product */
+		public static function sync( $product, bool $save = true ): WC_Product {}
+		public function get_variation_regular_price( string $min_or_max = 'min', bool $for_display = false ): string {}
+	}
+	class WC_Product_Variation extends WC_Product {
+		public function set_parent_id( int $id ): void {}
+	}
+
 	/**
 	 * @param mixed $the_product
 	 * @return WC_Product|null|false
 	 */
 	function wc_get_product( $the_product = false ) {}
+	/**
+	 * @param array<string, mixed> $args
+	 * @return mixed Paginated object with paginate => true, otherwise a list.
+	 */
+	function wc_get_products( array $args ) {}
+	/** @return array<int> */
+	function wc_get_product_ids_on_sale(): array {}
+	/**
+	 * @param int|WC_Product $product
+	 * @return int|float|false|null
+	 */
+	function wc_update_product_stock( $product, ?int $stock_quantity = null, string $operation = 'set', bool $updating = false ) {}
+	function wc_rest_check_post_permissions( string $post_type, string $context = 'read', int $object_id = 0 ): bool {}
+	/** @param mixed $number */
+	function wc_format_decimal( $number, bool|int $dp = false, bool $trim_zeros = false ): string {}
+	function wc_attribute_taxonomy_id_by_name( string $name ): int {}
+	function wc_get_page_id( string $page ): int {}
+	function get_woocommerce_currency(): string {}
+	function get_woocommerce_currency_symbol( string $currency = '' ): string {}
+	function wc_get_price_decimals(): int {}
+	function wc_get_price_thousand_separator(): string {}
+	function wc_get_price_decimal_separator(): string {}
+	function wc_prices_include_tax(): bool {}
+	function wc_tax_enabled(): bool {}
+	function wc_shipping_enabled(): bool {}
+	function wc_coupons_enabled(): bool {}
 }
