@@ -4,6 +4,10 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 ## Unreleased
 
+## 0.5.0 — 2026-11-08
+
+**Phase 6: SEO and media (14 new tools).** Works with Rank Math, Yoast SEO, All in One SEO and SEOPress; SEO changes are refused while two SEO plugins are active.
+
 - Added (Phase 6): All in One SEO and SEOPress support for the SEO tools (through each plugin's own abilities), `kuduy-seo-verify` (reads the live page's SEO tags and compares them with what you expect) and `kuduy-seo-audit` (posts without their own SEO title, description or keyword).
 - Added (Phase 6): `kuduy-media-usage` (where an image is used), `kuduy-media-upload` (add an image from an HTTPS URL), `kuduy-media-regenerate` (rebuild thumbnail sizes).
 - Added (Phase 6): background jobs — `kuduy-job-start` runs `kuduy-seo-update`, `kuduy-media-update` or `kuduy-media-regenerate` over up to 500 items, `kuduy-job-status`, `kuduy-job-cancel`. Each item is checked like a single call and keeps its own undo. New database table `kuduy_jobs` (created automatically on update).
