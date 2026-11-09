@@ -437,3 +437,7 @@ Format: user-facing releases first (newest on top), then the dated development h
 ### 2026-11-09 — ACF on staging (claude.ai)
 
 - Staging on 0.7.0. The session created a test field group and draft post in WP admin (built-in browser), ran the check in claude.ai web: 7 / 7 pass (values, password never shown, four refusals with nothing changed, post-meta guard, undo). Test post and field group trashed afterwards. `TESTING.md` §3, `COMPATIBILITY.md`.
+
+### 2026-11-09 — Forms research and plan (D15–D17 proposed)
+
+- Read Contact Form 7 6.2.4.1 (6.1.7 for WordPress 6.9: 6.2 needs WordPress 7.1 and PHP 8.3), Flamingo 2.6.4, WPForms Lite 2.0.4 and Fluent Forms 6.2.17 from their wordpress.org ZIPs; Gravity Forms from its docs (`RESEARCH.md` §10b). Findings: WPForms Lite stores no entries; Fluent Forms' own abilities are off by default; Flamingo's spam action sends the message to Akismet; CF7 mail settings decide where submissions are emailed. Plan `docs/plans/phase-7-forms.md` (8 `kuduy-forms-*` tools) and decisions D15–D17 waiting for approval; no code.

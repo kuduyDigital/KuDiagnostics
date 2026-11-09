@@ -157,7 +157,7 @@ Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude cli
 |---|---|
 | ACF field values (posts, users, terms) and field groups (read) | Tested (A1–A6: `kuduy-acf-status`, `-field-groups`, `-get`, `-update`; ACF 6.8.11 free, WP 6.9 + 7.1; on Hostinger staging with claude.ai 2026-11-09; PRO field types UNVERIFIED) |
 | CPT and taxonomies (registering new ones) | Not started |
-| Fluent Forms, WPForms, Gravity Forms, Contact Form 7 | Not started |
+| Fluent Forms, WPForms, Gravity Forms, Contact Form 7 | Not started (researched 2026-11-09, `RESEARCH.md` §10b; plan `docs/plans/phase-7-forms.md`, D15–D17 proposed) |
 | Navigation menus | Tested (classic menus, see §5) |
 | Widgets and sidebars | Not started |
 | Block Editor, Site Editor, Global Styles | Not started |

@@ -28,6 +28,9 @@ Approved 2026-11-04 (decisions D1–D6); D1 and D2 changed by user decision duri
 | D12 | Customer personal data: masked by default, full only with `include_pii` + per-object capability, never in audit rows (A), or full data to anyone with the capability (B) | **Decided 2026-11-08 (user): A** |
 | D13 | Scopes for Woo tools: existing `kuduy:read` / `write` / `admin` (A), or a new `kuduy:shop` scope (B) | **Decided 2026-11-08 (user): A** |
 | D14 | ACF data path: own tools on ACF's public API, definitions read only (A); A + definition writes through ACF's abilities when the site enabled them (B); raw post meta (C) (see `docs/plans/phase-7-acf.md`) | **Decided 2026-11-09 (user): A** |
+| D15 | Forms data path: own tools on each plugin's public PHP API with one shared `kuduy-forms-*` tool set (A); the plugins' own abilities where on + own tools for the rest (B); read only (C) (see `docs/plans/phase-7-forms.md`) | **Proposed 2026-11-09** (recommended: A) |
+| D16 | What forms tools may change: inbox actions with undo, CF7 form edits, mail routing confirm-first under `kuduy:admin`, no permanent delete (A); A with mail routing refused (B); nothing (C) | **Proposed 2026-11-09** (recommended: A) |
+| D17 | Visitors' personal data in entries: masked by field type, full with `include_pii` + entry-edit permission, never in audit rows (A); every value masked unless `include_pii` (B) | **Proposed 2026-11-09** (recommended: A) |
 
 ## 3. Components
 

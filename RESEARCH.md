@@ -186,7 +186,7 @@ Source read 2026-11-05 from the current wordpress.org ZIPs (all tested up to Wor
 **Background jobs:** Action Scheduler is bundled by WooCommerce, Rank Math and AIOSEO (`as_enqueue_async_action()` when loaded), otherwise WP-Cron (`wp_schedule_single_event()` + `spawn_cron()`, which needs a loopback request). **UNVERIFIED:** WP-Cron loopback on the Hostinger staging site.
 
 - **UNVERIFIED (Phase 6, later):** Rank Math schema and redirect writes, Yoast/Rank Math term SEO, Pro/Premium features (Yoast redirects, SEOPress PRO), sitemap contents per plugin.
-- **UNVERIFIED (Phase 7, later in the phase):** ACF `get_field` / `update_field` and field-group APIs, CF7 / WPForms / Gravity / Fluent entry APIs, WPML / Polylang language APIs, Site Editor and Global Styles REST. WooCommerce: §10.
+- **UNVERIFIED (Phase 7, later in the phase):** WPML / Polylang language APIs, Site Editor and Global Styles REST. WooCommerce: §10; ACF: §10a; forms: §10b.
 - Rule: each phase starts by reading the integration's own source and docs; nothing is built from guessed meta keys.
 
 ## 10. WooCommerce (Phase 7)
@@ -251,6 +251,51 @@ Source read 2026-11-09 from the wordpress.org ZIP of **ACF 6.8.11** (the version
 
 **Still UNVERIFIED (ACF):** PRO field types and options pages; what `acf_validate_value()` accepts per field type outside a form submission (to test); REST output of fields (`show_in_rest`).
 
+## 10b. Forms plugins (Phase 7)
+
+Source read 2026-11-09 from the current wordpress.org ZIPs: **Contact Form 7 6.2.4.1**, **Flamingo 2.6.4** (CF7's entry store), **WPForms Lite 2.0.4**, **Fluent Forms 6.2.17**. Gravity Forms is paid: **docs only** (docs.gravityforms.com), behaviour **UNVERIFIED** until a licensed ZIP is tested. The staging site has **no forms plugin** today (checked with `kuduy-plugin-list` 2026-11-09). Elementor Pro's Form widget also stores submissions (Pro ZIP not on this machine): **UNVERIFIED**, later. Nothing below has run in a test yet.
+
+**Versions per test pair:** CF7 6.2 needs **WordPress 7.1 and PHP 8.3** (header of every 6.2.x tag); **6.1.7 is the last release for 6.9** (WordPress 6.7, PHP 7.4). The functions KUDUY would use (`wpcf7_save_contact_form`, `wpcf7_sanitize_mail`, `wpcf7_map_meta_cap`, REST routes) are the same in 6.1.7 (SVN tag compared). Flamingo 2.6.4 (WordPress 6.7), WPForms Lite 2.0.4 (5.5) and Fluent Forms 6.2.17 (6.4) run on both pairs.
+
+**Abilities:** CF7 and Flamingo register none. WPForms and Fluent Forms register their own (below). Neither replaces a full tool set: WPForms Lite has no entries, Fluent's are off by default.
+
+**Contact Form 7 6.2.4.1** (`includes/contact-form.php`, `contact-form-functions.php`, `capabilities.php`, `rest-api.php`):
+- Detection: constant `WPCF7_VERSION`, class `WPCF7_ContactForm`.
+- Storage: post type `wpcf7_contact_form` (not public). Properties `form` (form-tag markup), `mail`, `mail_2` (`active`, `subject`, `sender`, `recipient`, `body`, `additional_headers`, `attachments`, `use_html`, `exclude_blank`), `messages`, `additional_settings`, stored as `_{prop}` post meta by `save()`, plus `_locale` and `_hash`. Add-ons add properties through `wpcf7_pre_construct_contact_form_properties`.
+- API: `wpcf7_contact_form( $id )`, `WPCF7_ContactForm::find( $args )`, `scan_form_tags()` (type, basetype, name, options, values, labels), `wpcf7_save_contact_form( $data, 'save' )` (patch: null keeps a property). That is the same path CF7's own REST `contact-form-7/v1/contact-forms` uses. `form` and mail `body` go through `wpcf7_kses()` unless the user has `unfiltered_html`; saving `mail` always sets `active = true`. `WPCF7_ConfigValidator( $form )->validate()` gives config errors. `delete()` is **permanent** (`wp_delete_post( $id, true )`); `copy()` duplicates.
+- Capabilities (`wpcf7_map_meta_cap`, filter of the same name): read → `WPCF7_ADMIN_READ_CAPABILITY` (default `edit_posts`); edit/delete → `WPCF7_ADMIN_READ_WRITE_CAPABILITY` (default `publish_pages`); integrations → `manage_options`. Per form: `wpcf7_edit_contact_form` / `wpcf7_read_contact_form` / `wpcf7_delete_contact_form` with the id.
+- No submissions stored by CF7 itself. Integration secrets live in option `wpcf7` (keys `recaptcha`, `turnstile`, `stripe`, `sendinblue`: site/secret keys and API keys): never returned.
+- Risk: the `mail` recipient, sender and `additional_headers` (Cc/Bcc) decide where every future submission is emailed. Changing them re-routes visitors' personal data.
+
+**Flamingo 2.6.4** (`includes/class-inbound-message.php`, `capabilities.php`):
+- Detection: constant `FLAMINGO_VERSION`, class `Flamingo_Inbound_Message`.
+- Messages: post type `flamingo_inbound`; channel taxonomy `flamingo_inbound_channel` (CF7 form slug); `Flamingo_Inbound_Message::find( $args )` (WP_Query args + `channel`, `channel_id`, `hash`; `post_status` `any` | `flamingo-spam` | `trash`), `count()`. Fields in meta `_subject`, `_from`, `_from_name`, `_from_email`, `_fields` (+ `_field_{name}`), `_meta` (remote IP, user agent, URL, date), `_akismet`, `_recaptcha`, `_spam_log`, `_consent`. Contacts: post type `flamingo_contact` (`Flamingo_Contact`).
+- Actions: `trash()` (permanent when `EMPTY_TRASH_DAYS` is 0), `untrash()`, `delete()` (permanent), `spam()` / `unspam()`. **`spam()` and `unspam()` also send the message to Akismet** when Akismet is active (`akismet_submit_spam` / `_ham`): data leaves the site.
+- Capabilities (`flamingo_map_meta_cap`, filterable): every Flamingo cap maps to **`edit_users`** by default (so admins only).
+
+**WPForms Lite 2.0.4** (`src/Integrations/Abilities/`, `includes/class-form.php`, `src/Access/Capabilities.php`):
+- Detection: constant `WPFORMS_VERSION`, `wpforms()->is_pro()`.
+- Forms: post type `wpforms`, JSON in `post_content` (`wpforms_decode()`): `fields`, `settings` (incl. `notifications` with recipient `email`, `confirmations`). Handler `wpforms()->obj( 'form' )`: `get( $id )`, `add()`, `update( $id, $data )`, `delete()`.
+- **Entries: Lite stores none on the site** (entries, entry REST and `wpforms_entries` tables are Pro; Lite Connect backs entries up to WPForms' servers). Pro entries: **UNVERIFIED**.
+- Abilities (WordPress 6.9+, category `wpforms`): reads always on: `wpforms/list-forms`, `wpforms/get-form` ("safe" settings only: title, description, submit text, AJAX, honeypot, antispam), `wpforms/describe-editing-schema`, Lite `wpforms/get-form-stats` (an upsell message, no data). Writes `wpforms/create-form`, `update-form-settings`, `add-field`, `update-field` **only when `wpforms_settings[ai-mcp-write-enabled]` is on** (off by default; filter `wpforms_integrations_abilities_allow_write`).
+- Capabilities: `wpforms_current_user_can( $cap, $id )`; in Lite every check is **`manage_options`** (filter `wpforms_manage_cap`); Pro has per-form access control (UNVERIFIED).
+
+**Fluent Forms 6.2.17** (`app/Api/`, `app/Services/Submission/SubmissionService.php`, `app/Modules/Acl/Acl.php`, `app/Modules/MCP/`):
+- Detection: constant `FLUENTFORM_VERSION`, function `fluentFormApi()`.
+- Storage: own tables `fluentform_forms` (`form_fields` JSON), `fluentform_form_meta` (settings, `notifications`), `fluentform_submissions` (`response` JSON, `status`, `is_favourite`, `ip`, `browser`, `device`, `user_id`, `source_url`), `fluentform_entry_details`, `fluentform_submission_meta`, `fluentform_logs`.
+- Read API: `fluentFormApi( 'forms' )->forms( $atts )`, `->find( $id )`, `->form( $form )->inputs() / fields() / settings() / emailNotifications()`, `->entryInstance( $form )->entries( $atts ) / entry( $id )`; `fluentFormApi( 'submissions' )`.
+- Write services: `SubmissionService::updateStatus( [ entry_id, status ] )` (statuses from `Helper::getMutableEntryStatuses()`: `unread`, `read`, `favorites`, `trashed`; action `fluentform/after_submission_status_update`), `toggleIsFavorite()`, `storeNote()`, `handleBulkActions()`, `deleteEntries()` (**permanent**, also deletes uploaded files).
+- Abilities (`app/Modules/MCP/`): `fluentform/list-forms`, `get-form`, `get-forms-context`, `list-submissions`, `get-submission`, `update-submission-status`, `add-submission-note`, `delete-submission`, `bulk-update-submissions`, `create-form`, `update-form-fields`, `upsert-email-notification`, styling, integrations and report abilities. **Registered only when option `_fluentform_mcp_settings[enabled]` is `yes`** (off by default; turning it on needs `manage_options`). Fluent also registers its own MCP server with the `mcp_adapter_init` hook.
+- Capabilities: `Acl::hasPermission( $permission, $form_id )` with `fluentform_dashboard_access`, `forms_manager`, `entries_viewer`, `manage_entries`, `view_payments`, `manage_payments`, `settings_manager`, `full_access`; admins (`manage_options`) pass everything; form scope through `FormManagerService::hasFormPermission()`. Fluent's own docblock warns that a user whose **role** was granted Fluent access passes every permission except full access (only per-user managers get the separation).
+
+**Gravity Forms (docs, read 2026-11-09; no source):**
+- `GFAPI::get_form( $id )`, `get_forms()`, `update_form()`; entries `get_entries( $form_ids, $search_criteria, $sorting, $paging, &$total )` (criteria `status` `active` | `spam` | `trash`, `start_date`, `end_date`, `field_filters`), `get_entry()`, `count_entries()`, `update_entry( $entry )` (true or `WP_Error`), `update_entry_property( $id, $property, $value )` (`status`, `is_read`, `is_starred`, payment columns, …), `delete_entry()` (**permanent**); notes `get_notes()`, `add_note( $entry_id, $user_id, $user_name, $note, $type )`, `update_note()`, `delete_note()`.
+- The docs do not say GFAPI checks capabilities: the caller must. Capabilities (role guide): `gravityforms_view_entries`, `_edit_entries`, `_delete_entries`, `_view_entry_notes`, `_edit_entry_notes`, `_edit_forms`, `_create_form`, `_delete_forms`, `_view_settings`, `_edit_settings`, `_export_entries`, … and a hidden `gform_full_access`. How Gravity grants these to administrators, and the right check function (`GFCommon::current_user_can_any()`?), are **UNVERIFIED**.
+
+**Personal data:** every entry is visitor personal data (names, emails, phones, addresses, free-text messages, IP, user agent, uploaded files). Flamingo, Fluent and Gravity register WordPress personal-data exporters / erasers (UNVERIFIED for each). Add-on API keys (Mailchimp, payment gateways, reCAPTCHA) sit in options per plugin and are never returned.
+
+**Still UNVERIFIED (forms):** everything about Gravity Forms beyond the docs, WPForms Pro entries, Elementor Pro form submissions, Fluent Forms Pro, CF7 add-on properties, Akismet behaviour in tests.
+
 ## 11. Licensing and dependencies
 
 | Component | License (verified) | Use in KUDUY |
@@ -273,6 +318,8 @@ KUDUY MCP is GPL-2.0-or-later, written from public specifications and documented
 | Elementor Pro Theme Builder / custom CSS, add-on schemas, v3 → v4 migration, Elementor 3.x behaviour | 5 |
 | SEO plugin APIs and rendered output | 6 — APIs read (§9); in-process `<head>`, Pro/Premium, schema/redirect writes still to check |
 | WooCommerce APIs | 7 — read from 11.2.2 source (§10); behaviour, HPOS switching in Playground and staging's HPOS state still to check |
-| ACF, forms, multilingual, Site Editor APIs | 7 (later in the phase) |
+| ACF APIs | 7 — done (§10a), staging check passed |
+| Forms plugin APIs | 7 — read from source (§10b: CF7, Flamingo, WPForms Lite, Fluent Forms; Gravity Forms from docs); behaviour still to test |
+| Multilingual, Site Editor APIs | 7 (later in the phase) |
 | WP-CLI command registration for hidden-mode recovery | 8 |
 | MCP Tasks extension for background jobs | later |
