@@ -1,0 +1,217 @@
+<?php
+/**
+ * Forms plugins are not dependencies; this declares only the Contact Form 7, Flamingo, Fluent Forms and WPForms API
+ * KUDUY and its tests call (RESEARCH.md §10b).
+ */
+
+namespace {
+	define( 'WPCF7_VERSION', '6.2.4.1' );
+	define( 'FLAMINGO_VERSION', '2.6.4' );
+	define( 'FLUENTFORM_VERSION', '6.2.17' );
+	define( 'WPFORMS_VERSION', '2.0.4' );
+
+	class WPCF7_FormTag {
+		/** @var string */
+		public $type;
+		/** @var string */
+		public $basetype;
+		/** @var string */
+		public $name;
+		/** @var array<int, string> */
+		public $values;
+		/** @var array<int, string> */
+		public $labels;
+		public function is_required(): bool {}
+	}
+
+	class WPCF7_ContactForm {
+		const post_type = 'wpcf7_contact_form';
+		/**
+		 * @param array<string, mixed>|string $args
+		 * @return list<WPCF7_ContactForm>
+		 */
+		public static function find( $args = '' ): array {}
+		/** @return int */
+		public function id() {}
+		/** @return string */
+		public function name() {}
+		/** @return string */
+		public function title() {}
+		/** @param string $title */
+		public function set_title( $title ): void {}
+		/** @return string */
+		public function locale() {}
+		/** @return mixed */
+		public function prop( string $name ) {}
+		/** @return array<string, mixed> */
+		public function get_properties(): array {}
+		/** @param array<string, mixed> $properties */
+		public function set_properties( array $properties ): void {}
+		/** @return int */
+		public function save() {}
+		/** @return list<WPCF7_FormTag> */
+		public function scan_form_tags( $cond = null ): array {}
+		/** @param array<string, mixed>|string $options */
+		public function shortcode( $options = '' ): string {}
+	}
+
+	class WPCF7_ConfigValidator {
+		public function __construct( WPCF7_ContactForm $contact_form, array $options = array() ) {}
+		public function validate(): bool {}
+		public function save(): void {}
+		/**
+		 * @param array<string, mixed> $options
+		 * @return array<string, mixed>
+		 */
+		public function collect_error_messages( array $options = array() ): array {}
+	}
+
+	/** @param int|WP_Post $post */
+	function wpcf7_contact_form( $post ): ?WPCF7_ContactForm {}
+	/**
+	 * @param array<string, mixed>|string $data
+	 * @return WPCF7_ContactForm|false
+	 */
+	function wpcf7_save_contact_form( $data = '', string $context = 'save' ) {}
+	function wpcf7_validate_configuration(): bool {}
+	/** @return int|false */
+	function wpcf7_flamingo_add_channel( string $slug, string $name = '' ) {}
+
+	class Flamingo_Inbound_Message {
+		const post_type        = 'flamingo_inbound';
+		const spam_status      = 'flamingo-spam';
+		const channel_taxonomy = 'flamingo_inbound_channel';
+		/** @var string */
+		public $channel;
+		/** @var string */
+		public $subject;
+		/** @var string */
+		public $from;
+		/** @var string */
+		public $from_name;
+		/** @var string */
+		public $from_email;
+		/** @var array<string, mixed> */
+		public $fields;
+		/** @var array<string, mixed> */
+		public $meta;
+		/** @var array<string, mixed> */
+		public $akismet;
+		/** @var bool */
+		public $spam;
+		/** @var array<int, mixed> */
+		public $spam_log;
+		/** @param int|WP_Post|null $post */
+		public function __construct( $post = null ) {}
+		/**
+		 * @param array<string, mixed>|string $args
+		 * @return list<Flamingo_Inbound_Message>
+		 */
+		public static function find( $args = '' ): array {}
+		/** @param array<string, mixed>|string $args */
+		public static function count( $args = '' ): int {}
+		/** @param array<string, mixed>|string $args */
+		public static function add( $args = '' ): Flamingo_Inbound_Message {}
+		/** @return int */
+		public function id() {}
+		/** @return bool|null */
+		public function trash() {}
+		/** @return bool|null */
+		public function untrash() {}
+		/** @return int|null */
+		public function spam() {}
+		/** @return int|null */
+		public function unspam() {}
+	}
+
+	function flamingo_akismet_is_active(): bool {}
+
+	/** @return object */
+	function fluentFormApi( string $module = 'forms' ) {}
+
+	class WPForms_Main {
+		public function is_pro(): bool {}
+		/** @return object|null */
+		public function obj( string $name ) {}
+	}
+	function wpforms(): WPForms_Main {}
+	/** @return mixed */
+	function wpforms_decode( string $data ) {}
+	/** @param string|array<int, string> $caps */
+	function wpforms_current_user_can( $caps = array(), int $id = 0 ): bool {}
+}
+
+namespace FluentForm\App\Models {
+	/** Query builder of Fluent Forms' ORM (only the calls KUDUY makes). */
+	class Builder {
+		/** @param mixed $operator */
+		public function where( string $column, $operator = null, $value = null ): Builder {}
+		/** @param array<int, mixed> $values */
+		public function whereNotIn( string $column, array $values ): Builder {}
+		public function orderBy( string $column, string $direction = 'asc' ): Builder {}
+		public function offset( int $offset ): Builder {}
+		public function limit( int $limit ): Builder {}
+		/** @return list<object> */
+		public function get(): array {}
+		public function first(): ?object {}
+		public function count(): int {}
+		public function delete(): int {}
+	}
+	class Form {
+		/** @param mixed $operator */
+		public static function where( string $column, $operator = null, $value = null ): Builder {}
+		public static function orderBy( string $column, string $direction = 'asc' ): Builder {}
+	}
+	class Submission {
+		/** @param mixed $operator */
+		public static function where( string $column, $operator = null, $value = null ): Builder {}
+	}
+	class SubmissionMeta {
+		/** @param mixed $operator */
+		public static function where( string $column, $operator = null, $value = null ): Builder {}
+	}
+}
+
+namespace FluentForm\App\Modules\Acl {
+	class Acl {
+		/** @param string|array<int, string> $permissions */
+		public static function hasPermission( $permissions, $formId = false ): bool {}
+	}
+}
+
+namespace FluentForm\App\Services\Submission {
+	class SubmissionService {
+		/**
+		 * @param array<string, mixed> $attributes
+		 * @return string
+		 */
+		public function updateStatus( $attributes = array() ) {}
+		/** @return array<int, mixed> */
+		public function toggleIsFavorite( int $submissionId ): array {}
+		/**
+		 * @param array<string, mixed> $attributes
+		 * @return array<string, mixed>
+		 */
+		public function storeNote( int $submissionId, $attributes = array() ): array {}
+	}
+}
+
+namespace {
+	// Cache plugins (RESEARCH.md §10d): only the purge API KUDUY calls.
+	function w3tc_flush_all( $extras = null ): void {}
+	function w3tc_flush_post( int $post_id, bool $force = false, $extras = null ): void {}
+	function w3tc_flush_url( string $url, $extras = null ): void {}
+	function wp_cache_clear_cache( int $blog_id = 0 ): void {}
+	/** @param int $id */
+	function wpsc_delete_post_cache( $id ): void {}
+	function wpsc_delete_url_cache( string $url ): bool {}
+	/** @return mixed */
+	function wpfc_clear_all_cache( bool $minified = false ) {}
+	/** @param int|false $post_id */
+	function wpfc_clear_post_cache_by_id( $post_id = false ): void {}
+	function rocket_clean_domain( string $lang = '' ): bool {}
+	/** @return mixed */
+	function rocket_clean_post( int $post_id, $post = null ) {}
+	/** @param array<int, string>|string $urls */
+	function rocket_clean_files( $urls, $filesystem = null, bool $run_actions = true ): void {}
+}

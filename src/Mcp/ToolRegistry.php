@@ -35,6 +35,14 @@ use Kuduy\Mcp\Modules\Elementor\ElementorWrite;
 use Kuduy\Mcp\Modules\Elementor\ThemeBuilder;
 use Kuduy\Mcp\Jobs\JobTools;
 use Kuduy\Mcp\Modules\Acf\AcfTools;
+use Kuduy\Mcp\Modules\Blocks\BlockTools;
+use Kuduy\Mcp\Modules\Blocks\GlobalStyles;
+use Kuduy\Mcp\Modules\Blocks\TemplateTools;
+use Kuduy\Mcp\Modules\Blocks\WidgetTools;
+use Kuduy\Mcp\Modules\Cache\CacheTools;
+use Kuduy\Mcp\Modules\Forms\Cf7Save;
+use Kuduy\Mcp\Modules\Forms\FormEntries;
+use Kuduy\Mcp\Modules\Forms\FormsTools;
 use Kuduy\Mcp\Modules\Media\MediaLibrary;
 use Kuduy\Mcp\Modules\Media\MediaTools;
 use Kuduy\Mcp\Modules\Seo\SeoAudit;
@@ -165,6 +173,30 @@ final class ToolRegistry {
 		$registry->register( new Report() );
 		foreach ( array( 'status', 'field-groups', 'get', 'update' ) as $mode ) {
 			$registry->register( new AcfTools( $mode ) );
+		}
+		foreach ( array( 'status', 'list', 'get' ) as $mode ) {
+			$registry->register( new FormsTools( $mode ) );
+		}
+		foreach ( array( 'entries', 'entry-get', 'entry-update', 'entry-note' ) as $mode ) {
+			$registry->register( new FormEntries( $mode ) );
+		}
+		foreach ( array( 'save', 'mail' ) as $mode ) {
+			$registry->register( new Cf7Save( $mode ) );
+		}
+		foreach ( array( 'types', 'post' ) as $mode ) {
+			$registry->register( new BlockTools( $mode ) );
+		}
+		foreach ( array( 'list', 'get', 'update', 'revert' ) as $mode ) {
+			$registry->register( new TemplateTools( $mode ) );
+		}
+		foreach ( array( 'get', 'update' ) as $mode ) {
+			$registry->register( new GlobalStyles( $mode ) );
+		}
+		foreach ( array( 'list', 'save', 'remove' ) as $mode ) {
+			$registry->register( new WidgetTools( $mode ) );
+		}
+		foreach ( array( 'status', 'purge' ) as $mode ) {
+			$registry->register( new CacheTools( $mode ) );
 		}
 		do_action( 'kuduy_mcp_register_tools', $registry );
 		return $registry;

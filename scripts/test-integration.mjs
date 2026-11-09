@@ -1,6 +1,7 @@
 // Runs tests/integration with PHPUnit inside Playground's WordPress and fails on the JUnit report,
 // not on Playground's exit code (PHPUnit's exit() inside runPHP is not a reliable signal).
-// Env: KUDUY_WP (default 7.1), KUDUY_PHP (default 8.3), KUDUY_HPOS (on|off, default on; only with WooCommerce).
+// Env: KUDUY_WP (default 7.1), KUDUY_PHP (default 8.3), KUDUY_HPOS (on|off, default on; only with WooCommerce),
+// KUDUY_FILTER (run only matching tests).
 import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -74,6 +75,17 @@ for (const file of (process.env.KUDUY_LOCAL_PLUGINS ?? '').split(',').map((s) =>
     pluginData: { resource: 'vfs', path: `/wordpress/wp-content/plugins/kuduy-mcp/${file}` },
     options: { activate: true },
   });
+}
+// KUDUY_FILTER=<PHPUnit filter> runs only matching tests (local debugging; CI always runs everything).
+const filter = process.env.KUDUY_FILTER ?? '';
+if (filter) {
+  if (!/^[A-Za-z0-9_:|]+$/.test(filter)) {
+    console.error('KUDUY_FILTER may only contain letters, digits, _, : and | (e.g. SiteEditorTest or test_widgets).');
+    process.exit(1);
+  }
+  for (const s of blueprint.steps) {
+    if (s.step === 'runPHP') s.code = s.code.replace("'--log-junit'", `'--filter', '${filter}', '--log-junit'`);
+  }
 }
 writeFileSync(join(out, 'blueprint.json'), JSON.stringify({ ...blueprint, preferredVersions: { php, wp }, steps: [...steps, ...blueprint.steps] }));
 

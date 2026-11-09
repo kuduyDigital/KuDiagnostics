@@ -1,6 +1,6 @@
 # Phase 7c — Forms plugins (plan)
 
-Research: `RESEARCH.md` §10b. Sources read 2026-11-09: Contact Form 7 6.2.4.1 (6.1.7 for WordPress 6.9), Flamingo 2.6.4, WPForms Lite 2.0.4 and Fluent Forms 6.2.17. Gravity Forms was read from its docs only. Status: **proposed, waiting for approval of D15–D17**. No code yet.
+Research: `RESEARCH.md` §10b. Sources read 2026-11-09: Contact Form 7 6.2.4.1 (6.1.7 for WordPress 6.9), Flamingo 2.6.4, WPForms Lite 2.0.4 and Fluent Forms 6.2.17. Gravity Forms was read from its docs only. Status: **plan approved 2026-11-09; D15–D17 decided (user): option A**.
 
 Exit gate (`ROADMAP.md`, forms part):
 - Forms and entries can be read through each plugin's own API, on both test pairs.
@@ -53,11 +53,12 @@ Every call names the plugin (`cf7`, `wpforms`, `fluentform`, `gravityforms`) and
 | 1 | `kuduy-forms-status`: plugins found, versions, where entries are stored (none for CF7 without Flamingo or for WPForms Lite), plugin abilities on or off | read | `edit_posts` | — |
 | 2 | `kuduy-forms-list`: forms the user may read: plugin, id, title, number of entries, shortcode | read | CF7 `wpcf7_read_contact_form`; WPForms `view_form_single`; Fluent `fluentform_forms_manager` or `fluentform_entries_viewer`; Gravity `gravityforms_edit_forms` or `gravityforms_view_entries` | — |
 | 3 | `kuduy-forms-get`: fields (name, label, type, required, choices), messages and confirmations, mail and notification routing (recipient, sender, Cc/Bcc). Never integration keys | read | as 2, per form | — |
-| 4 | `kuduy-forms-entries`: entries of one form, filtered by status, date and search, with paging; values masked per D17 | read | Flamingo `flamingo_edit_inbound_messages`; Fluent `fluentform_entries_viewer`; Gravity `gravityforms_view_entries` | — |
+| 4 | `kuduy-forms-entries`: entries of one form, filtered by status and search text, with paging (a date filter was left out in the build); values masked per D17 | read | Flamingo `flamingo_edit_inbound_messages`; Fluent `fluentform_entries_viewer`; Gravity `gravityforms_view_entries` | — |
 | 5 | `kuduy-forms-entry-get`: one entry with every field, its status and notes (note authors' emails masked) | read | as 4, per entry | — |
 | 6 | `kuduy-forms-entry-update`: `read`, `starred`, `status` (`active`, `trash`, `spam`) on one entry | write | Flamingo `flamingo_edit_inbound_message`, `flamingo_delete_inbound_message` (trash) and `flamingo_spam_inbound_message`; Fluent `fluentform_manage_entries`; Gravity `gravityforms_edit_entries` and `gravityforms_delete_entries` (trash) | previous read, starred and status values |
 | 7 | `kuduy-forms-entry-note`: add an internal note (Fluent, Gravity) | write | Fluent `fluentform_manage_entries`; Gravity `gravityforms_edit_entry_notes` | undo deletes the note |
-| 8 | `kuduy-forms-cf7-save`: create or patch a CF7 form; `mail` / `mail_2` confirm-first under `kuduy:admin` (D16 A) | write (admin for mail) | `wpcf7_edit_contact_forms` (create), `wpcf7_edit_contact_form` (id) | previous properties restored through `wpcf7_save_contact_form()`; a created form is deleted |
+| 8 | `kuduy-forms-cf7-save`: create or patch a CF7 form (title, markup, messages, additional settings) through `wpcf7_save_contact_form()` | write | `wpcf7_edit_contact_forms` (create), `wpcf7_edit_contact_form` (id) | previous title and properties restored with the form's own `save()`; a created form has no undo (CF7 has no trash and KUDUY offers no delete) |
+| 9 | `kuduy-forms-cf7-mail`: change `mail` / `mail_2`; confirm-first when recipient, sender, extra headers or the second mail's on/off change (D16 A) | **admin** | as 8 | as 8 |
 
 Not offered: permanent delete of entries or forms, exports, payments and transactions (Fluent, WPForms), integration and add-on settings, form submission on a visitor's behalf.
 
@@ -73,7 +74,7 @@ Jobs: none in this step. Bulk trash would break the rule that nothing which remo
   - Gravity add-on settings;
   - Flamingo `_akismet` and `_recaptcha` details (kept to a spam yes/no).
 - Entry values are masked by field type (D17). Fluent field types are known from `form_fields`; CF7 types come from `scan_form_tags()`, matched to Flamingo fields by name; Gravity uses field `type`.
-- Audit rows of tools 6 to 8 mask entry values and mail routing as `[personal data]`, except for the ids.
+- Audit rows of tools 7 to 9 mask note text, mail addresses and bodies; tools 4 to 6 take no entry values as input. Audit rows mask entry values and mail routing as `[personal data]`, except for the ids.
 
 ## Tests (Playground)
 
@@ -89,6 +90,10 @@ The 7.1 pair runs `KUDUY_PLUGINS=contact-form-7@6.2.4.1,flamingo@2.6.4,fluentfor
 - CI: one forms job per WordPress pair.
 
 Then a staging run with claude.ai. Staging has no forms plugin today, so CF7 + Flamingo and Fluent Forms would be installed there for the check, then removed again. I'll ask before installing.
+
+## Progress
+
+- 2026-11-09 (build): built all steps first and tested at the end, at the user's request. Plan changes made in the build: CF7 editing is two tools (`-cf7-save` with `kuduy:write`, `-cf7-mail` with `kuduy:admin`), because one tool has one scope; a created CF7 form has no undo; the entries list filters by status and search (no date filter); Flamingo has no read, starred or notes, Fluent Forms has all of them and keeps spam on the site.
 
 ## Order
 

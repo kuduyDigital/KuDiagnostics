@@ -11,6 +11,7 @@ parameters:
     - tests/phpstan/seo.stub
     - tests/phpstan/woocommerce.stub
     - tests/phpstan/acf.stub
+    - tests/phpstan/forms.stub
   paths:
     - kuduy-mcp.php
     - uninstall.php

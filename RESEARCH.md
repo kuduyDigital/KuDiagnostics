@@ -294,6 +294,32 @@ Source read 2026-11-09 from the current wordpress.org ZIPs: **Contact Form 7 6.2
 
 **Personal data:** every entry is visitor personal data (names, emails, phones, addresses, free-text messages, IP, user agent, uploaded files). Flamingo, Fluent and Gravity register WordPress personal-data exporters / erasers (UNVERIFIED for each). Add-on API keys (Mailchimp, payment gateways, reCAPTCHA) sit in options per plugin and are never returned.
 
+## 10c. Blocks, Site Editor, Global Styles, widgets (Phase 7, WordPress core)
+
+Source read 2026-11-09 from WordPress **7.1.4** core (`wp-includes/rest-api/endpoints/`, `block-template-utils.php`), the same core files exist in 6.9 (UNVERIFIED line by line; covered by the 6.9 test pair). Nothing below has run in a test yet.
+
+- **Templates and template parts** (block themes, `wp_is_block_theme()`): post types `wp_template`, `wp_template_part`; ids `{theme}//{slug}`. `get_block_templates( $query, $type )`, `get_block_template( $id, $type )`; `WP_Block_Template` has `source` (`theme` = file only, `custom` = stored in the database, also for a customized theme template), `has_theme_file`, `wp_id`, `content`, `area` (parts). REST `wp/v2/templates`, `wp/v2/template-parts` (`WP_REST_Templates_Controller`): read needs `edit_posts` (or the post type's `edit_posts`), create/update/delete need **`edit_theme_options`**; content is filtered with kses unless `unfiltered_html`. Updating a theme-file template creates a `custom` copy in the database. Delete: only `source: custom` (a theme-file template "can't be removed"); without `force` it is moved to the trash, which reverts a customized theme template to its file; `force` deletes permanently.
+- **Global Styles:** one `wp_global_styles` post per theme (`WP_Theme_JSON_Resolver::get_user_global_styles_post_id()`). REST `wp/v2/global-styles/{id}`: read `read_post`, update `edit_post` on that post (administrators via `edit_theme_options`); update replaces `styles` and `settings` as whole objects (the request's object wins, the other is kept); `styles.css` (custom CSS) is validated (`validate_custom_css()`, no `</style>`); **verified by test 2026-11-10: the REST route does not check `edit_css`** (only its `action-edit-css` link and the Site Editor screen use it), so KUDUY checks `edit_css` itself for any `css` key in a styles patch. Theme defaults: `wp/v2/global-styles/themes/{stylesheet}`. Revisions: `wp/v2/global-styles/{id}/revisions`.
+- **Widgets and sidebars** (classic and hybrid themes): REST `wp/v2/sidebars`, `wp/v2/widgets` (`WP_REST_Widgets_Controller`), all checks `edit_theme_options`. A widget's `instance.raw` can be set only when the widget type has `show_instance_in_rest` (block widgets and most core widgets); otherwise `instance.encoded` + `hash` (`wp_hash()`) or `form_data`. DELETE without `force` moves the widget to `wp_inactive_widgets` (reversible); `force` deletes it.
+- **Blocks:** `WP_Block_Type_Registry::get_instance()->get_all_registered()`; REST `wp/v2/block-types` (read: `edit_posts`); `parse_blocks( $content )` / `serialize_blocks()` for a post's block tree; patterns `wp/v2/block-patterns/patterns`.
+- All of these REST routes can run in-process with `rest_do_request()` as the current user (KUDUY already does this for WooCommerce Analytics), so core's own permission checks, sanitization and revisions apply.
+
+- **Widgets in tests (found 2026-11-10):** a fresh Playground install stores `sidebar-1` / `sidebar-2` from the default widgets while the block theme registers none; core's `retrieve_widgets()` (called by both REST controllers) then maps those onto the registered areas and moves a newly added widget to "Inactive widgets". Tests store widget areas that match the registered ones, as a theme with widget areas does.
+
+## 10d. Cache plugins (Phase 7)
+
+Source read 2026-11-10 from the wordpress.org ZIPs: **LiteSpeed Cache 7.9.3** (WP 6.0, 7M installs), **W3 Total Cache 2.11.0**, **WP Super Cache 3.1.5** (WP 6.8), **WP Fastest Cache 1.5.5**. WP Rocket is paid: function names from its public docs only (**UNVERIFIED**).
+
+- **LiteSpeed Cache** (`src/api.cls.php`): constant `LSCWP_V`; public actions `litespeed_purge_all`, `litespeed_purge_post` (post id), `litespeed_purge_url`, `litespeed_purge_posttype`, … Purges are sent to the LiteSpeed web server as `X-LiteSpeed-Purge` headers at the end of the request; `Purge::purge_all()` fires `litespeed_purged_all`. On servers that are not LiteSpeed nothing is cached by it.
+- **W3 Total Cache** (`w3-total-cache-api.php`): constant `W3TC_VERSION`; `w3tc_flush_all()`, `w3tc_flush_post( $id )`, `w3tc_flush_url( $url )`.
+- **WP Super Cache** (`wp-cache-phase2.php`, `inc/cache-files.php`): constant `WPSC_VERSION_ID`; `wp_cache_clear_cache()`, `wpsc_delete_post_cache( $id )`, `wpsc_delete_url_cache( $url )`.
+- **WP Fastest Cache** (`wpFastestCache.php`): `wpfc_clear_all_cache( $minified )`, `wpfc_clear_post_cache_by_id( $id )` (both run its own actions; a constant `WPFC_DISABLE_HOOK_CLEAR_ALL_CACHE` turns the hook off); no per-URL purge for addresses that are not posts.
+- **WP Rocket** (docs): `rocket_clean_domain()`, `rocket_clean_post( $id )`, `rocket_clean_files( $urls )`; constant `WP_ROCKET_VERSION`.
+- **Object cache:** `wp_using_ext_object_cache()`, `wp_cache_flush()` (whole site; Redis/Memcached drop-ins).
+- Capabilities: the plugins' purge buttons are admin-only (`manage_options`); none documents a per-post capability, so KUDUY uses `edit_post` for one post.
+
+**Still UNVERIFIED (Site Editor):** block navigation menus (`wp_navigation`) beyond reading; style variations; template behaviour of hybrid themes; font library.
+
 **Still UNVERIFIED (forms):** everything about Gravity Forms beyond the docs, WPForms Pro entries, Elementor Pro form submissions, Fluent Forms Pro, CF7 add-on properties, Akismet behaviour in tests.
 
 ## 11. Licensing and dependencies

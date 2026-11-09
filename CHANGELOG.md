@@ -441,3 +441,15 @@ Format: user-facing releases first (newest on top), then the dated development h
 ### 2026-11-09 — Forms research and plan (D15–D17 proposed)
 
 - Read Contact Form 7 6.2.4.1 (6.1.7 for WordPress 6.9: 6.2 needs WordPress 7.1 and PHP 8.3), Flamingo 2.6.4, WPForms Lite 2.0.4 and Fluent Forms 6.2.17 from their wordpress.org ZIPs; Gravity Forms from its docs (`RESEARCH.md` §10b). Findings: WPForms Lite stores no entries; Fluent Forms' own abilities are off by default; Flamingo's spam action sends the message to Akismet; CF7 mail settings decide where submissions are emailed. Plan `docs/plans/phase-7-forms.md` (8 `kuduy-forms-*` tools) and decisions D15–D17 waiting for approval; no code.
+
+### 2026-11-09 — Forms plan approved
+
+- The user approved `docs/plans/phase-7-forms.md` and decided D15–D17: option A (own tools on each plugin's API; inbox actions with undo, CF7 edits, mail routing confirm-first, no permanent delete; personal data masked by field type).
+
+### 2026-11-10 — Phase 7: forms, Site Editor and cache tools built (tests at the end of Phase 7)
+
+- At the user's request (2026-11-09, before going offline): build all remaining Phase 7 work first, commit locally, no push; run the full test suite and publish only when Phase 7 is complete.
+- Forms (`Modules/Forms`, D15–D17 A): 9 tools — `kuduy-forms-status`, `-list`, `-get`, `-entries`, `-entry-get`, `-entry-update`, `-entry-note`, `-cf7-save`, `-cf7-mail` — over Contact Form 7 + Flamingo, Fluent Forms and WPForms Lite. Tests `FormsCf7Test`, `FormsFluentTest`, `FormsWpformsTest`; CI forms job on both pairs. Interim Playground runs (2026-11-10): all forms tests pass on WP 7.1.4 and 6.9.11. Build changes to the plan: CF7 editing split into `-cf7-save` (write) and `-cf7-mail` (admin), the note tool is marked destructive so the executor keeps its snapshot (found by the first run).
+- Site Editor (`Modules/Blocks`, D18 A, decided under the standing instruction): 11 tools — `kuduy-block-types`, `kuduy-post-blocks`, `kuduy-site-templates`, `-template-get`, `-template-update`, `-template-revert`, `kuduy-global-styles-get`, `-update`, `kuduy-widgets`, `kuduy-widget-save`, `kuduy-widget-remove` — through core's REST controllers in-process. Found in the interim run: core's global-styles route does not check `edit_css`, so KUDUY does; a fresh Playground install's leftover widget areas made core move new widgets to inactive (test setup fixed).
+- Cache (`Modules/Cache`, D19 A, decided under the standing instruction): `kuduy-cache-status`, `kuduy-cache-purge` over LiteSpeed Cache, W3 Total Cache, WP Super Cache, WP Fastest Cache and WP Rocket (docs only), plus object-cache flush. Test `CacheTest`; CI cache job (LiteSpeed Cache 7.9.3).
+- Runner: `KUDUY_FILTER` runs only matching tests (local debugging).

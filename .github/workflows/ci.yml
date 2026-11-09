@@ -72,6 +72,12 @@ jobs:
           # ACF (Phase 7, D14).
           - { wp: '6.9', php: '8.1', elementor: '4.3.6', plugins: 'advanced-custom-fields@6.8.11', label: '+ ACF' }
           - { wp: '7.1', php: '8.3', elementor: '4.3.6', plugins: 'advanced-custom-fields@6.8.11', label: '+ ACF' }
+          # Forms plugins (Phase 7, D15–D17). CF7 6.2 needs WordPress 7.1, so 6.9 runs 6.1.7.
+          - { wp: '6.9', php: '8.1', elementor: '4.3.6', plugins: 'contact-form-7@6.1.7,flamingo@2.6.4,fluentform@6.2.17,wpforms-lite@2.0.4', label: '+ forms' }
+          - { wp: '7.1', php: '8.3', elementor: '4.3.6', plugins: 'contact-form-7@6.2.4.1,flamingo@2.6.4,fluentform@6.2.17,wpforms-lite@2.0.4', label: '+ forms' }
+          # Cache plugins (Phase 7, D19): LiteSpeed Cache purges through its own actions.
+          - { wp: '6.9', php: '8.1', elementor: '4.3.6', plugins: 'litespeed-cache@7.9.3', label: '+ cache' }
+          - { wp: '7.1', php: '8.3', elementor: '4.3.6', plugins: 'litespeed-cache@7.9.3', label: '+ cache' }
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2
