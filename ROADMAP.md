@@ -2,7 +2,7 @@
 
 A phase is done only when its exit gate passes with evidence recorded in `TESTING.md` and its rows in `FEATURES.md` are `Tested`. Process: TDD per tool, small commits, docs updated in the same commit, no TODOs in released code.
 
-Status on 2026-11-08: **Phase 3 code complete; claude.ai verified; Desktop, Claude Code's own sign-in, refresh and revoke still to observe (O11). Phase 4 done. Phase 5 exit test EL10 passed on Elementor 4.3 with claude.ai on staging (Theme Builder conditions not reachable from claude.ai: no `kuduy:admin` grant). Phase 6 done (exit gate passed in Playground and on staging with claude.ai, 2026-11-08). Latest release v0.5.1 (0.5.0 Phase 6 SEO + media, 77 tools, plus the fixes found on staging). Phase 7 in progress: WooCommerce plan approved.**
+Status on 2026-11-08: **Phase 3 code complete; claude.ai verified; Desktop, Claude Code's own sign-in, refresh and revoke still to observe (O11). Phase 4 done. Phase 5 exit test EL10 passed on Elementor 4.3 with claude.ai on staging (Theme Builder conditions not reachable from claude.ai: no `kuduy:admin` grant). Phase 6 done (exit gate passed in Playground and on staging with claude.ai, 2026-11-08). Latest release v0.6.0 (Phase 7 WooCommerce, 29 tools on top of 0.5.1). Phase 7 in progress: WooCommerce plan approved.**
 
 | Phase | Scope | Exit gate | Status |
 |---|---|---|---|

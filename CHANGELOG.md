@@ -4,17 +4,16 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 ## Unreleased
 
-- Changed: `kuduy-job-start` can also run `kuduy-woo-product-update`, `kuduy-woo-variation-update`, `kuduy-woo-product-stock` and `kuduy-woo-coupon-update` over many items (bulk prices, sales, stock, coupons), each item with its own undo. Order changes and trash are not allowed as jobs.
+## 0.6.0 — 2026-11-09
 
-- Added (Phase 7): WooCommerce store settings, read only — `kuduy-woo-shipping` (zones, regions, methods), `kuduy-woo-tax` (tax settings, classes, rates), `kuduy-woo-payment-gateways` (payment methods for admins; API keys, passwords and other secrets are never shown) — and `kuduy-woo-report` (WooCommerce Analytics: revenue, orders, products, variations, categories, coupons, taxes, stock, customers, downloads; customer emails masked).
+**Phase 7: WooCommerce (29 new tools, shown only while WooCommerce is active).** Products, variations, stock, orders, coupons, customers, reviews, shipping, tax, payment methods and reports, all through WooCommerce's own APIs and permission rules, with WooCommerce's new order storage (HPOS) on or off. Customer details are masked unless asked for and allowed, payment secrets are never shown, nothing is refunded or deleted permanently, and anything that would email a customer asks for confirmation first.
 
-- Added (Phase 7): WooCommerce coupons (`kuduy-woo-coupon-list`, `-get`, `-create`, `-update`, `-trash`), customers (`kuduy-woo-customer-list`, `-get`, `-update` for billing and shipping addresses) and product reviews (`kuduy-woo-review-list`, `-moderate`, `-reply`). Coupon codes must be unique; percentage coupons cannot exceed 100. Customer details are masked unless asked for and allowed, and the addresses you send are not written to the audit log. Moderating a review updates the product's rating. Changes can be undone.
-
-- Added (Phase 7): WooCommerce orders — `kuduy-woo-order-list`, `kuduy-woo-order-get`, `kuduy-woo-order-status`, `kuduy-woo-order-note`. Customer details (email, address, phone, IP) are masked unless the request asks for them and the user may edit the order. A status change or customer note that makes WooCommerce email the customer first reports the email and needs confirmation. Undoing a status change sends no email. Refunds are not offered.
-
-- Added (Phase 7): WooCommerce products — `kuduy-woo-status` (version, order storage, currency, tax/shipping/coupon/review settings, coming-soon mode), `kuduy-woo-product-list`, `-get`, `-create`, `-update`, `-stock`, `-trash`, `kuduy-woo-variation-list`, `-create`, `-update`. Everything goes through WooCommerce's own product API with WooCommerce's own permission rules; changes, stock and trash can be undone; nothing is deleted permanently. Products are created as drafts; publishing needs permission to publish products.
-
-- Changed: while WooCommerce is active, `kuduy-post-create`, `-update`, `-trash` and `kuduy-post-meta-set` refuse products, variations, orders and coupons and name the WooCommerce tools to use instead (plain post writes would skip WooCommerce's own data handling). Reading them still works.
+- Added (Phase 7): WooCommerce products — `kuduy-woo-status` (version, order storage, currency, tax/shipping/coupon/review settings, coming-soon mode), `kuduy-woo-product-list`, `-get`, `-create`, `-update`, `-stock`, `-trash`, `kuduy-woo-variation-list`, `-create`, `-update`. Products are created as drafts; publishing needs permission to publish products; changes, stock and trash can be undone.
+- Added (Phase 7): WooCommerce orders — `kuduy-woo-order-list`, `kuduy-woo-order-get`, `kuduy-woo-order-status`, `kuduy-woo-order-note`. A status change or customer note that makes WooCommerce email the customer first reports the email and needs `confirm: true`. Undoing a status change sends no email. Refunds are not offered.
+- Added (Phase 7): WooCommerce coupons (`kuduy-woo-coupon-list`, `-get`, `-create`, `-update`, `-trash`), customers (`kuduy-woo-customer-list`, `-get`, `-update` for billing and shipping addresses) and product reviews (`kuduy-woo-review-list`, `-moderate`, `-reply`). Coupon codes must be unique; percentage coupons cannot exceed 100. The addresses you send are not written to the audit log. Moderating a review updates the product's rating.
+- Added (Phase 7): read-only store settings — `kuduy-woo-shipping`, `kuduy-woo-tax`, `kuduy-woo-payment-gateways` (admins only; API keys, passwords and other secrets are never shown) — and `kuduy-woo-report` (WooCommerce Analytics; customer emails masked).
+- Changed: `kuduy-job-start` can also run `kuduy-woo-product-update`, `kuduy-woo-variation-update`, `kuduy-woo-product-stock` and `kuduy-woo-coupon-update` over many items, each with its own undo. Order changes and trash are not allowed as jobs.
+- Changed: while WooCommerce is active, `kuduy-post-create`, `-update`, `-trash` and `kuduy-post-meta-set` refuse products, variations, orders and coupons and name the WooCommerce tools to use instead. Reading them still works.
 - Security: results and audit rows also mask WooCommerce secrets (`api_signature`, `consumer_key`, `order_key`, `cart_hash`, `payment_token`) and the value of any settings field of type `password`.
 
 ## 0.5.1 — 2026-11-08
@@ -388,3 +387,7 @@ Format: user-facing releases first (newest on top), then the dated development h
 ### 2026-11-09 — Phase 7 step 6: WooCommerce jobs
 
 - `Jobs::TOOLS` gains the four WooCommerce update tools. TDD: `WooJobsTest` (bulk sale prices with a failing item and per-item undo, bulk stock) failed before the change; the refusal test for order tools passed before and after.
+
+### 2026-11-09 — Release 0.6.0
+
+- Version 0.6.0 (Phase 7 WooCommerce tools). Tagged after CI passed on the release commit, at the user's request.
