@@ -50,7 +50,7 @@ Then a staging run with claude.ai (staging has ACF 6.8.11 active).
 
 ## Progress
 
-- 2026-11-09: steps 1–3 done — `kuduy-acf-status`, `-field-groups`, `-get`, `-update`, guard in `kuduy-post-meta-set`, jobs, CI (A1–A6). Found in tests: ACF 6.8.11 already denies `edit_post_meta` on its field keys (`acf_map_post_meta_caps`), so the guard checks `edit_post` for those keys and refuses in the tool with a clear message; ACF's select field has no validator, so KUDUY checks choices itself. Left: release and staging check (staging has ACF 6.8.11).
+- 2026-11-09: steps 1–3 done — `kuduy-acf-status`, `-field-groups`, `-get`, `-update`, guard in `kuduy-post-meta-set`, jobs, CI (A1–A6). Found in tests: ACF 6.8.11 already denies `edit_post_meta` on its field keys (`acf_map_post_meta_caps`), so the guard checks `edit_post` for those keys and refuses in the tool with a clear message; ACF's select field has no validator, so KUDUY checks choices itself. Released in 0.7.0; staging check with claude.ai 2026-11-09: 7 / 7 pass (`TESTING.md` §3). ACF part of the exit gate: **passed**.
 
 ## Order
 

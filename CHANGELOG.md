@@ -433,3 +433,7 @@ Format: user-facing releases first (newest on top), then the dated development h
 ### 2026-11-09 — Release 0.7.0
 
 - Version 0.7.0 (ACF tools, WooCommerce fixes from the staging runs). Tagged after CI passed on the release commit, at the user's request.
+
+### 2026-11-09 — ACF on staging (claude.ai)
+
+- Staging on 0.7.0. The session created a test field group and draft post in WP admin (built-in browser), ran the check in claude.ai web: 7 / 7 pass (values, password never shown, four refusals with nothing changed, post-meta guard, undo). Test post and field group trashed afterwards. `TESTING.md` §3, `COMPATIBILITY.md`.
