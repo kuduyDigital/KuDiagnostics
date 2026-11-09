@@ -4,6 +4,8 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 ## Unreleased
 
+- Added (Phase 7): WooCommerce store settings, read only — `kuduy-woo-shipping` (zones, regions, methods), `kuduy-woo-tax` (tax settings, classes, rates), `kuduy-woo-payment-gateways` (payment methods for admins; API keys, passwords and other secrets are never shown) — and `kuduy-woo-report` (WooCommerce Analytics: revenue, orders, products, variations, categories, coupons, taxes, stock, customers, downloads; customer emails masked).
+
 - Added (Phase 7): WooCommerce coupons (`kuduy-woo-coupon-list`, `-get`, `-create`, `-update`, `-trash`), customers (`kuduy-woo-customer-list`, `-get`, `-update` for billing and shipping addresses) and product reviews (`kuduy-woo-review-list`, `-moderate`, `-reply`). Coupon codes must be unique; percentage coupons cannot exceed 100. Customer details are masked unless asked for and allowed, and the addresses you send are not written to the audit log. Moderating a review updates the product's rating. Changes can be undone.
 
 - Added (Phase 7): WooCommerce orders — `kuduy-woo-order-list`, `kuduy-woo-order-get`, `kuduy-woo-order-status`, `kuduy-woo-order-note`. Customer details (email, address, phone, IP) are masked unless the request asks for them and the user may edit the order. A status change or customer note that makes WooCommerce email the customer first reports the email and needs confirmation. Undoing a status change sends no email. Refunds are not offered.
@@ -375,3 +377,8 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 - `CouponTools`, `CustomerTools`, `ReviewTools` (11 tools); `AuditMasksAuditArgs` lets a tool mask its arguments before the executor writes the audit row and the snapshot input (customer addresses).
 - TDD: `WooCouponsTest`, `WooCustomersTest`, `WooReviewsTest` (13 tests) failed with the tools unregistered; first green run fixed one wrong test assertion (view vs edit context). All pass with HPOS on and off on both WordPress pairs; runs without WooCommerce unchanged.
+
+### 2026-11-09 — Phase 7 step 5: shipping, tax, gateways, reports
+
+- `StoreSettings` (`kuduy-woo-shipping`, `kuduy-woo-tax`, `kuduy-woo-payment-gateways`) and `Report` (`kuduy-woo-report`); `Redactor::is_secret_key()` and `Pii::scrub()` helpers. Test doubles: `KuduyFakeGateway` (a gateway with secrets under a free name and a key-like name).
+- TDD: `WooStoreSettingsTest`, `WooReportsTest` (8 tests) failed with the tools unregistered; one fix after the first green run (`extended_info` for report rows). All 29 planned WooCommerce tools now exist and pass with HPOS on and off on both WordPress pairs.

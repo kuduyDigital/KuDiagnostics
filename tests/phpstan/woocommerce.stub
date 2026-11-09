@@ -3,6 +3,12 @@
  * WooCommerce is not a dependency; this declares only the WooCommerce API KUDUY and its tests call (RESEARCH.md §10).
  */
 
+namespace Automattic\WooCommerce\Internal\Admin\Schedulers {
+	class OrdersScheduler {
+		public static function import( int $order_id ): void {}
+	}
+}
+
 namespace Automattic\WooCommerce\Utilities {
 	class OrderUtil {
 		public static function custom_orders_table_usage_is_enabled(): bool {}
@@ -23,6 +29,7 @@ namespace {
 		/** @var WC_Countries */
 		public $countries;
 		public function mailer(): WC_Emails {}
+		public function payment_gateways(): WC_Payment_Gateways {}
 	}
 	function WC(): WooCommerce {}
 
@@ -233,6 +240,74 @@ namespace {
 		public function set_billing_country( string $value ): void {}
 		public function set_billing_phone( string $value ): void {}
 	}
+	abstract class WC_Settings_API {
+		/** @var string */
+		public $id = '';
+		/** @var array<string, mixed> */
+		public $form_fields = array();
+		/** @return array<string, mixed> */
+		public function get_form_fields(): array {}
+		/** @return mixed */
+		public function get_option( string $key, mixed $empty_value = null ) {}
+		public function init_settings(): void {}
+	}
+	abstract class WC_Payment_Gateway extends WC_Settings_API {
+		/** @var string */
+		public $title = '';
+		/** @var string */
+		public $enabled = 'yes';
+		/** @var string */
+		public $method_title = '';
+		/** @var array<string> */
+		public $supports = array();
+		public function get_title(): string {}
+		public function get_method_title(): string {}
+	}
+	class WC_Payment_Gateways {
+		/** @return array<string, mixed> */
+		public function payment_gateways(): array {}
+		public function init(): void {}
+	}
+	abstract class WC_Shipping_Method extends WC_Settings_API {
+		/** @var int */
+		public $instance_id = 0;
+		public function get_method_title(): string {}
+		public function get_title(): string {}
+		public function is_enabled(): bool {}
+		/** @return array<string, mixed> */
+		public function get_instance_form_fields(): array {}
+		/** @return mixed */
+		public function get_instance_option( string $key, mixed $empty_value = null ) {}
+	}
+	class WC_Shipping_Zone extends WC_Data {
+		public function __construct( int $zone = 0 ) {}
+		public function get_zone_name( string $context = 'view' ): string {}
+		public function get_zone_order( string $context = 'view' ): int {}
+		/** @return array<object{code: string, type: string}> */
+		public function get_zone_locations( string $context = 'view' ): array {}
+		/** @return array<int, WC_Shipping_Method> */
+		public function get_shipping_methods( bool $enabled_only = false, string $context = 'admin' ): array {}
+		public function set_zone_name( string $name ): void {}
+		public function add_location( string $code, string $type ): void {}
+		public function add_shipping_method( string $type ): int {}
+	}
+	class WC_Shipping_Zones {
+		/** @return array<int|string, array<string, mixed>> */
+		public static function get_zones( string $context = 'admin' ): array {}
+		public static function get_zone( int $zone_id ): WC_Shipping_Zone {}
+	}
+	class WC_Tax {
+		/** @return array<int, string> */
+		public static function get_tax_classes(): array {}
+		/** @return array<int, string> */
+		public static function get_tax_class_slugs(): array {}
+		/** @return array<int, object{tax_rate_id: int|string, tax_rate_country: string, tax_rate_state: string, tax_rate: string, tax_rate_name: string, tax_rate_priority: int|string, tax_rate_compound: int|string, tax_rate_shipping: int|string, postcode?: array<string>, city?: array<string>}> */
+		public static function get_rates_for_tax_class( string $tax_class ): array {}
+		/** @param array<string, mixed> $tax_rate */
+		public static function _insert_tax_rate( array $tax_rate ): int {}
+	}
+	function wc_rest_check_manager_permissions( string $object, string $context = 'read' ): bool {}
+
 	class WC_Comments {
 		public static function clear_transients( int $post_id ): void {}
 	}

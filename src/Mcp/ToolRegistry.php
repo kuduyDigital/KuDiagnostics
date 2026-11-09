@@ -45,7 +45,9 @@ use Kuduy\Mcp\Modules\Woo\OrderRead;
 use Kuduy\Mcp\Modules\Woo\OrderWrite;
 use Kuduy\Mcp\Modules\Woo\ProductRead;
 use Kuduy\Mcp\Modules\Woo\ProductWrite;
+use Kuduy\Mcp\Modules\Woo\Report;
 use Kuduy\Mcp\Modules\Woo\ReviewTools;
+use Kuduy\Mcp\Modules\Woo\StoreSettings;
 use Kuduy\Mcp\Modules\Woo\VariationWrite;
 use Kuduy\Mcp\Modules\Woo\WooStatus;
 
@@ -156,6 +158,10 @@ final class ToolRegistry {
 		foreach ( array( 'list', 'moderate', 'reply' ) as $mode ) {
 			$registry->register( new ReviewTools( $mode ) );
 		}
+		foreach ( array( 'shipping', 'tax', 'gateways' ) as $mode ) {
+			$registry->register( new StoreSettings( $mode ) );
+		}
+		$registry->register( new Report() );
 		do_action( 'kuduy_mcp_register_tools', $registry );
 		return $registry;
 	}

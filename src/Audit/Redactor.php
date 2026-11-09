@@ -26,6 +26,15 @@ final class Redactor {
 	);
 
 	/**
+	 * Whether a field name looks like a credential (used for settings lists, where values sit under `value`).
+	 *
+	 * @param string $key Field name.
+	 */
+	public static function is_secret_key( string $key ): bool {
+		return 1 === preg_match( self::SECRET_KEY, $key );
+	}
+
+	/**
 	 * Redact an array (tool results, arguments).
 	 *
 	 * @param array<mixed> $data Data.

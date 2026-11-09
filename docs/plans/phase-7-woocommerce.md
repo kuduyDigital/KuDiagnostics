@@ -115,6 +115,8 @@ Not offered (D11 A): refunds, order creation or item edits, payment changes, gat
 
 - 2026-11-09: step 4 done — coupons (`kuduy-woo-coupon-list` / `-get` / `-create` / `-update` / `-trash`, W9), customers (`kuduy-woo-customer-list` / `-get` / `-update`, W10), reviews (`kuduy-woo-review-list` / `-moderate` / `-reply`, W11). New `MasksAuditArgs` interface: customer address arguments never reach the audit log or the snapshot input. Plan changes: coupon creates and review replies keep no snapshot (like other creates; trash a coupon with `kuduy-woo-coupon-trash`, a reply with `kuduy-comment-moderate`); coupons are active (publish) when created, as in WooCommerce's editor. Found in source: WooCommerce's code lookup only sees published coupons, so a draft's code is not reserved; an empty minimum/maximum spend reads as "0" in view context.
 
+- 2026-11-09: step 5 done — `kuduy-woo-shipping`, `kuduy-woo-tax`, `kuduy-woo-payment-gateways` (read only), `kuduy-woo-report` (W12–W14, W2 end-to-end). All 29 planned WooCommerce tools exist (no refund tool, D11). Settings fields are masked by type `password` and by credential-like names. Found in tests: report rows only carry product names with `extended_info`, which also adds customer details to order rows (masked). Left for the WooCommerce exit gate: job allow-list (step 6) and the staging run with claude.ai.
+
 ## Order
 
 1. Guards in core post tools + `Redactor` additions (W1, W2).
