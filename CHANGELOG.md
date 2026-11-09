@@ -4,13 +4,15 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 ## Unreleased
 
+## 0.7.0 — 2026-11-09
+
+**Phase 7: Advanced Custom Fields (4 new tools) and WooCommerce fixes found on a real store.**
+
 - Added (Phase 7): Advanced Custom Fields — `kuduy-acf-status`, `kuduy-acf-field-groups` (read), `kuduy-acf-get`, `kuduy-acf-update` for field values on posts, users and terms through ACF's own API. Only fields ACF shows on that object can be changed; values are checked the way ACF's edit screen checks them; changes can be undone and run in bulk with `kuduy-job-start`. Password fields are never shown.
 - Changed: `kuduy-post-meta-set` refuses ACF field names and points to `kuduy-acf-update`.
-
+- Fixed: `kuduy-woo-report` listed only the first 10 intervals (e.g. 10 of 30 days); it now returns every interval in the range, oldest first, and says so when a very long daily range is cut.
 - Fixed: `kuduy-woo-payment-gateways` hid checkbox and select settings whose names look like credentials (e.g. Stripe's `sepa_tokens_for_ideal`); only free-text fields are hidden by name now (password fields always).
 - Fixed: `kuduy-woo-order-get` showed an order note author's display name unmasked when it is an email address, and with `include_pii` left the order's top-level `email` masked.
-
-- Fixed: `kuduy-woo-report` listed only the first 10 intervals (e.g. 10 of 30 days); it now returns every interval in the range, oldest first, and says so when a very long daily range is cut.
 
 ## 0.6.0 — 2026-11-09
 
@@ -427,3 +429,7 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 - `Modules/Acf` (`Acf`, `AcfTools`): 4 tools, guard in `kuduy-post-meta-set`, `kuduy-acf-update` in the job allow-list, CI jobs for ACF on both pairs, PHPStan stub for ACF.
 - TDD: `AcfTest` (9 tests) failed with the tools unregistered and passed at once after; the red run also showed ACF 6.8.11 denying raw meta writes to its fields (a test-key collision with `CoreEditorialTest`, fixed by renaming the test fields).
+
+### 2026-11-09 — Release 0.7.0
+
+- Version 0.7.0 (ACF tools, WooCommerce fixes from the staging runs). Tagged after CI passed on the release commit, at the user's request.
