@@ -67,6 +67,9 @@ See `CLAUDE.md` → Commands. Integration: `KUDUY_WP=<6.9|7.1> KUDUY_PHP=<8.1|8.
 | Integration: WP 6.9.11/PHP 8.1.34 + Elementor 4.3.6 + WooCommerce 11.0.1, HPOS on / off | **201 pass, 4 skipped** each |
 | Integration: WP 7.1.4/PHP 8.3.36 + Elementor 4.3.6, no WooCommerce; WP 6.9.11/PHP 8.1.34 + Elementor 3.35.9, no WooCommerce | **156 pass, 4 skipped**; **151 pass, 9 skipped** |
 | Smoke over real HTTP (2026-11-09, after Phase 7 step 5) | **26 / 26 pass** |
+| Integration (local, 2026-11-09, Phase 7 step 6: WooCommerce jobs): WP 7.1.4 + WooCommerce 11.2.2 and WP 6.9.11 + 11.0.1, HPOS on / off | **204 pass, 4 skipped** each (208 tests; `WooJobsTest`: bulk sale prices with one failing item and per-item undo, bulk stock, order status/notes/trash refused as jobs). Before the change the two job tests failed |
+| Integration without WooCommerce (WP 7.1.4 + Elementor 4.3.6; WP 6.9.11 + Elementor 3.35.9) | **156 pass, 4 skipped**; **151 pass, 9 skipped** |
+| Smoke over real HTTP (2026-11-09, after Phase 7 step 6) | **26 / 26 pass** |
 | Integration (local, 2026-11-08, after the Phase 6 close-out fixes: job results name their item, search-visibility note, audit `total` described): WP 7.1.4/PHP 8.3.36 + Elementor 4.3.6 + Yoast 28.8 | **158 pass, 5 skipped** (163 tests). Before the fix the two new assertions failed as expected; that run also had one `LifecycleTest` uninstall failure (`kuduy_oauth_clients still exists`) that did not repeat in any later run |
 | Integration: WP 6.9.11/PHP 8.1.34 + Elementor 4.3.6 + Yoast 28.7 | **158 pass, 5 skipped** |
 | Integration: WP 6.9.11/PHP 8.1.34 + Elementor 4.3.6, no SEO plugin | **155 pass, 4 skipped** |

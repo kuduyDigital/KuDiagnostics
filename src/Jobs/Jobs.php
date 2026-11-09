@@ -24,9 +24,18 @@ final class Jobs {
 	public const MAX_ITEMS = 500;
 
 	/**
-	 * Tools that may run as jobs (idempotent single-object writes with undo, or harmless regeneration).
+	 * Tools that may run as jobs (single-object writes with undo, or harmless regeneration). Nothing that reaches
+	 * customers (order status, notes) or removes things (trash) runs in bulk.
 	 */
-	public const TOOLS = array( 'kuduy-seo-update', 'kuduy-media-update', 'kuduy-media-regenerate' );
+	public const TOOLS = array(
+		'kuduy-seo-update',
+		'kuduy-media-update',
+		'kuduy-media-regenerate',
+		'kuduy-woo-product-update',
+		'kuduy-woo-variation-update',
+		'kuduy-woo-product-stock',
+		'kuduy-woo-coupon-update',
+	);
 
 	private const BATCH   = 25;
 	private const SECONDS = 20;

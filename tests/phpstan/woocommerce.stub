@@ -93,6 +93,8 @@ namespace {
 		public function get_stock_managed_by_id(): int {}
 		public function set_name( string $name ): void {}
 		public function set_regular_price( string $price ): void {}
+		public function set_manage_stock( bool $manage_stock ): void {}
+		public function set_stock_quantity( ?int $quantity ): void {}
 		public function set_status( string $status ): void {}
 		/** @param array<mixed> $raw_attributes */
 		public function set_attributes( array $raw_attributes ): void {}

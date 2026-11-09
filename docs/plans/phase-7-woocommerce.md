@@ -117,6 +117,8 @@ Not offered (D11 A): refunds, order creation or item edits, payment changes, gat
 
 - 2026-11-09: step 5 done — `kuduy-woo-shipping`, `kuduy-woo-tax`, `kuduy-woo-payment-gateways` (read only), `kuduy-woo-report` (W12–W14, W2 end-to-end). All 29 planned WooCommerce tools exist (no refund tool, D11). Settings fields are masked by type `password` and by credential-like names. Found in tests: report rows only carry product names with `extended_info`, which also adds customer details to order rows (masked). Left for the WooCommerce exit gate: job allow-list (step 6) and the staging run with claude.ai.
 
+- 2026-11-09: step 6 code done — `kuduy-job-start` accepts `kuduy-woo-product-update`, `-variation-update`, `-product-stock`, `-coupon-update` (`WooJobsTest`); order status, notes and trash stay single calls. Left: the staging run with claude.ai (needs a release).
+
 ## Order
 
 1. Guards in core post tools + `Redactor` additions (W1, W2).
