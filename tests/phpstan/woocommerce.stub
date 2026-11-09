@@ -30,6 +30,11 @@ namespace {
 		public function save(): int {}
 		public function get_id(): int {}
 		public function delete( bool $force_delete = false ): bool {}
+		/**
+		 * @param array<string, mixed> $props
+		 * @return true|WP_Error
+		 */
+		public function set_props( array $props, string $context = 'set' ) {}
 	}
 	class WC_Product_Download {
 		public function get_name(): string {}
@@ -180,6 +185,61 @@ namespace {
 		public function set_billing_country( string $value ): void {}
 		public function set_customer_ip_address( string $value ): void {}
 	}
+	/**
+	 * Coupon getters/setters are called by field name; the ones called directly are declared.
+	 */
+	class WC_Coupon extends WC_Data {
+		/** @param mixed $data Id, code or object. */
+		public function __construct( $data = '' ) {}
+		public function get_code( string $context = 'view' ): string {}
+		public function get_discount_type( string $context = 'view' ): string {}
+		/** @return float|string */
+		public function get_amount( string $context = 'view' ) {}
+		public function get_free_shipping( string $context = 'view' ): bool {}
+		public function get_date_expires( string $context = 'view' ): ?WC_DateTime {}
+		/** @return float|string */
+		public function get_minimum_amount( string $context = 'view' ) {}
+		public function get_usage_count( string $context = 'view' ): int {}
+		public function get_usage_limit( string $context = 'view' ): int {}
+		public function get_description( string $context = 'view' ): string {}
+		public function set_status( string $status ): void {}
+	}
+	class WC_Customer extends WC_Data {
+		public function __construct( int $data = 0, bool $is_session = false ) {}
+		public function get_email( string $context = 'view' ): string {}
+		public function get_first_name( string $context = 'view' ): string {}
+		public function get_last_name( string $context = 'view' ): string {}
+		public function get_date_created( string $context = 'view' ): ?WC_DateTime {}
+		public function get_order_count(): int {}
+		/** @return float|string */
+		public function get_total_spent() {}
+		/** @return WC_Order|false */
+		public function get_last_order() {}
+		public function get_is_paying_customer( string $context = 'view' ): bool {}
+		public function get_billing_country( string $context = 'view' ): string {}
+		public function get_billing_city( string $context = 'view' ): string {}
+		public function get_billing_address_1( string $context = 'view' ): string {}
+		public function get_billing_phone( string $context = 'view' ): string {}
+		/** @return array<string, string> */
+		public function get_billing( string $context = 'view' ): array {}
+		/** @return array<string, string> */
+		public function get_shipping( string $context = 'view' ): array {}
+		public function set_first_name( string $value ): void {}
+		public function set_last_name( string $value ): void {}
+		public function set_billing_first_name( string $value ): void {}
+		public function set_billing_last_name( string $value ): void {}
+		public function set_billing_address_1( string $value ): void {}
+		public function set_billing_city( string $value ): void {}
+		public function set_billing_country( string $value ): void {}
+		public function set_billing_phone( string $value ): void {}
+	}
+	class WC_Comments {
+		public static function clear_transients( int $post_id ): void {}
+	}
+	function wc_get_coupon_id_by_code( string $code, int $exclude = 0 ): int {}
+	function wc_rest_check_user_permissions( string $context = 'read', int $object_id = 0 ): bool {}
+	function wc_rest_check_product_reviews_permissions( string $context = 'read', int $object_id = 0 ): bool {}
+
 	class WC_Email {
 		/** @var string */
 		public $id;

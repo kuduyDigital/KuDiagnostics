@@ -39,10 +39,13 @@ use Kuduy\Mcp\Modules\Media\MediaTools;
 use Kuduy\Mcp\Modules\Seo\SeoAudit;
 use Kuduy\Mcp\Modules\Seo\SeoTools;
 use Kuduy\Mcp\Modules\Seo\SeoVerify;
+use Kuduy\Mcp\Modules\Woo\CouponTools;
+use Kuduy\Mcp\Modules\Woo\CustomerTools;
 use Kuduy\Mcp\Modules\Woo\OrderRead;
 use Kuduy\Mcp\Modules\Woo\OrderWrite;
 use Kuduy\Mcp\Modules\Woo\ProductRead;
 use Kuduy\Mcp\Modules\Woo\ProductWrite;
+use Kuduy\Mcp\Modules\Woo\ReviewTools;
 use Kuduy\Mcp\Modules\Woo\VariationWrite;
 use Kuduy\Mcp\Modules\Woo\WooStatus;
 
@@ -143,6 +146,15 @@ final class ToolRegistry {
 		}
 		foreach ( array( 'status', 'note' ) as $mode ) {
 			$registry->register( new OrderWrite( $mode ) );
+		}
+		foreach ( array( 'list', 'get', 'create', 'update', 'trash' ) as $mode ) {
+			$registry->register( new CouponTools( $mode ) );
+		}
+		foreach ( array( 'list', 'get', 'update' ) as $mode ) {
+			$registry->register( new CustomerTools( $mode ) );
+		}
+		foreach ( array( 'list', 'moderate', 'reply' ) as $mode ) {
+			$registry->register( new ReviewTools( $mode ) );
 		}
 		do_action( 'kuduy_mcp_register_tools', $registry );
 		return $registry;

@@ -4,6 +4,8 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 ## Unreleased
 
+- Added (Phase 7): WooCommerce coupons (`kuduy-woo-coupon-list`, `-get`, `-create`, `-update`, `-trash`), customers (`kuduy-woo-customer-list`, `-get`, `-update` for billing and shipping addresses) and product reviews (`kuduy-woo-review-list`, `-moderate`, `-reply`). Coupon codes must be unique; percentage coupons cannot exceed 100. Customer details are masked unless asked for and allowed, and the addresses you send are not written to the audit log. Moderating a review updates the product's rating. Changes can be undone.
+
 - Added (Phase 7): WooCommerce orders — `kuduy-woo-order-list`, `kuduy-woo-order-get`, `kuduy-woo-order-status`, `kuduy-woo-order-note`. Customer details (email, address, phone, IP) are masked unless the request asks for them and the user may edit the order. A status change or customer note that makes WooCommerce email the customer first reports the email and needs confirmation. Undoing a status change sends no email. Refunds are not offered.
 
 - Added (Phase 7): WooCommerce products — `kuduy-woo-status` (version, order storage, currency, tax/shipping/coupon/review settings, coming-soon mode), `kuduy-woo-product-list`, `-get`, `-create`, `-update`, `-stock`, `-trash`, `kuduy-woo-variation-list`, `-create`, `-update`. Everything goes through WooCommerce's own product API with WooCommerce's own permission rules; changes, stock and trash can be undone; nothing is deleted permanently. Products are created as drafts; publishing needs permission to publish products.
@@ -368,3 +370,8 @@ Format: user-facing releases first (newest on top), then the dated development h
 - TDD: `WooOrdersTest` (8 tests) failed with the tools unregistered, then passed at once with HPOS on and off on both WordPress pairs.
 - Plan changes: no undo for notes; `refunded` refused (WooCommerce creates a refund record for it).
 - An intermittent `LifecycleTest` uninstall failure came back once in a run without WooCommerce and passed on re-run (`TESTING.md` §3).
+
+### 2026-11-09 — Phase 7 step 4: coupons, customers, reviews
+
+- `CouponTools`, `CustomerTools`, `ReviewTools` (11 tools); `AuditMasksAuditArgs` lets a tool mask its arguments before the executor writes the audit row and the snapshot input (customer addresses).
+- TDD: `WooCouponsTest`, `WooCustomersTest`, `WooReviewsTest` (13 tests) failed with the tools unregistered; first green run fixed one wrong test assertion (view vs edit context). All pass with HPOS on and off on both WordPress pairs; runs without WooCommerce unchanged.

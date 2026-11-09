@@ -13,6 +13,8 @@ namespace Kuduy\Mcp\Modules\Woo;
  */
 final class Pii {
 
+	public const MASK = '[personal data]';
+
 	/**
 	 * "jane@example.com" → "j***@example.com".
 	 *

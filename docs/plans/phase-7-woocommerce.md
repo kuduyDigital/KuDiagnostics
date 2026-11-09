@@ -113,6 +113,8 @@ Not offered (D11 A): refunds, order creation or item edits, payment changes, gat
 
 - 2026-11-09: step 3 done — `kuduy-woo-order-list` / `-get` / `-status` / `-note` (W6–W8, `WooOrdersTest`, HPOS on and off). Plan changes: order notes have no undo (the snapshot is taken before the note exists; notes only add text); `refunded` is refused by `kuduy-woo-order-status` because WooCommerce creates a refund record for it (`wc_order_fully_refunded`); without `include_pii` addresses keep names, company and country.
 
+- 2026-11-09: step 4 done — coupons (`kuduy-woo-coupon-list` / `-get` / `-create` / `-update` / `-trash`, W9), customers (`kuduy-woo-customer-list` / `-get` / `-update`, W10), reviews (`kuduy-woo-review-list` / `-moderate` / `-reply`, W11). New `MasksAuditArgs` interface: customer address arguments never reach the audit log or the snapshot input. Plan changes: coupon creates and review replies keep no snapshot (like other creates; trash a coupon with `kuduy-woo-coupon-trash`, a reply with `kuduy-comment-moderate`); coupons are active (publish) when created, as in WooCommerce's editor. Found in source: WooCommerce's code lookup only sees published coupons, so a draft's code is not reserved; an empty minimum/maximum spend reads as "0" in view context.
+
 ## Order
 
 1. Guards in core post tools + `Redactor` additions (W1, W2).

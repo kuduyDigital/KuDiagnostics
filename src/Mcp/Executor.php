@@ -8,6 +8,7 @@
 namespace Kuduy\Mcp\Mcp;
 
 use Kuduy\Mcp\Audit\AuditLog;
+use Kuduy\Mcp\Audit\MasksAuditArgs;
 use Kuduy\Mcp\Audit\Redactor;
 use Kuduy\Mcp\Execution\Snapshots;
 use Kuduy\Mcp\Execution\Snapshottable;
@@ -28,7 +29,7 @@ final class Executor {
 		$start                      = hrtime( true );
 		$snapshot                   = null;
 		[ $result, $status, $code ] = self::run( $tool, $args, $snapshot );
-		AuditLog::record( $tool->name(), $args, $status, $code, (int) ( ( hrtime( true ) - $start ) / 1000000 ), $snapshot );
+		AuditLog::record( $tool->name(), self::audit_args( $tool, $args ), $status, $code, (int) ( ( hrtime( true ) - $start ) / 1000000 ), $snapshot );
 		return $result;
 	}
 
@@ -64,7 +65,7 @@ final class Executor {
 				$snap = $tool->snapshot( $input );
 				if ( null !== $snap ) {
 					AuditLog::target( $snap['object_type'], $snap['object_id'] );
-					$snapshot = Snapshots::store( $tool->name(), $snap, $input );
+					$snapshot = Snapshots::store( $tool->name(), $snap, (array) self::audit_args( $tool, $input ) );
 				}
 			}
 			$result = Redactor::redact_array( $tool->execute( $input ) );
@@ -98,6 +99,16 @@ final class Executor {
 			'ok',
 			null,
 		);
+	}
+
+	/**
+	 * Arguments as they may be stored (audit row, snapshot input): tools carrying personal data mask it (D12).
+	 *
+	 * @param Tool  $tool Tool.
+	 * @param mixed $args Arguments.
+	 */
+	private static function audit_args( Tool $tool, mixed $args ): mixed {
+		return $tool instanceof MasksAuditArgs && is_array( $args ) ? $tool->audit_args( $args ) : $args;
 	}
 
 	/**
