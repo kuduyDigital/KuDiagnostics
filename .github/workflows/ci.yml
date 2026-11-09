@@ -78,6 +78,9 @@ jobs:
           # Cache plugins (Phase 7, D19): LiteSpeed Cache purges through its own actions.
           - { wp: '6.9', php: '8.1', elementor: '4.3.6', plugins: 'litespeed-cache@7.9.3', label: '+ cache' }
           - { wp: '7.1', php: '8.3', elementor: '4.3.6', plugins: 'litespeed-cache@7.9.3', label: '+ cache' }
+          # Multilingual (Phase 7, D20): Polylang 3.9.2 needs WordPress 6.8+.
+          - { wp: '6.9', php: '8.1', elementor: '4.3.6', plugins: 'polylang@3.9.2', label: '+ Polylang' }
+          - { wp: '7.1', php: '8.3', elementor: '4.3.6', plugins: 'polylang@3.9.2', label: '+ Polylang' }
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2

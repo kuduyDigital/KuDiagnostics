@@ -40,6 +40,7 @@ use Kuduy\Mcp\Modules\Blocks\GlobalStyles;
 use Kuduy\Mcp\Modules\Blocks\TemplateTools;
 use Kuduy\Mcp\Modules\Blocks\WidgetTools;
 use Kuduy\Mcp\Modules\Cache\CacheTools;
+use Kuduy\Mcp\Modules\Multilingual\LanguageTools;
 use Kuduy\Mcp\Modules\Forms\Cf7Save;
 use Kuduy\Mcp\Modules\Forms\FormEntries;
 use Kuduy\Mcp\Modules\Forms\FormsTools;
@@ -197,6 +198,9 @@ final class ToolRegistry {
 		}
 		foreach ( array( 'status', 'purge' ) as $mode ) {
 			$registry->register( new CacheTools( $mode ) );
+		}
+		foreach ( array( 'status', 'get', 'set', 'link', 'translate' ) as $mode ) {
+			$registry->register( new LanguageTools( $mode ) );
 		}
 		do_action( 'kuduy_mcp_register_tools', $registry );
 		return $registry;

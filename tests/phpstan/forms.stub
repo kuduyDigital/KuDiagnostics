@@ -215,3 +215,73 @@ namespace {
 	/** @param array<int, string>|string $urls */
 	function rocket_clean_files( $urls, $filesystem = null, bool $run_actions = true ): void {}
 }
+
+namespace {
+	// Polylang 3.9 public API (RESEARCH.md §10e): only the functions KUDUY and its tests call.
+	define( 'POLYLANG_VERSION', '3.9.2' );
+	class PLL_Language {
+		/** @var string */
+		public $slug;
+		/** @var string */
+		public $name;
+		/** @var string */
+		public $locale;
+	}
+	/**
+	 * @param array<string, mixed> $args
+	 * @return array<int, mixed>
+	 */
+	function pll_languages_list( $args = array() ): array {}
+	/** @return string|false */
+	function pll_default_language( string $field = 'slug' ) {}
+	function pll_is_translated_post_type( string $post_type ): bool {}
+	function pll_is_translated_taxonomy( string $tax ): bool {}
+	/** @return string|false */
+	function pll_get_post_language( int $post_id, string $field = 'slug' ) {}
+	/** @return string|false */
+	function pll_get_term_language( int $term_id, string $field = 'slug' ) {}
+	/** @return array<string, int> */
+	function pll_get_post_translations( int $post_id ): array {}
+	/** @return array<string, int> */
+	function pll_get_term_translations( int $term_id ): array {}
+	/** @param PLL_Language|string $lang */
+	function pll_set_post_language( int $id, $lang ): bool {}
+	/** @param PLL_Language|string $lang */
+	function pll_set_term_language( int $id, $lang ): bool {}
+	/**
+	 * @param array<string, int> $arr
+	 * @return array<string, int>
+	 */
+	function pll_save_post_translations( array $arr ): array {}
+	/**
+	 * @param array<string, int> $arr
+	 * @return array<string, int>
+	 */
+	function pll_save_term_translations( array $arr ): array {}
+	/** @return int|false|null */
+	function pll_get_post( int $post_id, string $lang = '' ) {}
+	/** @param array<string, mixed> $args */
+	function pll_count_posts( string $lang, array $args = array() ): int {}
+	/**
+	 * @param array<string, mixed> $postarr
+	 * @param PLL_Language|string  $language
+	 * @return int|WP_Error
+	 */
+	function pll_insert_post( array $postarr, $language ) {}
+	class PLL_Languages_Model {
+		/**
+		 * @param array<string, mixed> $args
+		 * @return PLL_Language|WP_Error
+		 */
+		public function add( $args ) {}
+	}
+	class PLL_Model {
+		/** @var PLL_Languages_Model */
+		public $languages;
+	}
+	class PLL_Base {
+		/** @var PLL_Model */
+		public $model;
+	}
+	function PLL(): PLL_Base {}
+}

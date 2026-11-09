@@ -453,3 +453,7 @@ Format: user-facing releases first (newest on top), then the dated development h
 - Site Editor (`Modules/Blocks`, D18 A, decided under the standing instruction): 11 tools — `kuduy-block-types`, `kuduy-post-blocks`, `kuduy-site-templates`, `-template-get`, `-template-update`, `-template-revert`, `kuduy-global-styles-get`, `-update`, `kuduy-widgets`, `kuduy-widget-save`, `kuduy-widget-remove` — through core's REST controllers in-process. Found in the interim run: core's global-styles route does not check `edit_css`, so KUDUY does; a fresh Playground install's leftover widget areas made core move new widgets to inactive (test setup fixed).
 - Cache (`Modules/Cache`, D19 A, decided under the standing instruction): `kuduy-cache-status`, `kuduy-cache-purge` over LiteSpeed Cache, W3 Total Cache, WP Super Cache, WP Fastest Cache and WP Rocket (docs only), plus object-cache flush. Test `CacheTest`; CI cache job (LiteSpeed Cache 7.9.3).
 - Runner: `KUDUY_FILTER` runs only matching tests (local debugging).
+
+### 2026-11-10 — Phase 7: multilingual (Polylang) built
+
+- `Modules/Multilingual` (D20 A, decided under the standing instruction): `kuduy-lang-status`, `-get`, `-set`, `-link`, `-translate` over Polylang 3.9.2's public API; WPML not supported until a licensed copy is tested. Test `MultilingualTest`; CI Polylang job on both pairs. Not run yet (full suite at the end of Phase 7).

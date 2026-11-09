@@ -318,6 +318,16 @@ Source read 2026-11-10 from the wordpress.org ZIPs: **LiteSpeed Cache 7.9.3** (W
 - **Object cache:** `wp_using_ext_object_cache()`, `wp_cache_flush()` (whole site; Redis/Memcached drop-ins).
 - Capabilities: the plugins' purge buttons are admin-only (`manage_options`); none documents a per-post capability, so KUDUY uses `edit_post` for one post.
 
+## 10e. Multilingual: Polylang, WPML (Phase 7)
+
+Source read 2026-11-10 from the wordpress.org ZIP of **Polylang 3.9.2** (WordPress 6.8+, PHP 7.4). WPML is paid and was not read; it is **not supported** until a licensed copy is tested.
+
+- **Detection:** constant `POLYLANG_VERSION`, function `PLL()`.
+- **Public API** (`src/api.php`): `pll_languages_list( [ 'fields' => … ] )`, `pll_default_language()`, `pll_is_translated_post_type()`, `pll_is_translated_taxonomy()`, `pll_get_post_language()` / `pll_get_term_language()`, `pll_set_post_language()` / `pll_set_term_language()` (slug or `PLL_Language`), `pll_get_post_translations()` / `pll_get_term_translations()` (language → id), `pll_save_post_translations( [ lang => id ] )` / terms (saves the whole group; objects left out are unlinked), `pll_get_post()`, `pll_count_posts()`, `pll_insert_post( $postarr, $lang )`, `pll_insert_term()`, `pll_update_post()`.
+- **Languages** are added with `PLL()->model->languages->add( [ 'locale' => 'de_DE' ] )` (name, slug, flag from Polylang's list).
+- **Capabilities:** `manage_languages` and `manage_translations` map to `manage_options` (settings and string translations); post and term languages follow the object's own `edit_post` / `edit_term`.
+- **WPML (docs, UNVERIFIED):** filters `wpml_active_languages`, `wpml_post_language_details`, `wpml_element_trid`, `wpml_get_element_translations`, action `wpml_set_element_language_details`.
+
 **Still UNVERIFIED (Site Editor):** block navigation menus (`wp_navigation`) beyond reading; style variations; template behaviour of hybrid themes; font library.
 
 **Still UNVERIFIED (forms):** everything about Gravity Forms beyond the docs, WPForms Pro entries, Elementor Pro form submissions, Fluent Forms Pro, CF7 add-on properties, Akismet behaviour in tests.

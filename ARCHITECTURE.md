@@ -32,6 +32,7 @@ Approved 2026-11-04 (decisions D1–D6); D1 and D2 changed by user decision duri
 | D16 | What forms tools may change: inbox actions with undo, CF7 form edits, mail routing confirm-first under `kuduy:admin`, no permanent delete (A); A with mail routing refused (B); nothing (C) | **Decided 2026-11-09 (user): A** |
 | D18 | Site Editor data path: core REST controllers in-process with `rest_do_request()` as the user (A); core PHP functions (B) (see `docs/plans/phase-7-site-editor.md`) | **A — built 2026-11-10 with the recommended option under the user's standing instruction (finish Phase 7 unattended); for review** |
 | D19 | Cache purges: each cache plugin's documented purge API, whole site / one post / one URL, object-cache flush for admins, no snapshot (A); only a whole-site purge (B) (see `docs/plans/phase-7-cache.md`) | **A — built 2026-11-10 under the same standing instruction; for review** |
+| D20 | Multilingual: Polylang's public `pll_*` API, WPML later with a licensed copy (A); Polylang + WPML hooks now (B) (see `docs/plans/phase-7-multilingual.md`) | **A — built 2026-11-10 under the standing instruction; for review** |
 | D17 | Visitors' personal data in entries: masked by field type, full with `include_pii` + entry-edit permission, never in audit rows (A); every value masked unless `include_pii` (B) | **Decided 2026-11-09 (user): A** |
 
 ## 3. Components
