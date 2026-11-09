@@ -144,7 +144,7 @@ Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude cli
 | Feature | Status |
 |---|---|
 | Products, variations, attributes, categories, tags, images, prices, stock | Tested (W3–W5: `kuduy-woo-status`, `kuduy-woo-product-list` / `-get` / `-create` / `-update` / `-stock` / `-trash`, `kuduy-woo-variation-list` / `-create` / `-update`; HPOS on and off, WP 6.9 + 7.1; not yet on a real host) |
-| Orders, items, status, notes (HPOS on/off) | Not started |
+| Orders, items, status, notes (HPOS on/off) | Tested (W6–W8: `kuduy-woo-order-list` / `-get` / `-status` / `-note`; customer data masked by default, customer emails confirm-first, refunds refused; not yet on a real host) |
 | Customers, coupons, reviews | Not started |
 | Shipping zones/methods, store settings, tax (read + safe writes) | Not started |
 | Reports and diagnostics | Not started |

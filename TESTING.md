@@ -54,6 +54,11 @@ See `CLAUDE.md` → Commands. Integration: `KUDUY_WP=<6.9|7.1> KUDUY_PHP=<8.1|8.
 | Integration: WP 6.9.11/PHP 8.1.34 + Elementor 3.35.9, no SEO plugin | **158 pass, 9 skipped** |
 | Smoke over real HTTP (2026-11-08) | **26 / 26 pass** |
 | Smoke over real HTTP (2026-11-09, after Phase 7 step 2) | **26 / 26 pass** |
+| Integration (local, 2026-11-09, Phase 7 step 3: orders): WP 7.1.4/PHP 8.3.36 + Elementor 4.3.6 + WooCommerce 11.2.2, HPOS on / off | **180 pass, 4 skipped** each (184 tests). With the order tools unregistered all 8 `WooOrdersTest` tests failed and nothing else did |
+| Integration: WP 6.9.11/PHP 8.1.34 + Elementor 4.3.6 + WooCommerce 11.0.1, HPOS on / off | **180 pass, 4 skipped** each |
+| Integration: WP 7.1.4/PHP 8.3.36 + Elementor 4.3.6, no WooCommerce | First run: **1 failure** — `LifecycleTest::test_uninstall_with_opt_in_drops_tables_and_options` (`kuduy_oauth_clients still exists`), the same intermittent failure seen once on 2026-11-08; re-run: **156 pass, 4 skipped**. Not caused by this change (no lifecycle code touched); open item: intermittent `DROP TABLE` in Playground's SQLite layer, UNVERIFIED cause |
+| Integration: WP 6.9.11/PHP 8.1.34 + Elementor 3.35.9, no WooCommerce | **151 pass, 9 skipped** |
+| Smoke over real HTTP (2026-11-09, after Phase 7 step 3) | **26 / 26 pass** |
 | Integration (local, 2026-11-08, after the Phase 6 close-out fixes: job results name their item, search-visibility note, audit `total` described): WP 7.1.4/PHP 8.3.36 + Elementor 4.3.6 + Yoast 28.8 | **158 pass, 5 skipped** (163 tests). Before the fix the two new assertions failed as expected; that run also had one `LifecycleTest` uninstall failure (`kuduy_oauth_clients still exists`) that did not repeat in any later run |
 | Integration: WP 6.9.11/PHP 8.1.34 + Elementor 4.3.6 + Yoast 28.7 | **158 pass, 5 skipped** |
 | Integration: WP 6.9.11/PHP 8.1.34 + Elementor 4.3.6, no SEO plugin | **155 pass, 4 skipped** |
@@ -188,9 +193,9 @@ Ids from `docs/plans/phase-7-woocommerce.md`. Every order test runs with HPOS on
 | W3 | Product CRUD round trip through `wc_get_product()`, lookup table updated | I — **pass 2026-11-09** on WP 7.1.4 + WooCommerce 11.2.2 and WP 6.9.11 + 11.0.1, HPOS on and off (`WooProductsTest`: create as draft, read back through `wc_get_product()`, SKU and price in `wc_product_meta_lookup`; duplicate SKU refused with nothing created; update patches only sent fields, undo restores name, sale price, short description and status; list by SKU, get, non-product refused; trash + undo restores status and variations; editor and author refused; create and publish need `publish_products`) |
 | W4 | Variations + parent sync | I — **pass 2026-11-09** on WP 7.1.4 + WooCommerce 11.2.2 and WP 6.9.11 + 11.0.1, HPOS on and off (`WooProductsTest`: custom attribute with variation flag, two variations, parent price range synced after create and update, undo, unknown option refused) |
 | W5 | Stock set/increase/decrease + undo | I — **pass 2026-11-09** on WP 7.1.4 + WooCommerce 11.2.2 and WP 6.9.11 + 11.0.1, HPOS on and off (`WooProductsTest`: refused while stock is not managed; set 10, decrease 3 → 7; undo → 10) |
-| W6 | Order read and PII masking, HPOS on and off | I |
-| W7 | Order status confirm-first, emails captured, undo | I |
-| W8 | Per-object order capabilities (shop manager yes, editor and author no), HPOS on and off | I |
+| W6 | Order read and PII masking, HPOS on and off | I — **pass 2026-11-09** on WP 7.1.4 + WooCommerce 11.2.2 and WP 6.9.11 + 11.0.1, HPOS on and off (`WooOrdersTest`: list and get mask email, address, phone and IP; order key never in any result; `include_pii` gives full billing data and IP to a shop manager and is refused to a role that can only read orders) |
+| W7 | Order status confirm-first, emails captured, undo | I — **pass 2026-11-09** on WP 7.1.4 + WooCommerce 11.2.2 and WP 6.9.11 + 11.0.1, HPOS on and off (`WooOrdersTest`: processing → completed reports the customer email and changes nothing; with `confirm` one email reaches the customer (`pre_wp_mail`); undo restores processing with no customer email; processing → on-hold runs at once; `refunded` refused with no refund created; private note sends nothing, customer note confirm-first then one email) |
+| W8 | Per-object order capabilities (shop manager yes, editor and author no), HPOS on and off | I — **pass 2026-11-09** on WP 7.1.4 + WooCommerce 11.2.2 and WP 6.9.11 + 11.0.1, HPOS on and off (`WooOrdersTest`: editor and author refused list, get and status; order unchanged) |
 | W9 | Coupons: unique code, undo | I |
 | W10 | Customer address update; shop manager limited to customers | I |
 | W11 | Reviews moderation + rating cache | I |

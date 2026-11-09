@@ -214,6 +214,34 @@ final class Woo {
 	}
 
 	/**
+	 * An order (not a refund), from either storage (HPOS or posts), or a ToolError.
+	 *
+	 * @param int $id Order id.
+	 * @throws ToolError When there is no such order.
+	 */
+	public static function order( int $id ): \WC_Order {
+		$order = $id > 0 ? wc_get_order( $id ) : null;
+		if ( ! $order instanceof \WC_Order ) {
+			throw new ToolError( 'No WooCommerce order with id ' . (int) $id . '.' );
+		}
+		return $order;
+	}
+
+	/**
+	 * WooCommerce's own REST permission check for orders (keeps the `woocommerce_rest_check_permissions` filter).
+	 * Under HPOS without sync WooCommerce maps edit_post / read_post for order ids itself (HposOrderCapabilityHelper).
+	 *
+	 * @param string $context read | edit.
+	 * @param int    $id      Order id (0 for collection checks).
+	 * @throws ToolError When WooCommerce refuses.
+	 */
+	public static function assert_order_permission( string $context, int $id = 0 ): void {
+		if ( ! wc_rest_check_post_permissions( 'shop_order', $context, $id ) ) {
+			throw new ToolError( 'WooCommerce does not allow your account to ' . esc_html( $context ) . ' this order.' );
+		}
+	}
+
+	/**
 	 * Current values of the given fields, in the same shape the tools accept.
 	 *
 	 * @param \WC_Product   $product Product or variation.

@@ -22,6 +22,7 @@ namespace {
 	class WooCommerce {
 		/** @var WC_Countries */
 		public $countries;
+		public function mailer(): WC_Emails {}
 	}
 	function WC(): WooCommerce {}
 
@@ -95,6 +96,122 @@ namespace {
 	class WC_Product_Variation extends WC_Product {
 		public function set_parent_id( int $id ): void {}
 	}
+
+	class WC_Order_Item {
+		public function get_id(): int {}
+		public function get_name( string $context = 'view' ): string {}
+	}
+	class WC_Order_Item_Product extends WC_Order_Item {
+		/** @return WC_Product|false|null */
+		public function get_product() {}
+		public function get_product_id( string $context = 'view' ): int {}
+		public function get_variation_id( string $context = 'view' ): int {}
+		/** @return int|float */
+		public function get_quantity( string $context = 'view' ) {}
+		public function get_subtotal( string $context = 'view' ): string {}
+		public function get_total( string $context = 'view' ): string {}
+		public function get_total_tax( string $context = 'view' ): string {}
+	}
+	class WC_Order_Item_Shipping extends WC_Order_Item {
+		public function get_method_id( string $context = 'view' ): string {}
+		public function get_method_title( string $context = 'view' ): string {}
+		public function get_total( string $context = 'view' ): string {}
+	}
+	class WC_Order_Item_Fee extends WC_Order_Item {
+		public function get_total( string $context = 'view' ): string {}
+	}
+	abstract class WC_Abstract_Order extends WC_Data {
+		public function get_status( string $context = 'view' ): string {}
+		public function get_date_created( string $context = 'view' ): ?WC_DateTime {}
+		public function get_currency( string $context = 'view' ): string {}
+		public function get_total( string $context = 'view' ): string {}
+		public function get_subtotal(): string {}
+		public function get_discount_total( string $context = 'view' ): string {}
+		public function get_shipping_total( string $context = 'view' ): string {}
+		public function get_total_tax( string $context = 'view' ): string {}
+		public function get_prices_include_tax( string $context = 'view' ): bool {}
+		/** @return array<int, WC_Order_Item> */
+		public function get_items( string $types = 'line_item' ): array {}
+		/** @return array<int, WC_Order_Item_Shipping> */
+		public function get_shipping_methods(): array {}
+		/** @return array<int, WC_Order_Item_Fee> */
+		public function get_fees(): array {}
+		/** @return array<string> */
+		public function get_coupon_codes(): array {}
+		public function get_item_count( string $item_type = '' ): int {}
+		/** @param WC_Product $product */
+		public function add_product( $product, int $qty = 1 ): int {}
+		public function calculate_totals( bool $and_taxes = true ): string {}
+		public function set_status( string $new_status ): void {}
+	}
+	class WC_Order_Refund extends WC_Abstract_Order {
+		public function get_amount( string $context = 'view' ): string {}
+		public function get_reason( string $context = 'view' ): string {}
+	}
+	class WC_Order extends WC_Abstract_Order {
+		public function get_order_number(): string {}
+		public function get_order_key( string $context = 'view' ): string {}
+		public function get_customer_id( string $context = 'view' ): int {}
+		public function get_billing_first_name( string $context = 'view' ): string {}
+		public function get_billing_last_name( string $context = 'view' ): string {}
+		public function get_billing_email( string $context = 'view' ): string {}
+		public function get_payment_method( string $context = 'view' ): string {}
+		public function get_payment_method_title( string $context = 'view' ): string {}
+		public function get_date_paid( string $context = 'view' ): ?WC_DateTime {}
+		public function get_date_completed( string $context = 'view' ): ?WC_DateTime {}
+		public function get_created_via( string $context = 'view' ): string {}
+		public function get_customer_note( string $context = 'view' ): string {}
+		public function get_customer_ip_address( string $context = 'view' ): string {}
+		public function get_customer_user_agent( string $context = 'view' ): string {}
+		public function get_transaction_id( string $context = 'view' ): string {}
+		public function get_total_refunded(): string {}
+		/** @return array<string, string> */
+		public function get_address( string $address_type = 'billing' ): array {}
+		/** @return array<WC_Order_Refund> */
+		public function get_refunds(): array {}
+		public function update_status( string $new_status, string $note = '', bool $manual = false ): bool {}
+		public function add_order_note( string $note, int $is_customer_note = 0, bool $added_by_user = false ): int {}
+		public function set_billing_first_name( string $value ): void {}
+		public function set_billing_last_name( string $value ): void {}
+		public function set_billing_email( string $value ): void {}
+		public function set_billing_phone( string $value ): void {}
+		public function set_billing_address_1( string $value ): void {}
+		public function set_billing_city( string $value ): void {}
+		public function set_billing_country( string $value ): void {}
+		public function set_customer_ip_address( string $value ): void {}
+	}
+	class WC_Email {
+		/** @var string */
+		public $id;
+		public function is_customer_email(): bool {}
+		public function is_enabled(): bool {}
+		public function get_title(): string {}
+	}
+	class WC_Emails {
+		/** @return array<string, mixed> */
+		public function get_emails(): array {}
+	}
+
+	/**
+	 * @param mixed $the_order
+	 * @return WC_Order|WC_Order_Refund|false
+	 */
+	function wc_get_order( $the_order = false ) {}
+	/**
+	 * @param array<string, mixed> $args
+	 * @return WC_Order|WP_Error
+	 */
+	function wc_create_order( array $args = array() ) {}
+	/**
+	 * @param array<string, mixed> $args
+	 * @return mixed Paginated object with paginate => true, otherwise a list.
+	 */
+	function wc_get_orders( array $args ) {}
+	/**
+	 * @param array<string, mixed> $args
+	 * @return array<object{id: int, content: string, customer_note: bool, added_by: string, date_created: WC_DateTime|null}>
+	 */
+	function wc_get_order_notes( array $args ) {}
 
 	/**
 	 * @param mixed $the_product

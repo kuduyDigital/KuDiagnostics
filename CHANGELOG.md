@@ -4,6 +4,8 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 ## Unreleased
 
+- Added (Phase 7): WooCommerce orders — `kuduy-woo-order-list`, `kuduy-woo-order-get`, `kuduy-woo-order-status`, `kuduy-woo-order-note`. Customer details (email, address, phone, IP) are masked unless the request asks for them and the user may edit the order. A status change or customer note that makes WooCommerce email the customer first reports the email and needs confirmation. Undoing a status change sends no email. Refunds are not offered.
+
 - Added (Phase 7): WooCommerce products — `kuduy-woo-status` (version, order storage, currency, tax/shipping/coupon/review settings, coming-soon mode), `kuduy-woo-product-list`, `-get`, `-create`, `-update`, `-stock`, `-trash`, `kuduy-woo-variation-list`, `-create`, `-update`. Everything goes through WooCommerce's own product API with WooCommerce's own permission rules; changes, stock and trash can be undone; nothing is deleted permanently. Products are created as drafts; publishing needs permission to publish products.
 
 - Changed: while WooCommerce is active, `kuduy-post-create`, `-update`, `-trash` and `kuduy-post-meta-set` refuse products, variations, orders and coupons and name the WooCommerce tools to use instead (plain post writes would skip WooCommerce's own data handling). Reading them still works.
@@ -359,3 +361,10 @@ Format: user-facing releases first (newest on top), then the dated development h
 - TDD: `WooProductsTest` (10 tests) failed with the tools unregistered, then passed after two fixes found by the first green run (the trash tool read the product id after `delete()` had reset it to 0; the parent price range is formatted with the store decimals, so the test compares amounts).
 - Plan change: creates keep no snapshot (like `kuduy-post-create`); a created product is undone with `kuduy-woo-product-trash`.
 - Results: `TESTING.md` §3 (WooCommerce 11.2.2 on 7.1 and 11.0.1 on 6.9, HPOS on and off; runs without WooCommerce unchanged).
+
+### 2026-11-09 — Phase 7 step 3: WooCommerce orders
+
+- `Pii` (masked email, address reduced to names, company and country), `OrderRead` (`kuduy-woo-order-list`, `-get`), `OrderWrite` (`kuduy-woo-order-status`, `-note`). Customer emails are detected from the enabled customer `WC_Email` objects on the status change's notification hooks; undo unhooks WooCommerce's email dispatch for that change and disables customer emails while it runs.
+- TDD: `WooOrdersTest` (8 tests) failed with the tools unregistered, then passed at once with HPOS on and off on both WordPress pairs.
+- Plan changes: no undo for notes; `refunded` refused (WooCommerce creates a refund record for it).
+- An intermittent `LifecycleTest` uninstall failure came back once in a run without WooCommerce and passed on re-run (`TESTING.md` §3).

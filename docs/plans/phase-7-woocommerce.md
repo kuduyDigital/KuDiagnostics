@@ -111,6 +111,8 @@ Not offered (D11 A): refunds, order creation or item edits, payment changes, gat
 
 - 2026-11-09: step 2 done — `kuduy-woo-status`, `kuduy-woo-product-list` / `-get` / `-create` / `-update` / `-stock` / `-trash`, `kuduy-woo-variation-list` / `-create` / `-update` (W3–W5, `WooProductsTest`). Plan change: creates (5, 7) keep no snapshot, like `kuduy-post-create` — a product is created as a draft and removed with `kuduy-woo-product-trash` (undoable); a variation can be disabled with `status: private`. Found in tests: `WC_Data::delete()` resets the object id to 0; the parent's variation price range is formatted with the store decimals ("30.00").
 
+- 2026-11-09: step 3 done — `kuduy-woo-order-list` / `-get` / `-status` / `-note` (W6–W8, `WooOrdersTest`, HPOS on and off). Plan changes: order notes have no undo (the snapshot is taken before the note exists; notes only add text); `refunded` is refused by `kuduy-woo-order-status` because WooCommerce creates a refund record for it (`wc_order_fully_refunded`); without `include_pii` addresses keep names, company and country.
+
 ## Order
 
 1. Guards in core post tools + `Redactor` additions (W1, W2).
