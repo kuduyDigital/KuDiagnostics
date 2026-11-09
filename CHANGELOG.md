@@ -4,6 +4,8 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 ## Unreleased
 
+- Fixed: `kuduy-woo-report` listed only the first 10 intervals (e.g. 10 of 30 days); it now returns every interval in the range, oldest first, and says so when a very long daily range is cut.
+
 ## 0.6.0 — 2026-11-09
 
 **Phase 7: WooCommerce (29 new tools, shown only while WooCommerce is active).** Products, variations, stock, orders, coupons, customers, reviews, shipping, tax, payment methods and reports, all through WooCommerce's own APIs and permission rules, with WooCommerce's new order storage (HPOS) on or off. Customer details are masked unless asked for and allowed, payment secrets are never shown, nothing is refunded or deleted permanently, and anything that would email a customer asks for confirmation first.
@@ -391,3 +393,8 @@ Format: user-facing releases first (newest on top), then the dated development h
 ### 2026-11-09 — Release 0.6.0
 
 - Version 0.6.0 (Phase 7 WooCommerce tools). Tagged after CI passed on the release commit, at the user's request.
+
+### 2026-11-09 — Phase 7 WooCommerce on staging (claude.ai)
+
+- Staging updated to 0.6.0 by the user (update offered after `kuduy-check-update` with `refresh: true`); check run from claude.ai web (Claude Code sessions still get the stale 42-tool connector list). 11 of 14 steps pass on WooCommerce 11.2.2 with HPOS on, sync off; order/customer masking and gateway secret masking could not run on this store (no orders, no customers, no gateway with secrets). Test product and coupon left in the trash. Results: `TESTING.md` §3, `COMPATIBILITY.md`.
+- Found: the report tool read only the first page of intervals (wc-analytics pages them, 10 by default). Test first (`test_daily_intervals_cover_the_whole_range` failed with 10 of 30), then fixed (100 per page, all pages up to 1,000 intervals).

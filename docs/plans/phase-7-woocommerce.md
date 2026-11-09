@@ -119,6 +119,8 @@ Not offered (D11 A): refunds, order creation or item edits, payment changes, gat
 
 - 2026-11-09: step 6 code done — `kuduy-job-start` accepts `kuduy-woo-product-update`, `-variation-update`, `-product-stock`, `-coupon-update` (`WooJobsTest`); order status, notes and trash stay single calls. Left: the staging run with claude.ai (needs a release).
 
+- 2026-11-09: released as 0.6.0; staging run with claude.ai: 11 of 14 steps pass, 3 not testable on that store (orders, customers, gateway secrets — covered in Playground). Fixed afterwards: report intervals were cut at 10. Open: re-run the order, customer and gateway steps on staging once it has a test order and a sandbox gateway; then the WooCommerce part of the exit gate is fully evidenced on a real host.
+
 ## Order
 
 1. Guards in core post tools + `Redactor` additions (W1, W2).

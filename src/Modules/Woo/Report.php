@@ -20,6 +20,11 @@ use Kuduy\Mcp\Modules\Core\Content;
 final class Report implements Tool {
 
 	/**
+	 * At most this many pages of 100 intervals (a daily report over up to about 2.7 years).
+	 */
+	private const MAX_INTERVAL_PAGES = 10;
+
+	/**
 	 * Report => [ stats route or null, rows route or null ].
 	 */
 	private const ROUTES = array(
@@ -152,7 +157,7 @@ final class Report implements Tool {
 	 *
 	 * @param string               $route  Route under wc-analytics/.
 	 * @param array<string, mixed> $params Query parameters.
-	 * @return array{0: mixed, 1: int|null} Data and X-WP-Total.
+	 * @return array{0: mixed, 1: int|null, 2: int} Data, X-WP-Total and X-WP-TotalPages.
 	 * @throws ToolError When WooCommerce returns an error.
 	 */
 	private static function fetch( string $route, array $params ): array {
@@ -164,8 +169,45 @@ final class Report implements Tool {
 			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- returned as JSON text, never HTML.
 			throw new ToolError( 'WooCommerce Analytics refused the report: ' . wp_strip_all_tags( $error->get_error_message() ) );
 		}
-		$total = $response->get_headers()['X-WP-Total'] ?? null;
-		return array( $response->get_data(), null === $total ? null : (int) $total );
+		$headers = $response->get_headers();
+		$total   = $headers['X-WP-Total'] ?? null;
+		return array( $response->get_data(), null === $total ? null : (int) $total, (int) ( $headers['X-WP-TotalPages'] ?? 1 ) );
+	}
+
+	/**
+	 * Stats with every interval: wc-analytics pages the intervals (10 per page by default, 100 at most), so a 30-day
+	 * daily report needs all pages (found on staging 2026-11-09).
+	 *
+	 * @param string               $route  Stats route.
+	 * @param array<string, mixed> $params Query parameters.
+	 * @return array{totals: array<mixed>, intervals: list<array<mixed>>, complete: bool}
+	 */
+	private static function stats( string $route, array $params ): array {
+		$totals    = array();
+		$intervals = array();
+		$pages     = 1;
+		$page      = 0;
+		while ( $page < $pages && $page < self::MAX_INTERVAL_PAGES ) {
+			++$page;
+			[ $data, , $pages ] = self::fetch(
+				$route,
+				$params + array(
+					'per_page' => 100,
+					'page'     => $page,
+					'order'    => 'asc',
+				)
+			);
+			$data               = is_array( $data ) ? $data : array();
+			$totals             = (array) ( $data['totals'] ?? $totals );
+			foreach ( (array) ( $data['intervals'] ?? array() ) as $row ) {
+				$intervals[] = (array) $row;
+			}
+		}
+		return array(
+			'totals'    => $totals,
+			'intervals' => $intervals,
+			'complete'  => $pages <= self::MAX_INTERVAL_PAGES,
+		);
 	}
 
 	/**
@@ -206,10 +248,12 @@ final class Report implements Tool {
 			'note'       => 'Numbers come from WooCommerce Analytics tables, which WooCommerce fills in the background' . ( 'yes' === get_option( 'woocommerce_analytics_scheduled_import', 'no' ) ? ' on a schedule' : '' ) . '; the newest orders may not be counted yet. Dates use the store time zone.',
 		);
 		if ( $stats_route ) {
-			[ $stats ]        = self::fetch( $stats_route, $params + array( 'interval' => $interval ) );
-			$stats            = is_array( $stats ) ? $stats : array();
-			$out['totals']    = Pii::scrub( (array) ( $stats['totals'] ?? array() ) );
-			$out['intervals'] = array_values( array_map( static fn( $row ) => Pii::scrub( (array) $row ), (array) ( $stats['intervals'] ?? array() ) ) );
+			$stats            = self::stats( $stats_route, $params + array( 'interval' => $interval ) );
+			$out['totals']    = Pii::scrub( $stats['totals'] );
+			$out['intervals'] = array_map( static fn( $row ) => Pii::scrub( $row ), $stats['intervals'] );
+			if ( ! $stats['complete'] ) {
+				$out['note'] .= ' Only the first ' . count( $out['intervals'] ) . ' intervals are listed; choose a longer interval for this range.';
+			}
 		}
 		if ( $rows_route ) {
 			// extended_info adds names, SKUs and (for orders) customer details to the rows; Pii::scrub() masks the latter.

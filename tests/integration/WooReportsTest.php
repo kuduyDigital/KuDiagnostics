@@ -88,6 +88,20 @@ final class WooReportsTest extends TestCase {
 		$this->assertNotEmpty( $out['note'] );
 	}
 
+	public function test_daily_intervals_cover_the_whole_range(): void {
+		// Found on staging 2026-11-09: wc-analytics pages intervals (10 by default), so a 30-day report showed 10 days.
+		$out = $this->ok(
+			'kuduy-woo-report',
+			array(
+				'report'   => 'revenue',
+				'after'    => current_datetime()->modify( '-29 days' )->format( 'Y-m-d' ),
+				'before'   => current_time( 'Y-m-d' ),
+				'interval' => 'day',
+			)
+		);
+		$this->assertCount( 30, $out['intervals'] );
+	}
+
 	public function test_products_report_lists_the_item(): void {
 		$out  = $this->today( 'products' );
 		$rows = array_values( array_filter( $out['rows'], static fn( $r ) => 'Kuduy report item' === ( $r['extended_info']['name'] ?? '' ) ) );
