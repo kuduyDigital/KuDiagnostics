@@ -27,6 +27,7 @@ Approved 2026-11-04 (decisions D1–D6); D1 and D2 changed by user decision duri
 | D11 | Money and customer-facing Woo actions: refunds, order creation, payment changes not offered; status changes/customer notes that email customers confirm-first (A), or A + record-only refunds (B) | **Decided 2026-11-08 (user): A** |
 | D12 | Customer personal data: masked by default, full only with `include_pii` + per-object capability, never in audit rows (A), or full data to anyone with the capability (B) | **Decided 2026-11-08 (user): A** |
 | D13 | Scopes for Woo tools: existing `kuduy:read` / `write` / `admin` (A), or a new `kuduy:shop` scope (B) | **Decided 2026-11-08 (user): A** |
+| D14 | ACF data path: own tools on ACF's public API, definitions read only (A); A + definition writes through ACF's abilities when the site enabled them (B); raw post meta (C) (see `docs/plans/phase-7-acf.md`) | **Proposed 2026-11-09, waiting for the user** — recommended A |
 
 ## 3. Components
 

@@ -47,6 +47,7 @@ final class WooStoreSettingsTest extends TestCase {
 				'testmode'      => 'yes',
 				'merchant_pin'  => self::PIN,
 				'api_signature' => self::SIGNATURE,
+				'sepa_tokens'   => 'yes',
 			)
 		);
 		add_filter( 'woocommerce_payment_gateways', array( self::class, 'add_gateway' ) );
@@ -132,6 +133,8 @@ final class WooStoreSettingsTest extends TestCase {
 			$this->assertNull( $settings[ $secret ]['value'], $secret );
 			$this->assertTrue( $settings[ $secret ]['has_value'], $secret );
 		}
+		// Found on staging 2026-11-09: a checkbox named like a token was hidden; only free-text fields are masked by name.
+		$this->assertSame( 'yes', $settings['sepa_tokens']['value'] );
 		$json = (string) wp_json_encode( $out ) . (string) wp_json_encode( AuditLog::latest( 5 ) );
 		$this->assertStringNotContainsString( self::PIN, $json );
 		$this->assertStringNotContainsString( self::SIGNATURE, $json );

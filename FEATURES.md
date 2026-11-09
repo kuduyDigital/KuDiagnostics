@@ -155,7 +155,7 @@ Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude cli
 
 | Feature | Status |
 |---|---|
-| ACF; CPT and taxonomies | Not started |
+| ACF; CPT and taxonomies | In progress: research (`RESEARCH.md` §10a, ACF 6.8.11) and plan `docs/plans/phase-7-acf.md` (4 tools, D14 proposed) |
 | Fluent Forms, WPForms, Gravity Forms, Contact Form 7 | Not started |
 | Navigation menus | Tested (classic menus, see §5) |
 | Widgets and sidebars | Not started |

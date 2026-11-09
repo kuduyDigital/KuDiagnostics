@@ -35,6 +35,11 @@ final class KuduyFakeGateway extends \WC_Payment_Gateway {
 				'title' => 'API signature',
 				'type'  => 'text',
 			),
+			// A checkbox whose name looks like a credential (Stripe has sepa_tokens_for_ideal): it holds yes/no only.
+			'sepa_tokens'   => array(
+				'title' => 'Save SEPA tokens',
+				'type'  => 'checkbox',
+			),
 		);
 		$this->init_settings();
 		$this->title   = (string) $this->get_option( 'title' );

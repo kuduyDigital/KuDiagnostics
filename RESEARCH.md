@@ -229,7 +229,25 @@ Source read 2026-11-08 from the wordpress.org ZIP of **WooCommerce 11.2.2** (the
 - Customer PII: billing/shipping name, address, email, phone (orders and `WC_Customer`), `get_customer_ip_address()`, `get_customer_user_agent()`, customer notes; `WC_Privacy` registers WordPress personal-data exporters/erasers for it.
 - Note for staging checks: new installs set `woocommerce_coming_soon` = `yes`, which hides store pages from visitors.
 
-**Still UNVERIFIED (Phase 7):** staging's HPOS state; that `setSiteOptions` in a Playground blueprint switches HPOS on a fresh shop; analytics import timing in Playground (Action Scheduler without loopback); behaviour of gateway extensions' settings; WooCommerce subscriptions/bookings extensions (out of scope).
+**Still UNVERIFIED (Phase 7):** behaviour of gateway extensions' settings beyond Stripe 11.1.1; WooCommerce subscriptions/bookings extensions (out of scope). Verified since: staging runs HPOS on with sync off; `setSiteOptions` switches HPOS on a fresh Playground shop (`WooGuardsTest`); the analytics import can be run directly with `OrdersScheduler::import()`; `wc-analytics` stats page their intervals (10 by default, 100 at most; found on staging).
+
+**Stripe 11.1.1** (`woocommerce-gateway-stripe`, read 2026-11-09): `test_secret_key` / `secret_key` / webhook secrets are form fields of type `password`; its 11.x settings screen offers only "Create or connect an account" (Stripe sign-in), no manual key entry; checkbox settings such as `sepa_tokens_for_ideal` have credential-like names (KUDUY masks free-text fields by name only).
+
+## 10a. Advanced Custom Fields (Phase 7)
+
+Source read 2026-11-09 from the wordpress.org ZIP of **ACF 6.8.11** (the version on staging; requires WordPress 6.2, PHP 7.4, tested up to 7.1.4). Free plugin only; ACF PRO (repeater, flexible content, gallery, clone, options pages, blocks) is **UNVERIFIED**.
+
+- **Detection:** class `ACF` / function `acf()`, constant `ACF_VERSION`.
+- **Abilities:** ACF 6.8 registers its own (`src/AI/Abilities/`): `acf/get-field-groups`, `acf/register-field-group`, field-group create/view/update/delete per group, `acf/get-custom-post-types`, `acf/register-custom-post-type`, `acf/get-custom-taxonomies`, `acf/register-custom-taxonomy`, and create/view/update/delete per ACF-registered post type. **Only when the ACF setting `enable_acf_ai` is on (default `false`)**, like Yoast's production-only abilities. Permission: `current_user_can( acf_get_setting( 'capability' ) )` (default `manage_options`) for field groups, post types and taxonomies; post-type content abilities use the post type's own caps. They manage definitions (field groups, post types), not field values.
+- **Values (public API, ACF docs):** `get_field( $selector, $post_id, $format_value )`, `get_field_object()`, `get_fields( $post_id )`, `update_field( $selector, $value, $post_id )`, `delete_field()`. `$post_id` is `123` for posts, `user_5`, `term_7` / `category_7`, `comment_9`, `option` (options pages, PRO). Lower level: `acf_get_value()`, `acf_update_value( $value, $post_id, $field )` (runs the field type's `update_value`, filters `acf/update_value*`).
+- **Pitfall:** `update_field()` with a selector that is not a known field creates a **dummy field** and writes raw meta under that name. KUDUY must resolve the field first (`acf_get_field( $key )`) and only accept fields that belong to a group shown on that object (`acf_get_field_groups( [ 'post_id' => $id ] )` / `user_id` / `taxonomy`), never free names.
+- **Validation:** `update_field()` does not validate. ACF's own forms call `acf_validate_value( $value, $field, $input )` (required, per-type `acf/validate_value/type=…` filters), which records errors via `acf_add_validation_error()`; read with `acf_get_validation_errors()`, clear with `acf_reset_validation_errors()`.
+- **Definitions:** `acf_get_field_groups( $filter )` (location rules: `post_id`, `post_type`, `taxonomy`, `user_id`, …), `acf_get_field_group( $id_or_key )`, `acf_get_fields( $group )`, `acf_get_field( $key )`. Groups, ACF post types and ACF taxonomies are internal post types (`acf-field-group`, `acf-post-type`, `acf-taxonomy`); `acf_update_internal_post_type()` saves them; local JSON / PHP-registered groups are read-only in the database sense.
+- **Free field types (6.8.11):** accordion, button_group, checkbox, color_picker, date_picker, date_time_picker, email, file, google_map, group, icon_picker, image, link, message, number, oembed, output, page_link, password, post_object, radio, range, relationship, select, separator, tab, taxonomy, text, textarea, time_picker, true_false, url, user, wysiwyg.
+- **Secrets:** the `password` field type stores its value as plain meta: KUDUY must never return it (mask by field type, like gateway settings). ACF setting `google_api_key` (Google Maps) is a credential. Field values may hold personal data like any post meta.
+- **Permissions:** ACF adds none for values; access follows the object (`edit_post`, `edit_user`, `edit_term`); definitions need `acf_get_setting( 'capability' )`.
+
+**Still UNVERIFIED (ACF):** PRO field types and options pages; what `acf_validate_value()` accepts per field type outside a form submission (to test); REST output of fields (`show_in_rest`).
 
 ## 11. Licensing and dependencies
 

@@ -366,13 +366,19 @@ final class OrderRead implements Tool {
 				'id'            => (int) $note->id,
 				'content'       => (string) $note->content,
 				'customer_note' => (bool) $note->customer_note,
-				'added_by'      => (string) $note->added_by,
+				// The author's display name, which can be an email address (found on staging 2026-11-09).
+				'added_by'      => is_email( (string) $note->added_by ) ? Pii::email( (string) $note->added_by ) : (string) $note->added_by,
 				'date'          => $note->date_created instanceof \WC_DateTime ? $note->date_created->date( 'c' ) : null,
 			);
 		}
 		$paid      = $order->get_date_paid();
 		$completed = $order->get_date_completed();
-		return self::row( $order ) + array(
+		$row       = self::row( $order );
+		if ( $pii ) {
+			// The top-level email matches billing.email when customer details were asked for.
+			$row['email'] = $order->get_billing_email();
+		}
+		return $row + array(
 			'pii'                 => $pii,
 			'subtotal'            => (string) $order->get_subtotal(),
 			'discount_total'      => (string) $order->get_discount_total(),

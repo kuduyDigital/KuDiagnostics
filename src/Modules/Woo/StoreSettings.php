@@ -175,8 +175,11 @@ final class StoreSettings implements Tool {
 			if ( in_array( $type, array( 'title', 'sectionend' ), true ) ) {
 				continue;
 			}
-			$raw    = $value( (string) $id );
-			$secret = 'password' === $type || Redactor::is_secret_key( (string) $id );
+			$raw = $value( (string) $id );
+			// Password fields always; other fields by a credential-like name, except fields that only hold a choice
+			// (Stripe's sepa_tokens_for_ideal checkbox looked like a token; found on staging 2026-11-09).
+			$choice = in_array( $type, array( 'checkbox', 'select', 'multiselect', 'radio' ), true );
+			$secret = 'password' === $type || ( ! $choice && Redactor::is_secret_key( (string) $id ) );
 			$out[]  = array(
 				'id'        => (string) $id,
 				'label'     => wp_strip_all_tags( (string) ( $field['title'] ?? $field['label'] ?? $id ) ),

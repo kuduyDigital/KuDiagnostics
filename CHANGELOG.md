@@ -4,6 +4,9 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 ## Unreleased
 
+- Fixed: `kuduy-woo-payment-gateways` hid checkbox and select settings whose names look like credentials (e.g. Stripe's `sepa_tokens_for_ideal`); only free-text fields are hidden by name now (password fields always).
+- Fixed: `kuduy-woo-order-get` showed an order note author's display name unmasked when it is an email address, and with `include_pii` left the order's top-level `email` masked.
+
 - Fixed: `kuduy-woo-report` listed only the first 10 intervals (e.g. 10 of 30 days); it now returns every interval in the range, oldest first, and says so when a very long daily range is cut.
 
 ## 0.6.0 — 2026-11-09
@@ -398,3 +401,13 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 - Staging updated to 0.6.0 by the user (update offered after `kuduy-check-update` with `refresh: true`); check run from claude.ai web (Claude Code sessions still get the stale 42-tool connector list). 11 of 14 steps pass on WooCommerce 11.2.2 with HPOS on, sync off; order/customer masking and gateway secret masking could not run on this store (no orders, no customers, no gateway with secrets). Test product and coupon left in the trash. Results: `TESTING.md` §3, `COMPATIBILITY.md`.
 - Found: the report tool read only the first page of intervals (wc-analytics pages them, 10 by default). Test first (`test_daily_intervals_cover_the_whole_range` failed with 10 of 30), then fixed (100 per page, all pages up to 1,000 intervals).
+
+### 2026-11-09 — Phase 7 staging re-run (orders, customers, gateways)
+
+- The user signed in; the session set up a test customer (example.test address), product and pending order and installed Stripe 11.1.1 in WP admin through the built-in browser, then ran the check in claude.ai web. 7 / 7 pass; secret masking of a *stored* gateway key could not be shown on the host (Stripe only takes keys through its own sign-in). Everything removed afterwards (order and product trashed, customer deleted, Stripe deleted).
+- Three findings from that run fixed test first (`WooStoreSettingsTest`, `WooOrdersTest` failed, then passed): name-based masking skips choice fields; note authors that are email addresses are masked; `email` matches billing with `include_pii`.
+
+### 2026-11-09 — Phase 7: ACF research and plan
+
+- Read ACF 6.8.11 (staging's version) from source: value API, field groups and location rules, validation, the abilities it registers (off by default, definitions only), free field types, secrets (`password` field values, Google Maps key). Found: `update_field()` with an unknown name writes a "dummy" raw meta key, so KUDUY must only accept fields shown on the object. `RESEARCH.md` §10a.
+- Plan `docs/plans/phase-7-acf.md` (4 tools, guard in `kuduy-post-meta-set`, jobs) and D14 proposed. No code until the user approves.

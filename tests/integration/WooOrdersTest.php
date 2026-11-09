@@ -41,9 +41,16 @@ final class WooOrdersTest extends TestCase {
 		}
 		Plugin::boot();
 		self::$manager = self::make_user( 'shop_manager' );
-		self::$editor  = self::make_user( 'editor' );
-		self::$author  = self::make_user( 'author' );
-		$product       = new \WC_Product_Simple();
+		// On staging the admin's display name is an email address; notes carry it as added_by.
+		wp_update_user(
+			array(
+				'ID'           => self::$manager,
+				'display_name' => 'staff.member@example.test',
+			)
+		);
+		self::$editor = self::make_user( 'editor' );
+		self::$author = self::make_user( 'author' );
+		$product      = new \WC_Product_Simple();
 		$product->set_name( 'Kuduy order item' );
 		$product->set_regular_price( '12' );
 		$product->set_status( 'publish' );
@@ -141,6 +148,7 @@ final class WooOrdersTest extends TestCase {
 		$this->assertSame( self::EMAIL, $full['billing']['email'] );
 		$this->assertSame( 'Musterstrasse 1', $full['billing']['address_1'] );
 		$this->assertSame( '203.0.113.9', $full['customer_ip_address'] );
+		$this->assertSame( self::EMAIL, $full['email'], 'Found on staging 2026-11-09: the top-level email matches billing when PII is shown.' );
 		$this->assertStringNotContainsString( $order->get_order_key(), (string) wp_json_encode( $full ), 'Order keys never.' );
 	}
 
@@ -235,9 +243,12 @@ final class WooOrdersTest extends TestCase {
 			)
 		);
 		$this->assertCount( 1, self::customer_mail() );
-		$notes = array_column( $this->ok( 'kuduy-woo-order-get', array( 'id' => $order->get_id() ) )['notes'], 'customer_note', 'content' );
+		$all   = $this->ok( 'kuduy-woo-order-get', array( 'id' => $order->get_id() ) )['notes'];
+		$notes = array_column( $all, 'customer_note', 'content' );
 		$this->assertFalse( $notes['Packed by Kuduy.'] );
 		$this->assertTrue( $notes['Your parcel is on its way.'] );
+		// Found on staging 2026-11-09: added_by is the author's display name, which can be an email address.
+		$this->assertSame( 's***@example.test', array_column( $all, 'added_by', 'content' )['Packed by Kuduy.'] );
 	}
 
 	public function test_users_without_order_capabilities_are_refused(): void {
