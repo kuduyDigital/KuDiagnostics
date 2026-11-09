@@ -10,6 +10,7 @@ parameters:
     - tests/phpstan/elementor.stub
     - tests/phpstan/seo.stub
     - tests/phpstan/woocommerce.stub
+    - tests/phpstan/acf.stub
   paths:
     - kuduy-mcp.php
     - uninstall.php

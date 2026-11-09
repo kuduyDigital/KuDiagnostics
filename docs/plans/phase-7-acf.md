@@ -1,6 +1,6 @@
 # Phase 7b — Advanced Custom Fields (plan)
 
-Research: `RESEARCH.md` §10a (ACF 6.8.11 source, read 2026-11-09; the version on the staging site). Status: **plan proposed 2026-11-09 while the user was away; D14 open — waiting for approval before any code.**
+Research: `RESEARCH.md` §10a (ACF 6.8.11 source, read 2026-11-09; the version on the staging site). Status: **plan approved 2026-11-09; D14 decided (user): option A** — values through ACF's public API on fields shown on the object, definitions read only.
 
 Exit gate (`ROADMAP.md`, ACF part): values written through KUDUY round-trip through ACF's own API on posts, users and terms; only fields that ACF shows on that object can be written; `password` fields never returned; tests pass on WordPress 6.9 and 7.1.
 
@@ -47,6 +47,10 @@ Field groups are registered in the test with ACF's PHP API (`acf_add_local_field
 - CI: one ACF job on each WordPress pair.
 
 Then a staging run with claude.ai (staging has ACF 6.8.11 active).
+
+## Progress
+
+- 2026-11-09: steps 1–3 done — `kuduy-acf-status`, `-field-groups`, `-get`, `-update`, guard in `kuduy-post-meta-set`, jobs, CI (A1–A6). Found in tests: ACF 6.8.11 already denies `edit_post_meta` on its field keys (`acf_map_post_meta_caps`), so the guard checks `edit_post` for those keys and refuses in the tool with a clear message; ACF's select field has no validator, so KUDUY checks choices itself. Left: release and staging check (staging has ACF 6.8.11).
 
 ## Order
 

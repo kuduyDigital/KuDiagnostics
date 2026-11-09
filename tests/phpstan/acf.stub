@@ -1,0 +1,61 @@
+<?php
+/**
+ * ACF is not a dependency; this declares only the ACF API KUDUY and its tests call (RESEARCH.md §10a).
+ */
+
+define( 'ACF_VERSION', '6.8.11' );
+
+/**
+ * @param array<string, mixed> $filter
+ * @return array<int, array<string, mixed>>
+ */
+function acf_get_field_groups( array $filter = array() ): array {}
+/**
+ * @param int|string|array<string, mixed> $parent
+ * @return array<int, array<string, mixed>>
+ */
+function acf_get_fields( $parent ): array {}
+/** @return array<int, array<string, mixed>> */
+function acf_get_local_field_groups(): array {}
+/**
+ * @param array<string, mixed> $field_group
+ */
+function acf_add_local_field_group( array $field_group ): bool {}
+/**
+ * @param array<string, mixed> $args
+ * @return array<string, object>
+ */
+function acf_get_field_types( array $args = array() ): array {}
+function acf_is_pro(): bool {}
+/**
+ * @param mixed $value
+ * @return mixed
+ */
+function acf_get_setting( string $name, $value = null ) {}
+/**
+ * @param int|string $post_id
+ * @return mixed
+ */
+function acf_get_metadata( $post_id = 0, string $name = '', bool $hidden = false ) {}
+/**
+ * @param mixed                $value
+ * @param array<string, mixed> $field
+ */
+function acf_validate_value( $value, array $field, string $input ): bool {}
+/** @return array<int, array{input: string, message: string}>|false */
+function acf_get_validation_errors() {}
+function acf_reset_validation_errors(): void {}
+/**
+ * @param int|string|false $post_id
+ * @return mixed
+ */
+function get_field( string $selector, $post_id = false, bool $format_value = true, bool $escape_html = false ) {}
+/**
+ * @param mixed            $value
+ * @param int|string|false $post_id
+ */
+function update_field( string $selector, $value, $post_id = false ): bool {}
+/**
+ * @param int|string|false $post_id
+ */
+function delete_field( string $selector, $post_id = false ): bool {}

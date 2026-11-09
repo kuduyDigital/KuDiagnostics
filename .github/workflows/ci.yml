@@ -69,6 +69,9 @@ jobs:
           - { wp: '6.9', php: '8.1', elementor: '4.3.6', plugins: 'woocommerce@11.0.1', hpos: 'off', label: '+ WooCommerce, HPOS off' }
           - { wp: '7.1', php: '8.3', elementor: '4.3.6', plugins: 'woocommerce@11.2.2', hpos: 'on', label: '+ WooCommerce, HPOS on' }
           - { wp: '7.1', php: '8.3', elementor: '4.3.6', plugins: 'woocommerce@11.2.2', hpos: 'off', label: '+ WooCommerce, HPOS off' }
+          # ACF (Phase 7, D14).
+          - { wp: '6.9', php: '8.1', elementor: '4.3.6', plugins: 'advanced-custom-fields@6.8.11', label: '+ ACF' }
+          - { wp: '7.1', php: '8.3', elementor: '4.3.6', plugins: 'advanced-custom-fields@6.8.11', label: '+ ACF' }
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2

@@ -34,6 +34,7 @@ use Kuduy\Mcp\Modules\Elementor\ElementorVerify;
 use Kuduy\Mcp\Modules\Elementor\ElementorWrite;
 use Kuduy\Mcp\Modules\Elementor\ThemeBuilder;
 use Kuduy\Mcp\Jobs\JobTools;
+use Kuduy\Mcp\Modules\Acf\AcfTools;
 use Kuduy\Mcp\Modules\Media\MediaLibrary;
 use Kuduy\Mcp\Modules\Media\MediaTools;
 use Kuduy\Mcp\Modules\Seo\SeoAudit;
@@ -162,6 +163,9 @@ final class ToolRegistry {
 			$registry->register( new StoreSettings( $mode ) );
 		}
 		$registry->register( new Report() );
+		foreach ( array( 'status', 'field-groups', 'get', 'update' ) as $mode ) {
+			$registry->register( new AcfTools( $mode ) );
+		}
 		do_action( 'kuduy_mcp_register_tools', $registry );
 		return $registry;
 	}

@@ -117,7 +117,7 @@ final class JobTools implements Tool {
 							),
 							'object_id'   => array(
 								'type'        => 'integer',
-								'description' => 'The object the item acted on (its id or post_id: post, image, product, variation or coupon).',
+								'description' => 'The object the item acted on (its id or post_id: post, image, product, variation, coupon, or the post/user/term of an ACF update).',
 							),
 							'ok'          => array( 'type' => 'boolean' ),
 							'error'       => array( 'type' => 'string' ),

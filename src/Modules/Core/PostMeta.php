@@ -19,6 +19,39 @@ use Kuduy\Mcp\Mcp\ToolError;
 final class PostMeta implements Tool, Snapshottable {
 
 	/**
+	 * Whether the key is the name of an ACF field shown on the post (ACF active only).
+	 *
+	 * @param int    $post_id Post.
+	 * @param string $key     Meta key.
+	 */
+	private static function acf_field( int $post_id, string $key ): bool {
+		if ( '' === $key || ! function_exists( 'acf_get_field_groups' ) || ! function_exists( 'acf_get_fields' ) ) {
+			return false;
+		}
+		foreach ( (array) acf_get_field_groups( array( 'post_id' => $post_id ) ) as $group ) {
+			foreach ( (array) acf_get_fields( $group ) as $field ) {
+				if ( ( $field['name'] ?? null ) === $key ) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Refuse raw writes to ACF fields: they skip ACF's reference key, formatting and validation (D14).
+	 *
+	 * @param int    $post_id Post.
+	 * @param string $key     Meta key.
+	 * @throws ToolError When the key is an ACF field.
+	 */
+	private static function assert_not_acf( int $post_id, string $key ): void {
+		if ( self::acf_field( $post_id, $key ) ) {
+			throw new ToolError( 'This is an Advanced Custom Fields field; change it with kuduy-acf-update so ACF stores and checks it properly. Nothing was changed.' );
+		}
+	}
+
+	/**
 	 * Mode.
 	 *
 	 * @param string $mode get | set.
@@ -126,6 +159,11 @@ final class PostMeta implements Tool, Snapshottable {
 			return 'edit_posts';
 		}
 		if ( 'set' === $this->mode && isset( $input['key'] ) ) {
+			if ( self::acf_field( $post->ID, (string) $input['key'] ) ) {
+				// ACF denies edit_post_meta for its field keys (acf_map_post_meta_caps); check edit_post here so
+				// execute() can say which tool to use instead of a bare "not allowed".
+				return array( 'edit_post', $post->ID );
+			}
 			// Core meta capability: edit_post plus the key's auth callback (protected keys are refused by it).
 			return array( 'edit_post_meta', $post->ID, (string) $input['key'] );
 		}
@@ -148,6 +186,7 @@ final class PostMeta implements Tool, Snapshottable {
 		$post = Content::post( (int) $input['post_id'] );
 		if ( null !== $post && 'set' === $this->mode ) {
 			Content::assert_writable( $post->post_type );
+			self::assert_not_acf( $post->ID, (string) ( $input['key'] ?? '' ) );
 		}
 		return null === $post || 'set' !== $this->mode ? null : array(
 			'object_type' => 'post',
@@ -196,6 +235,9 @@ final class PostMeta implements Tool, Snapshottable {
 		$key = isset( $input['key'] ) ? (string) $input['key'] : null;
 		if ( null !== $key && is_protected_meta( $key, 'post' ) ) {
 			throw new ToolError( 'This is a protected field used by WordPress or a plugin; it cannot be read or changed with this tool.' );
+		}
+		if ( 'set' === $this->mode && null !== $key ) {
+			self::assert_not_acf( $post->ID, $key );
 		}
 
 		if ( 'set' === $this->mode && null !== $key ) {

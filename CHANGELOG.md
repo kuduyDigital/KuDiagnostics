@@ -4,6 +4,9 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 ## Unreleased
 
+- Added (Phase 7): Advanced Custom Fields — `kuduy-acf-status`, `kuduy-acf-field-groups` (read), `kuduy-acf-get`, `kuduy-acf-update` for field values on posts, users and terms through ACF's own API. Only fields ACF shows on that object can be changed; values are checked the way ACF's edit screen checks them; changes can be undone and run in bulk with `kuduy-job-start`. Password fields are never shown.
+- Changed: `kuduy-post-meta-set` refuses ACF field names and points to `kuduy-acf-update`.
+
 - Fixed: `kuduy-woo-payment-gateways` hid checkbox and select settings whose names look like credentials (e.g. Stripe's `sepa_tokens_for_ideal`); only free-text fields are hidden by name now (password fields always).
 - Fixed: `kuduy-woo-order-get` showed an order note author's display name unmasked when it is an email address, and with `include_pii` left the order's top-level `email` masked.
 
@@ -412,6 +415,15 @@ Format: user-facing releases first (newest on top), then the dated development h
 - Read ACF 6.8.11 (staging's version) from source: value API, field groups and location rules, validation, the abilities it registers (off by default, definitions only), free field types, secrets (`password` field values, Google Maps key). Found: `update_field()` with an unknown name writes a "dummy" raw meta key, so KUDUY must only accept fields shown on the object. `RESEARCH.md` §10a.
 - Plan `docs/plans/phase-7-acf.md` (4 tools, guard in `kuduy-post-meta-set`, jobs) and D14 proposed. No code until the user approves.
 
+### 2026-11-09 — ACF plan approved
+
+- The user approved `docs/plans/phase-7-acf.md` and decided D14: option A (own tools on ACF's public API, only fields shown on the object, definitions read only).
+
 ### 2026-11-09 — EL10 step 6 on staging
 
 - Re-ran the Theme Builder conditions step of EL10 on Hostinger staging (claude.ai "Kuduy" connector with `kuduy:admin` granted, called from a Claude Code session in the Claude desktop app; KUDUY MCP 0.6.0, WP 7.1.4, Elementor 4.3.6, Elementor Pro 4.0.4). A draft header took a page condition with no conflicts, `include/general` was refused because the live header 386 uses it, and the conditions were cleared; the test page was trashed. All 16 EL10 steps have now passed on staging; Phase 5 still lacks a real-client run on Elementor 3.x.
+
+### 2026-11-09 — Phase 7: ACF tools
+
+- `Modules/Acf` (`Acf`, `AcfTools`): 4 tools, guard in `kuduy-post-meta-set`, `kuduy-acf-update` in the job allow-list, CI jobs for ACF on both pairs, PHPStan stub for ACF.
+- TDD: `AcfTest` (9 tests) failed with the tools unregistered and passed at once after; the red run also showed ACF 6.8.11 denying raw meta writes to its fields (a test-key collision with `CoreEditorialTest`, fixed by renaming the test fields).

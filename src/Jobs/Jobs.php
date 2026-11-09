@@ -35,6 +35,7 @@ final class Jobs {
 		'kuduy-woo-variation-update',
 		'kuduy-woo-product-stock',
 		'kuduy-woo-coupon-update',
+		'kuduy-acf-update',
 	);
 
 	private const BATCH   = 25;
