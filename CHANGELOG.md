@@ -457,3 +457,9 @@ Format: user-facing releases first (newest on top), then the dated development h
 ### 2026-11-10 — Phase 7: multilingual (Polylang) built
 
 - `Modules/Multilingual` (D20 A, decided under the standing instruction): `kuduy-lang-status`, `-get`, `-set`, `-link`, `-translate` over Polylang 3.9.2's public API; WPML not supported until a licensed copy is tested. Test `MultilingualTest`; CI Polylang job on both pairs. Not run yet (full suite at the end of Phase 7).
+
+### 2026-11-10 — Phase 7: developer mode and content types built
+
+- `Modules/Dev` (D21 A and D4, decided under the standing instruction): read-only `kuduy-dev-files`, `-file-read`, `-search`, `-log`, `-db-schema`, `-db-query` (admin scope, `manage_options`; secret files refused, credentials masked, read-only capped queries); behind D4 `kuduy-dev-file-write` and `kuduy-dev-php` (`KUDUY_MCP_ALLOW_CODE_EXEC` + `kuduy:code` + `edit_plugins` + `manage_options`). Test `DeveloperTest` (code tools run with `KUDUY_CODE_EXEC=1`, own CI job). WP-CLI not offered.
+- `Modules/Types` (D22 A): `kuduy-content-types`, `-content-type-save`, `-content-type-remove`; definitions in option `kuduy_mcp_content_types` (removed on uninstall), registered on `init`. Test `ContentTypesTest`.
+- Not run yet: the full suite runs once all of Phase 7 is built.

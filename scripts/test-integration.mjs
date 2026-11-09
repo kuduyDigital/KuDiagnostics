@@ -34,7 +34,11 @@ const install = (slug, version) => ({
 // Test sites never update themselves: with an older pinned plugin (WooCommerce 11.0.1 on WordPress 6.9) WordPress
 // started a background update during the blueprint and left `.maintenance` behind, so every later request got the
 // maintenance page and PHPUnit never ran (found 2026-11-09).
-const steps = [{ step: 'defineWpConfigConsts', consts: { AUTOMATIC_UPDATER_DISABLED: true } }];
+// KUDUY_CODE_EXEC=1 defines D4's KUDUY_MCP_ALLOW_CODE_EXEC so the code-tool tests run (a separate CI job).
+const steps = [{ step: 'defineWpConfigConsts', consts: {
+  AUTOMATIC_UPDATER_DISABLED: true,
+  ...(process.env.KUDUY_CODE_EXEC === '1' ? { KUDUY_MCP_ALLOW_CODE_EXEC: true } : {}),
+} }];
 if (elementor !== 'none') steps.push(install('elementor', elementor));
 // KUDUY_PLUGINS=slug@version,… installs more wordpress.org plugins after Elementor (e.g. Elementor add-ons).
 for (const entry of (process.env.KUDUY_PLUGINS ?? '').split(',').map((s) => s.trim()).filter(Boolean)) {

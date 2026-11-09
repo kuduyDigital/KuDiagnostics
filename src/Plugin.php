@@ -15,6 +15,7 @@ use Kuduy\Mcp\Lifecycle\Migrations;
 use Kuduy\Mcp\Mcp\RestController;
 use Kuduy\Mcp\OAuth\Authorize;
 use Kuduy\Mcp\OAuth\Endpoints;
+use Kuduy\Mcp\Modules\Types\ContentTypes;
 use Kuduy\Mcp\OAuth\TokenAuth;
 use Kuduy\Mcp\Update\GitHubUpdater;
 
@@ -68,6 +69,8 @@ final class Plugin {
 		add_action( Cleanup::HOOK, array( Cleanup::class, 'run' ) );
 		add_action( Jobs::HOOK, array( Jobs::class, 'run' ) );
 		add_action( 'admin_menu', array( ConnectionsPage::class, 'menu' ) );
+		// Post types and taxonomies defined through kuduy-content-type-save (D22).
+		ContentTypes::boot();
 
 		add_filter( 'update_plugins_github.com', array( GitHubUpdater::class, 'filter_update' ), 10, 3 );
 		add_filter( 'site_transient_update_plugins', array( GitHubUpdater::class, 'inject' ) );
