@@ -411,3 +411,7 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 - Read ACF 6.8.11 (staging's version) from source: value API, field groups and location rules, validation, the abilities it registers (off by default, definitions only), free field types, secrets (`password` field values, Google Maps key). Found: `update_field()` with an unknown name writes a "dummy" raw meta key, so KUDUY must only accept fields shown on the object. `RESEARCH.md` §10a.
 - Plan `docs/plans/phase-7-acf.md` (4 tools, guard in `kuduy-post-meta-set`, jobs) and D14 proposed. No code until the user approves.
+
+### 2026-11-09 — EL10 step 6 on staging
+
+- Re-ran the Theme Builder conditions step of EL10 on Hostinger staging (claude.ai "Kuduy" connector with `kuduy:admin` granted, called from a Claude Code session in the Claude desktop app; KUDUY MCP 0.6.0, WP 7.1.4, Elementor 4.3.6, Elementor Pro 4.0.4). A draft header took a page condition with no conflicts, `include/general` was refused because the live header 386 uses it, and the conditions were cleared; the test page was trashed. All 16 EL10 steps have now passed on staging; Phase 5 still lacks a real-client run on Elementor 3.x.
