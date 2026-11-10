@@ -4,6 +4,17 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 ## Unreleased
 
+## 0.8.0 — 2026-11-10
+
+**Phase 7: forms, Site Editor and widgets, cache, Polylang, custom content types and developer tools (36 new tools).** Each appears only when the plugin or theme feature it needs is there.
+
+- Added: forms — `kuduy-forms-status`, `-list`, `-get`, `-entries`, `-entry-get`, `-entry-update`, `-entry-note`, `-cf7-save`, `-cf7-mail` for Contact Form 7 (entries from Flamingo), Fluent Forms and WPForms Lite (forms only; Lite keeps no entries). Visitors' emails, phones, names, addresses, files and IP addresses are masked unless asked for and allowed; password fields are never shown. Entries can be marked read, starred, spam or trashed, each with undo; nothing is deleted permanently. Changing where Contact Form 7 emails submissions needs admin rights and a confirmation; marking a Flamingo message as spam asks first when it would be reported to Akismet.
+- Added: Site Editor — `kuduy-block-types`, `kuduy-post-blocks`, `kuduy-site-templates`, `-template-get`, `-template-update`, `-template-revert`, `kuduy-global-styles-get`, `-update`, and widgets `kuduy-widgets`, `kuduy-widget-save`, `kuduy-widget-remove`, all through WordPress's own Site Editor API with undo. Custom CSS needs permission to edit CSS.
+- Added: cache — `kuduy-cache-status`, `kuduy-cache-purge` (whole site, one post or one URL) for LiteSpeed Cache, W3 Total Cache, WP Super Cache, WP Fastest Cache and WP Rocket, plus object-cache flush.
+- Added: Polylang — `kuduy-lang-status`, `-get`, `-set`, `-link`, `-translate` (translation drafts with text Claude writes). WPML is not supported yet.
+- Added: custom post types and taxonomies — `kuduy-content-types`, `-content-type-save`, `-content-type-remove` (admins; removing a type keeps its content).
+- Added: developer tools for site admins — `kuduy-dev-files`, `-file-read`, `-search`, `-log`, `-db-schema`, `-db-query` (read only; secret files refused, passwords, keys and tokens masked, queries capped). Code tools `kuduy-dev-file-write` and `kuduy-dev-php` exist only when wp-config.php defines `KUDUY_MCP_ALLOW_CODE_EXEC`, and need the separate code scope and plugin-editing rights.
+
 ## 0.7.0 — 2026-11-09
 
 **Phase 7: Advanced Custom Fields (4 new tools) and WooCommerce fixes found on a real store.**

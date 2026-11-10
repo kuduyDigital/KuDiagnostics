@@ -27,7 +27,7 @@ final class Plugin {
 	/**
 	 * Must match the `Version:` header in kuduy-mcp.php.
 	 */
-	public const VERSION = '0.7.0';
+	public const VERSION = '0.8.0';
 
 	/**
 	 * Hooks added once per request.
