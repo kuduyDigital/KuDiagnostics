@@ -7,6 +7,7 @@
 namespace RankMath {
 	class Helper {
 		public static function is_invalid_registration(): bool {}
+		public static function is_module_active( string $id ): bool {}
 	}
 	class Metadata {}
 }
@@ -118,5 +119,29 @@ namespace Yoast\WP\SEO\Memoizers {
 namespace Yoast\WP\SEO\Integrations\Watchers {
 	class Indexable_Post_Watcher {
 		public function build_indexable( int $post_id ): void {}
+	}
+}
+
+namespace RankMath\Redirections {
+	class DB {
+		/**
+		 * @param array<string, mixed> $args
+		 * @return array{redirections: list<array<string, mixed>>, count: int}
+		 */
+		public static function get_redirections( $args = array() ) {}
+		/** @return array<string, mixed>|false */
+		public static function get_redirection_by_id( int $id, string $status = 'all' ) {}
+		/** @param array<string, mixed> $args */
+		public static function update( $args = array() ): int|false {}
+		/** @param int|array<int> $ids */
+		public static function change_status( $ids, string $status ): int|false {}
+	}
+	class Redirection {
+		/** @param array<string, mixed> $data */
+		public static function from( $data ): Redirection {}
+		public function has_sources(): bool {}
+		public function is_infinite_loop(): bool {}
+		/** @return int|false */
+		public function save() {}
 	}
 }

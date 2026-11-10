@@ -127,7 +127,7 @@ Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude cli
 |---|---|
 | Active SEO plugin detection; conflict refusal | Tested (`kuduy-seo-status`; Rank Math + Yoast active → writes refused naming both, nothing changed; Rank Math not set up → refused with what to do) |
 | Rank Math: title, description, keywords, canonical, robots, OG/Twitter | Tested (`kuduy-seo-get`, `kuduy-seo-update` through Rank Math's own `updateMeta`; WP 6.9 + 7.1) |
-| Rank Math: schema, sitemap, redirects | Not started |
+| Rank Math: schema, sitemap, redirects | Implemented 2026-11-10 (D25: `kuduy-seo-redirects`, `-redirect-save`, `-redirect-trash`, `-schema-get`, `-schema-save`, `-schema-delete`, `kuduy-seo-sitemap` for every SEO plugin; tests written, run in the final round) |
 | Yoast: title, description, keyphrase, canonical, robots, social | Tested (`WPSEO_Meta` + Surfaces API; Yoast 28.8 on WP 7.1, 28.7 on 6.9) |
 | Yoast: schema type, sitemap; related keyphrases (Premium) | Not started |
 | AIOSEO and SEOPress adapters | Tested (AIOSEO through its abilities and own table; SEOPress through its abilities + target-keywords route; WP 6.9 + 7.1) |
