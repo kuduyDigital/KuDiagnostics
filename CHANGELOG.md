@@ -4,6 +4,19 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 ## Unreleased
 
+## 1.0.0 — 2026-11-10
+
+**First stable release (21 new tools, 165 in all).** The plugin is now called **KuDiagnostics**; the folder, tool names, connector URL and settings are unchanged, so existing Claude connections keep working.
+
+- Added: hidden admin mode — an administrator can hide the Tools → KuDiagnostics page and its notices. Claude keeps working the same way, and the plugin stays listed in Plugins. Bring the page back with `wp kuduy ui show`, the option `kuduy_mcp_hidden_mode`, or the constant `KUDUY_MCP_SHOW_UI`.
+- Added: block navigation menus — `kuduy-nav-menus`, `-nav-menu-get`, `-nav-menu-save`, `-nav-menu-trash` (block themes), with undo.
+- Added: WooCommerce shipping and tax changes — `kuduy-woo-shipping-zone-save`, `kuduy-woo-shipping-method-save`, `kuduy-woo-tax-rate-save`, `kuduy-woo-tax-rate-delete` (admins), each with undo.
+- Added: Rank Math redirects and schema — `kuduy-seo-redirects`, `-redirect-save`, `-redirect-trash`, `kuduy-seo-schema-get`, `-schema-save`, `-schema-delete`, with undo — and `kuduy-seo-sitemap` (Rank Math, Yoast or WordPress's own sitemap).
+- Added: `kuduy-media-replace` (new file, same media item and address) and `kuduy-media-rename` (refused while the file is linked in content), with backups for undo.
+- Added: guides — install, connecting Claude (with the Claude apps verified so far), developer guide, release checklist and a full tool reference.
+- Fixed: `kuduy-dev-php` left its 30-second time limit on the rest of the request.
+- Security: read-only database queries can no longer show passwords, keys or other secret settings by renaming or combining columns. Custom CSS in Global Styles now needs permission to edit CSS. Review, fuzz and load tests: no high findings open (`SECURITY.md` §4a).
+
 ## 0.8.1 — 2026-11-10
 
 - Fixed: undoing `kuduy-lang-set` on a post or term that had no language now removes the language again (it used to leave the new language in place). Found on staging with claude.ai.
