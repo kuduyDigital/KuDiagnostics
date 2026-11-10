@@ -46,6 +46,8 @@ final class Cleanup {
 		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- custom tables, fixed names.
 		$wpdb->query( $wpdb->prepare( "DELETE FROM {$p}kuduy_audit_log WHERE ts < %s", $ago( $audit_days * DAY_IN_SECONDS ) ) );
 		$wpdb->query( $wpdb->prepare( "DELETE FROM {$p}kuduy_snapshots WHERE ts < %s", $ago( $snapshot_days * DAY_IN_SECONDS ) ) );
+		// File backups of media replace/rename live as long as their snapshots.
+		\Kuduy\Mcp\Modules\Media\MediaFiles::prune_backups( $snapshot_days );
 		$wpdb->query( $wpdb->prepare( "DELETE FROM {$p}kuduy_jobs WHERE updated_at < %s AND status NOT IN ('queued', 'running')", $ago( $snapshot_days * DAY_IN_SECONDS ) ) );
 		$wpdb->query( $wpdb->prepare( "DELETE FROM {$p}kuduy_oauth_codes WHERE expires_at < %s", $ago( DAY_IN_SECONDS ) ) );
 		$wpdb->query( $wpdb->prepare( "DELETE FROM {$p}kuduy_oauth_tokens WHERE expires_at < %s", $ago( DAY_IN_SECONDS ) ) );

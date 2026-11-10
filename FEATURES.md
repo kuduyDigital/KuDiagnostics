@@ -135,7 +135,7 @@ Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude cli
 | Media: list, inspect, alt/title/caption/description | Tested (`kuduy-media-list`, `-get`, `-update`, undo) |
 | Media: usage scan | Tested (`kuduy-media-usage`: featured, content, Elementor, Woo gallery, site icon/logo; Woo gallery and icon/logo paths not exercised by a test) |
 | Thumbnail regeneration; upload from URL | Tested (`kuduy-media-regenerate`; `kuduy-media-upload`) |
-| Social images, optimization via installed tools, replace image, safe rename | Not started |
+| Social images, optimization via installed tools, replace image, safe rename | Replace image and safe rename implemented 2026-11-10 (D26: `kuduy-media-replace`, `kuduy-media-rename`; tests written, run in the final round). Social images: set through the SEO tools (`og.*`). Optimization via installed tools: not offered |
 | Alt text from actual image content; decorative images | Tested — `kuduy-media-get` returns the image as MCP image content and `decorative` sets an empty alt (integration); claude.ai web shows the image to Claude, which wrote alt text from it (staging, 2026-11-08, S6 M) |
 | SEO verification in rendered `<head>` and sitemap | Tested for `<head>` (`kuduy-seo-verify` parses the live page; each plugin's real head checked through it in tests; live self-fetch on Hostinger staging with Yoast 28.8, 2026-11-08, S4 E). `kuduy-seo-status` and `-verify` warn while search engines are discouraged. Sitemap: not verified |
 

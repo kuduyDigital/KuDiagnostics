@@ -49,6 +49,7 @@ use Kuduy\Mcp\Modules\Types\TypeTools;
 use Kuduy\Mcp\Modules\Forms\Cf7Save;
 use Kuduy\Mcp\Modules\Forms\FormEntries;
 use Kuduy\Mcp\Modules\Forms\FormsTools;
+use Kuduy\Mcp\Modules\Media\MediaFiles;
 use Kuduy\Mcp\Modules\Media\MediaLibrary;
 use Kuduy\Mcp\Modules\Media\MediaTools;
 use Kuduy\Mcp\Modules\Seo\SeoAudit;
@@ -149,6 +150,9 @@ final class ToolRegistry {
 		}
 		foreach ( array( 'usage', 'upload', 'regenerate' ) as $mode ) {
 			$registry->register( new MediaLibrary( $mode ) );
+		}
+		foreach ( array( 'replace', 'rename' ) as $mode ) {
+			$registry->register( new MediaFiles( $mode ) );
 		}
 		foreach ( array( 'start', 'status', 'cancel' ) as $mode ) {
 			$registry->register( new JobTools( $mode ) );

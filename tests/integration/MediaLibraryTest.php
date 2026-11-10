@@ -186,4 +186,70 @@ final class MediaLibraryTest extends TestCase {
 		$this->download = self::png( 10, 10 );
 		$this->fails( 'kuduy-media-upload', array( 'url' => 'https://images.example.com/b.png' ), 'contributors cannot upload' );
 	}
+
+	public function test_replace_and_rename_with_undo(): void {
+		$this->download = self::png( 800, 600 );
+		$id             = (int) $this->ok( 'kuduy-media-upload', array( 'url' => 'https://images.example.com/photos/kuduy-shoe.png' ) )['id'];
+		$file           = (string) get_post_meta( $id, '_wp_attached_file', true );
+
+		$this->download = self::png( 400, 300 );
+		$replaced       = $this->ok(
+			'kuduy-media-replace',
+			array(
+				'id'  => $id,
+				'url' => 'https://images.example.com/new.png',
+			)
+		);
+		$this->assertSame( 400, $replaced['width'] );
+		$this->assertSame( $file, $replaced['file'], 'Same file name, so links keep working.' );
+		$this->ok( 'kuduy-snapshot-restore', array( 'snapshot_id' => $replaced['_snapshot_id'] ) );
+		$this->assertSame( 800, (int) wp_get_attachment_metadata( $id )['width'] );
+		$this->assertSame( 800, (int) getimagesize( (string) get_attached_file( $id ) )[0], 'The old file is back.' );
+
+		$gd = imagecreatetruecolor( 20, 20 );
+		ob_start();
+		imagejpeg( $gd );
+		$this->download = (string) ob_get_clean();
+		$this->fails(
+			'kuduy-media-replace',
+			array(
+				'id'  => $id,
+				'url' => 'https://images.example.com/other.jpg',
+			),
+			'a JPEG cannot replace a PNG'
+		);
+
+		$renamed = $this->ok(
+			'kuduy-media-rename',
+			array(
+				'id'   => $id,
+				'name' => 'Red Running Shoes',
+			)
+		);
+		$this->assertStringEndsWith( 'red-running-shoes.png', $renamed['file'] );
+		$this->assertFileExists( (string) get_attached_file( $id ) );
+		foreach ( (array) wp_get_attachment_metadata( $id )['sizes'] as $size ) {
+			$this->assertStringStartsWith( 'red-running-shoes-', $size['file'] );
+		}
+		$this->ok( 'kuduy-snapshot-restore', array( 'snapshot_id' => $renamed['_snapshot_id'] ) );
+		$this->assertSame( $file, (string) get_post_meta( $id, '_wp_attached_file', true ) );
+		$this->assertFileExists( (string) get_attached_file( $id ) );
+
+		wp_insert_post(
+			array(
+				'post_title'   => 'Links the file',
+				'post_status'  => 'publish',
+				'post_content' => '<img src="' . wp_get_attachment_url( $id ) . '">',
+			)
+		);
+		$message = $this->fails(
+			'kuduy-media-rename',
+			array(
+				'id'   => $id,
+				'name' => 'other-name',
+			),
+			'linked by URL in a post'
+		);
+		$this->assertStringContainsString( 'linked', $message );
+	}
 }
