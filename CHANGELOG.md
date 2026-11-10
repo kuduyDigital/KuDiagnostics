@@ -488,3 +488,8 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 - Released 0.8.0 (tagged after CI passed, at the user's request); staging updated itself. Test plugins (CF7 + Flamingo, Fluent Forms, Polylang, LiteSpeed Cache) installed with `kuduy-plugin-install`, one submission per form; the user ran the 12-step check in claude.ai: 11/12 pass. Fixed: undoing `kuduy-lang-set` on an object without a language now removes the language again (Polylang's `delete_translation()` / `delete_language()`); `kuduy-block-types` returns `count`. Afterwards the test page was trashed, the Polylang languages deleted and the five test plugins removed.
 - Found while checking the fix: `MultilingualTest` had never run in Playground (Polylang's API loads only in a context; the class skipped silently). The runner now adds English and German before the tests for Polylang runs, and the test fails when Polylang is active without its API. All four Polylang tests pass on WP 7.1.4 and 6.9.11.
+
+### 2026-11-10 — Road to 1.0: Phase 8 hidden UI built
+
+- Working order agreed with the user: build all remaining work (Phase 8, Phase 10 docs, block navigation menus, WooCommerce shipping/tax writes, Rank Math extras, media replace/rename), then the full test suite, then the Phase 9 security work, then one push. New decisions take the recommended option and are marked for review.
+- `Admin/HiddenMode` + `Admin/Cli` (D23 A): "Hide KUDUY MCP from WP admin" on the Tools page (administrators, nonce), option `kuduy_mcp_hidden_mode`, page slug redirected to the dashboard, permalink notice hidden; recovery `wp kuduy ui show`, the option, or `KUDUY_MCP_SHOW_UI`. Uninstall removes the option (was the planned name `kuduy_mcp_ui_hidden`). Test `HiddenModeTest` written.

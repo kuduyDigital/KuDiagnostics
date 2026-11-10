@@ -183,11 +183,11 @@ Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude cli
 | Feature | Status |
 |---|---|
 | Setup screen with connector instructions | Implemented (Tools > KUDUY MCP shows the URL, connections, recent calls; full setup guide pending) |
-| Hide UI action | Not started |
-| Hidden mode removes menu, pages, dashboard widgets, notices, admin-bar node, plugin-row links | Not started |
+| Hide UI action | Implemented 2026-11-10 (D23; tests H1–H3 written, run in the final test round) |
+| Hidden mode removes menu, pages, dashboard widgets, notices, admin-bar node, plugin-row links | Implemented 2026-11-10 (D23; tests H1–H3 written, run in the final test round) |
 | Plugin stays in Installed Plugins | Tested (nothing hides it today; to re-test in hidden mode, H2) |
-| MCP, OAuth, tools, jobs, audit keep working when hidden | Not started |
-| Recovery: `wp option update kuduy_mcp_hidden_mode 0`, WP-CLI command, `KUDUY_MCP_SHOW_UI` constant | Not started |
+| MCP, OAuth, tools, jobs, audit keep working when hidden | Implemented 2026-11-10 (D23; tests H1–H3 written, run in the final test round) |
+| Recovery: `wp option update kuduy_mcp_hidden_mode 0`, WP-CLI command, `KUDUY_MCP_SHOW_UI` constant | Implemented 2026-11-10 (D23; tests H1–H3 written, run in the final test round) |
 
 ## Release deliverables (§15 Phase 10)
 

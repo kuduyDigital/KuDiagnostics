@@ -12,7 +12,7 @@ namespace Kuduy\Mcp\Lifecycle;
  */
 final class Uninstaller {
 
-	public const OPTIONS = array( Migrations::OPTION, 'kuduy_mcp_settings', 'kuduy_mcp_ui_hidden', 'kuduy_mcp_content_types' );
+	public const OPTIONS = array( Migrations::OPTION, 'kuduy_mcp_settings', 'kuduy_mcp_hidden_mode', 'kuduy_mcp_content_types' );
 
 	/**
 	 * Run the uninstall.

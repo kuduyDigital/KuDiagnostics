@@ -7,7 +7,9 @@
 
 namespace Kuduy\Mcp;
 
+use Kuduy\Mcp\Admin\Cli;
 use Kuduy\Mcp\Admin\ConnectionsPage;
+use Kuduy\Mcp\Admin\HiddenMode;
 use Kuduy\Mcp\Http\OutputGuard;
 use Kuduy\Mcp\Jobs\Jobs;
 use Kuduy\Mcp\Lifecycle\Cleanup;
@@ -69,6 +71,9 @@ final class Plugin {
 		add_action( Cleanup::HOOK, array( Cleanup::class, 'run' ) );
 		add_action( Jobs::HOOK, array( Jobs::class, 'run' ) );
 		add_action( 'admin_menu', array( ConnectionsPage::class, 'menu' ) );
+		// Hidden mode and its recovery (Phase 8): presentation only, the MCP runtime never reads it.
+		HiddenMode::register();
+		Cli::register();
 		// Post types and taxonomies defined through kuduy-content-type-save (D22).
 		ContentTypes::boot();
 
@@ -82,7 +87,7 @@ final class Plugin {
 	 * OAuth issuer URLs need pretty permalinks (an issuer with ?rest_route= is not valid).
 	 */
 	public static function permalink_notice(): void {
-		if ( '' !== (string) get_option( 'permalink_structure' ) || ! current_user_can( 'manage_options' ) ) {
+		if ( HiddenMode::is_hidden() || '' !== (string) get_option( 'permalink_structure' ) || ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
 		echo '<div class="notice notice-error"><p>' . esc_html__( 'KUDUY MCP needs pretty permalinks so Claude can sign in. Go to Settings → Permalinks and choose any option except "Plain".', 'kuduy-mcp' ) . '</p></div>';

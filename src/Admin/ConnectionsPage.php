@@ -21,6 +21,9 @@ final class ConnectionsPage {
 	 * Add the menu entry (admin_menu).
 	 */
 	public static function menu(): void {
+		if ( HiddenMode::is_hidden() ) {
+			return;
+		}
 		add_management_page( 'KUDUY MCP', 'KUDUY MCP', 'read', self::SLUG, array( self::class, 'render' ) );
 	}
 
@@ -66,6 +69,8 @@ final class ConnectionsPage {
 			}
 			echo '</tbody></table>';
 		}
+
+		HiddenMode::render_section();
 
 		echo '<h2>' . esc_html__( 'Recent tool calls', 'kuduy-mcp' ) . '</h2>';
 		$rows = AuditLog::latest( 20, $is_boss ? null : $user->ID );

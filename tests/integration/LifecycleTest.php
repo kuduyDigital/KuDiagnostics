@@ -84,7 +84,7 @@ final class LifecycleTest extends TestCase {
 
 	public function test_uninstall_with_opt_in_drops_tables_and_options(): void {
 		update_option( 'kuduy_mcp_settings', array( 'x' => 1 ) );
-		update_option( 'kuduy_mcp_ui_hidden', true );
+		update_option( 'kuduy_mcp_hidden_mode', true );
 		update_option( 'unrelated_option', 'keep' );
 
 		Uninstaller::run( true );
@@ -92,7 +92,7 @@ final class LifecycleTest extends TestCase {
 		foreach ( self::TABLES as $table ) {
 			$this->assertFalse( self::table_exists( $table ), "{$table} still exists" );
 		}
-		foreach ( array( Migrations::OPTION, 'kuduy_mcp_settings', 'kuduy_mcp_ui_hidden' ) as $option ) {
+		foreach ( array( Migrations::OPTION, 'kuduy_mcp_settings', 'kuduy_mcp_hidden_mode' ) as $option ) {
 			$this->assertFalse( get_option( $option ), "{$option} still set" );
 		}
 		$this->assertSame( 'keep', get_option( 'unrelated_option' ) );
