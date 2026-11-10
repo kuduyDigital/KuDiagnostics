@@ -27,3 +27,7 @@ Status on 2026-11-08: **Phase 3 code complete; claude.ai verified; Desktop, Clau
 5. Record O11, then close Phase 3.
 
 Observed 2026-11-05: the normal WordPress update on Hostinger (0.1.2 → 0.2.0) kept the plugin active.
+
+## After 1.1.0 — upgrade round
+
+The wider integration upgrade (builders, themes, blocks, forms, fields, add-ons, memory, design intelligence, skills, modes, token work) is planned in `IMPLEMENTATION-PLAN.md`, phases A–L, from the audit in `AUDIT.md` and the gaps in `FEATURE-GAP.md`. Phase A (integration registry) was built 2026-11-10; phase B (forms) is next.

@@ -21,6 +21,7 @@ use Kuduy\Mcp\Modules\Core\PostTypes;
 use Kuduy\Mcp\Modules\Core\PostUpdate;
 use Kuduy\Mcp\Modules\Core\Revisions;
 use Kuduy\Mcp\Modules\Core\Settings;
+use Kuduy\Mcp\Modules\Core\Integrations;
 use Kuduy\Mcp\Modules\Core\SiteInfo;
 use Kuduy\Mcp\Modules\Core\SnapshotList;
 use Kuduy\Mcp\Modules\Core\SnapshotRestore;
@@ -89,6 +90,7 @@ final class ToolRegistry {
 	public static function create(): self {
 		$registry = new self();
 		$registry->register( new SiteInfo() );
+		$registry->register( new Integrations() );
 		$registry->register( new SnapshotList() );
 		$registry->register( new SnapshotRestore() );
 		$registry->register( new CheckUpdate() );

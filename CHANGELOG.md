@@ -4,6 +4,9 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 ## Unreleased
 
+- Added: `kuduy-integrations` — one place to ask what KuDiagnostics can do with the page builders, themes and plugins on a site: installed, active, how far each is supported (full, partial, detection only, none), which tools manage it and whether they are available now. Support levels reflect what has been tested, not what is installed.
+- Added: upgrade plan documents — `AUDIT.md`, `FEATURE-GAP.md`, `INTEGRATION-MATRIX.md`, `IMPLEMENTATION-PLAN.md`.
+
 ## 1.1.0 — 2026-11-10
 
 **WPBakery Page Builder (16 new tools, 181 in all), shown only while WPBakery is active.** WPBakery is a paid plugin and no licensed copy was available: the tools are tested against real WordPress with a stand-in for WPBakery's element list, and are **not yet verified against WPBakery itself**. Try them on a staging site first. Guide: `docs/WPBAKERY.md`.
@@ -539,3 +542,11 @@ Format: user-facing releases first (newest on top), then the dated development h
 - `PostWriter::guard_builder` also refuses content writes on WPBakery pages while WPBakery is active.
 - Tests: `WpBakeryParserTest` (every job) and `WpBakeryTest` with a stand-in registry (`tests/integration/fakes/wpbakery.php`, runner option `KUDUY_FAKES`, two new CI jobs with Elementor active). First run: 28 of 29 passed; the one failure was a wrong expectation in the test.
 - Paused, not in this release: Gravity Forms and WPForms Pro entry adapters (started the same day from their documented APIs).
+
+### 2026-11-10 — Upgrade round, phase A: audit, plan, integration registry (D30)
+
+- User brief: bring the existing plugin up to the integration list advertised by Novamira Pro (58 integrations in 11 groups, plus memory, design intelligence, skills, read/ghost modes, token work), as an upgrade, plan first. Novamira is AGPL: the list is used as a checklist only.
+- Audit against the code and test evidence: 8 of the 58 targets are fully supported today, 17 partly, 12 detection only, 21 not at all; of the 50 that are not full, 33 have a free copy that can be tested here and 17 are paid. wordpress.org versions checked the same day.
+- Plan in phases B–L (`IMPLEMENTATION-PLAN.md`); paid products are built only when a licensed copy is provided. Three brief items are not planned as written: raw database updates (rule 6), permanent deletes, PHP 8.0.
+- Built: `Modules/Core/IntegrationCatalog` (67 rows) and `kuduy-integrations`; `IntegrationsTest` (IR1–IR3).
+- Still paused in the working tree: Gravity Forms and WPForms Pro entry adapters (phase B).

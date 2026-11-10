@@ -233,6 +233,14 @@ Runs with `KUDUY_FAKES=wpbakery` (a stand-in for WPBakery's element registry, `t
 | WB12 | Elementor page: WPBakery writes refused, Elementor data and meta untouched; `kuduy-post-update` content refused on a WPBakery page, other fields allowed; Elementor suites green in the same run | I — `test_elementor_pages_and_plain_updates_are_left_alone` + `Elementor*Test` |
 | WB13 | Real WPBakery: discovery, editor round trip, frontend rendering | E — **open** (needs a licensed copy) |
 
+## Integration registry (D30)
+
+| # | Feature | Type |
+|---|---|---|
+| IR1 | Catalogue is consistent: unique ids, known categories and classes, every tool prefix matches a registered tool, a row called full or partial names tools and a row with tools is not called unsupported, partial and detection rows say what is missing, at least the 58 targets present | I — `IntegrationsTest::test_catalogue_is_consistent` (every job) |
+| IR2 | Reports what is on the site: WordPress itself, Elementor active with its version and tools; uninstalled ones only with `all`; an unimplemented builder is `none` with no tools; WPBakery is `partial` and its tools count as available only while the plugin is loaded; category and search filters | I — `test_reports_what_is_on_this_site` |
+| IR3 | Versions only for users who can manage plugins; subscriber refused; unknown category refused | I — `test_versions_only_for_those_who_manage_plugins` |
+
 ## SEO + Image SEO
 
 | # | Feature | Type |

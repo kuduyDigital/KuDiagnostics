@@ -140,6 +140,16 @@ WPBakery is a paid plugin and no licensed copy was available: everything below i
 | Behaviour in WPBakery's own editor after a save; real `WPBMap` on WPBakery 7/8 | **UNVERIFIED** — needs a licensed copy or a site that has it (WB13) |
 | WPBakery templates, grid builder, presets, role settings | Not offered |
 
+## Upgrade round — integration registry (2026-11-10, D30)
+
+Plan and gap analysis for the wider upgrade: `AUDIT.md`, `FEATURE-GAP.md`, `INTEGRATION-MATRIX.md`, `IMPLEMENTATION-PLAN.md`.
+
+| Feature | Status |
+|---|---|
+| Central integration registry with capability discovery: installed, active, version, support class, tools and whether they are available now | Tested 2026-11-10 (IR1–IR3: `kuduy-integrations`, `IntegrationsTest`) |
+| Catalogue covers the 58 target integrations and what is supported beyond them (67 rows) | Tested (IR1: consistency test) |
+| Everything else in the upgrade plan (phases B–L) | Not started — see `IMPLEMENTATION-PLAN.md` |
+
 ## SEO and image SEO (§7) — Phase 6
 
 | Feature | Status |
