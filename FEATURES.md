@@ -156,27 +156,27 @@ Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude cli
 | Feature | Status |
 |---|---|
 | ACF field values (posts, users, terms) and field groups (read) | Tested (A1–A6: `kuduy-acf-status`, `-field-groups`, `-get`, `-update`; ACF 6.8.11 free, WP 6.9 + 7.1; on Hostinger staging with claude.ai 2026-11-09; PRO field types UNVERIFIED) |
-| CPT and taxonomies (registering new ones) | Implemented (`kuduy-content-types`, `-content-type-save`, `-content-type-remove`; D22; tests T1–T3 written, run at the end of Phase 7) |
-| Fluent Forms, WPForms, Gravity Forms, Contact Form 7 | Implemented for CF7 + Flamingo, Fluent Forms, WPForms Lite (forms only); Gravity Forms Blocked (needs a licensed copy) — (researched 2026-11-09, `RESEARCH.md` §10b; plan `docs/plans/phase-7-forms.md`, D15–D17 decided: A) |
+| CPT and taxonomies (registering new ones) | Tested 2026-11-10 in Playground, WP 6.9.11 + 7.1.4 — (`kuduy-content-types`, `-content-type-save`, `-content-type-remove`; D22; tests T1–T3) |
+| Fluent Forms, WPForms, Gravity Forms, Contact Form 7 | Tested 2026-11-10 in Playground (WP 6.9.11 + 7.1.4) for CF7 + Flamingo, Fluent Forms, WPForms Lite (forms only); Gravity Forms Blocked (needs a licensed copy) — (researched 2026-11-09, `RESEARCH.md` §10b; plan `docs/plans/phase-7-forms.md`, D15–D17 decided: A) |
 | Navigation menus | Tested (classic menus, see §5) |
-| Widgets and sidebars | Implemented (`kuduy-widgets`, `kuduy-widget-save`, `kuduy-widget-remove`; D18; S4) |
-| Block Editor, Site Editor, Global Styles | Implemented (`kuduy-block-types`, `kuduy-post-blocks`, `kuduy-site-templates`, `-template-get`, `-template-update`, `-template-revert`, `kuduy-global-styles-get`, `-update`; D18; S1–S3, S5) |
+| Widgets and sidebars | Tested 2026-11-10 in Playground, WP 6.9.11 + 7.1.4 — (`kuduy-widgets`, `kuduy-widget-save`, `kuduy-widget-remove`; D18; S4) |
+| Block Editor, Site Editor, Global Styles | Tested 2026-11-10 in Playground, WP 6.9.11 + 7.1.4 — (`kuduy-block-types`, `kuduy-post-blocks`, `kuduy-site-templates`, `-template-get`, `-template-update`, `-template-revert`, `kuduy-global-styles-get`, `-update`; D18; S1–S3, S5) |
 | WP-Cron inspection | Tested (`kuduy-cron-list`, arguments never shown) |
-| Cache and performance plugins | Implemented (`kuduy-cache-status`, `kuduy-cache-purge`: LiteSpeed Cache, W3 Total Cache, WP Super Cache, WP Fastest Cache; WP Rocket from docs, UNVERIFIED; D19; C1–C3) |
-| WPML and Polylang | Polylang: Implemented (`kuduy-lang-status`, `-get`, `-set`, `-link`, `-translate`; D20; L1–L4). WPML: Blocked (needs a licensed copy to test) |
+| Cache and performance plugins | Tested 2026-11-10 in Playground, WP 6.9.11 + 7.1.4 — (`kuduy-cache-status`, `kuduy-cache-purge`: LiteSpeed Cache, W3 Total Cache, WP Super Cache, WP Fastest Cache; WP Rocket from docs, UNVERIFIED; D19; C1–C3) |
+| WPML and Polylang | Polylang: Tested 2026-11-10 in Playground, WP 6.9.11 + 7.1.4 (`kuduy-lang-status`, `-get`, `-set`, `-link`, `-translate`; D20; L1–L4). WPML: Blocked (needs a licensed copy to test) |
 | Clear "not installed / not supported" messages | Implemented (`is_available()` + executor message, F7); per-integration tests pending |
 
 ## Developer and advanced operations (§10) — Phase 7
 
 | Feature | Status |
 |---|---|
-| Inspect approved files, search sources, inspect hooks | Implemented (`kuduy-dev-files`, `kuduy-dev-file-read`, `kuduy-dev-search`; hooks: `kuduy-hooks-inspect`; D21; D1–D2) |
-| DB schema and capped read-only queries, secret columns masked | Implemented (`kuduy-dev-db-schema`, `kuduy-dev-db-query`; D3) |
-| PHP error and conflict diagnosis; approved logs redacted | Implemented (`kuduy-dev-log`, masked; conflict diagnosis through `kuduy-site-health` and `kuduy-hooks-inspect`) |
-| File create/edit in approved directories with snapshots | Implemented behind D4 (`kuduy-dev-file-write`; D4 tests) |
-| Custom plugin/theme creation | Implemented behind D4 (`kuduy-dev-file-write` into a new plugin or theme folder, then `kuduy-plugin-activate` / `kuduy-theme-switch`) |
+| Inspect approved files, search sources, inspect hooks | Tested 2026-11-10 in Playground, WP 6.9.11 + 7.1.4 — (`kuduy-dev-files`, `kuduy-dev-file-read`, `kuduy-dev-search`; hooks: `kuduy-hooks-inspect`; D21; D1–D2) |
+| DB schema and capped read-only queries, secret columns masked | Tested 2026-11-10 in Playground, WP 6.9.11 + 7.1.4 — (`kuduy-dev-db-schema`, `kuduy-dev-db-query`; D3) |
+| PHP error and conflict diagnosis; approved logs redacted | Tested 2026-11-10 in Playground, WP 6.9.11 + 7.1.4 — (`kuduy-dev-log`, masked; conflict diagnosis through `kuduy-site-health` and `kuduy-hooks-inspect`) |
+| File create/edit in approved directories with snapshots | Tested 2026-11-10 in Playground, WP 6.9.11 + 7.1.4 — behind D4 (`kuduy-dev-file-write`; D4 tests) |
+| Custom plugin/theme creation | Tested 2026-11-10 in Playground, WP 6.9.11 + 7.1.4 — behind D4 (`kuduy-dev-file-write` into a new plugin or theme folder, then `kuduy-plugin-activate` / `kuduy-theme-switch`) |
 | WP-CLI availability + allow-listed commands | Not offered (D21: WP-CLI is not available inside web requests on most hosts, UNVERIFIED per host; `kuduy-dev-php` covers the same work behind D4) |
-| Code execution behind D4 (constant + `kuduy:code` + caps, time limit, audit, recovery) | Implemented (`kuduy-dev-php`: time limit, output and errors captured, fatal errors audited; scope gating `Tested` in O10) |
+| Code execution behind D4 (constant + `kuduy:code` + caps, time limit, audit, recovery) | Tested 2026-11-10 in Playground, WP 6.9.11 + 7.1.4 — (`kuduy-dev-php`: time limit, output and errors captured, fatal errors audited; scope gating `Tested` in O10) |
 
 ## Hidden UI mode (§11) — Phase 8
 

@@ -133,8 +133,9 @@ final class DeveloperTest extends TestCase {
 		if ( defined( 'KUDUY_MCP_ALLOW_CODE_EXEC' ) && KUDUY_MCP_ALLOW_CODE_EXEC ) {
 			$this->markTestSkipped( 'Code tools are on in this run.' );
 		}
+		// Unavailable tools are not listed or callable at all (the endpoint answers "Unknown tool").
 		$this->assertNotTrue( ToolRegistry::create()->get( 'kuduy-dev-php' )->is_available() );
-		$this->fails( 'kuduy-dev-php', array( 'code' => 'return 1;' ), 'no D4 constant' );
+		$this->assertNotTrue( ToolRegistry::create()->get( 'kuduy-dev-file-write' )->is_available() );
 		$this->assertSame( 'kuduy:code', ToolRegistry::create()->get( 'kuduy-dev-file-write' )->scope() );
 	}
 

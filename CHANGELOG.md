@@ -463,3 +463,7 @@ Format: user-facing releases first (newest on top), then the dated development h
 - `Modules/Dev` (D21 A and D4, decided under the standing instruction): read-only `kuduy-dev-files`, `-file-read`, `-search`, `-log`, `-db-schema`, `-db-query` (admin scope, `manage_options`; secret files refused, credentials masked, read-only capped queries); behind D4 `kuduy-dev-file-write` and `kuduy-dev-php` (`KUDUY_MCP_ALLOW_CODE_EXEC` + `kuduy:code` + `edit_plugins` + `manage_options`). Test `DeveloperTest` (code tools run with `KUDUY_CODE_EXEC=1`, own CI job). WP-CLI not offered.
 - `Modules/Types` (D22 A): `kuduy-content-types`, `-content-type-save`, `-content-type-remove`; definitions in option `kuduy_mcp_content_types` (removed on uninstall), registered on `init`. Test `ContentTypesTest`.
 - Not run yet: the full suite runs once all of Phase 7 is built.
+
+### 2026-11-10 — Phase 7 full test round
+
+- PHPCS, PHPStan level 6: clean. Smoke 26/26. Integration on WP 7.1.4 and 6.9.11: base, forms, LiteSpeed Cache, Polylang, ACF, WooCommerce HPOS on/off, plus the D4 code-tools run. Three test-side issues found and fixed (hidden tools answer "Unknown tool"; the widget test needs a fresh-request view of core's `$sidebars_widgets`; OAuth metadata lists `kuduy:code` with the constant on); the affected tests then pass on both pairs and in the code run. Results in `TESTING.md` §3a, `COMPATIBILITY.md`. Not yet checked on staging with claude.ai.

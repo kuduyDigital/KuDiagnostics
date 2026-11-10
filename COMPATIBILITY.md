@@ -72,6 +72,13 @@ Only versions listed as **Tested** have passing evidence (see `TESTING.md`). Eve
 | Two SEO plugins at once | Rank Math + Yoast | **Tested**: SEO changes refused | CI |
 | SEO plugins on a real host (live `<head>` via `kuduy-seo-verify`) | Yoast SEO 28.8 | **Tested** 2026-11-08 on Hostinger staging (KUDUY 0.5.0, WP 7.1.4/PHP 8.3.36, LiteSpeed + `hcdn`), claude.ai web | Site fetches itself (200), live head matches the written title, description, og:title; no stale cache seen. WP-Cron ran a KUDUY job within a minute. Robots mismatch open (`TESTING.md` S4). Rank Math, AIOSEO, SEOPress: not run on a real host |
 | Advanced Custom Fields (free) | 6.8.11 | **Tested** in Playground (A1–A6, WP 6.9.11 + 7.1.4) and 2026-11-09 on Hostinger staging (KUDUY 0.7.0, WP 7.1.4, claude.ai web): 7 / 7 steps | CI: WP 6.9 + 7.1. ACF PRO not tested |
+| Contact Form 7 + Flamingo | 6.2.4.1 (WP 7.1) / 6.1.7 (WP 6.9); Flamingo 2.6.4 | **Tested** in Playground 2026-11-10 (WP 6.9.11 + 7.1.4): F1–F7 | CI: forms job. CF7 6.2 needs WP 7.1 + PHP 8.3 |
+| Fluent Forms (free) | 6.2.17 | **Tested** in Playground 2026-11-10 (WP 6.9.11 + 7.1.4): F1–F5, F7 | Fluent Pro not tested |
+| WPForms Lite | 2.0.4 | **Tested** in Playground 2026-11-10 (WP 6.9.11 + 7.1.4): forms only (Lite stores no entries) | WPForms Pro entries not supported |
+| Gravity Forms | — | **Not supported** (paid; needs a licensed copy to test) | |
+| LiteSpeed Cache | 7.9.3 | **Tested** in Playground 2026-11-10 (WP 6.9.11 + 7.1.4): C1–C3 | W3 Total Cache 2.11.0, WP Super Cache 3.1.5, WP Fastest Cache 1.5.5: API read, not run; WP Rocket: docs only |
+| Polylang (free) | 3.9.2 | **Tested** in Playground 2026-11-10 (WP 6.9.11 + 7.1.4): L1–L4 | WPML not supported |
+| Block themes (Site Editor) | Twenty Twenty-Five | **Tested** in Playground 2026-11-10 (WP 6.9.11 + 7.1.4): S1–S5 | Hybrid/classic themes with widget areas: widgets tested with a registered test area |
 | CF7, WPForms, Gravity, Fluent, WPML, Polylang | — | Not tested | Phase 7 |
 | Plugins that print output during REST requests | — | **Tested** | Output guard (F2) |
 

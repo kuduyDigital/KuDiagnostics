@@ -362,7 +362,12 @@ final class OAuthTest extends TestCase {
 
 		$this->assertSame( Urls::resource(), $data['resource'] );
 		$this->assertSame( array( Urls::issuer() ), $data['authorization_servers'] );
-		$this->assertSame( array( 'kuduy:read', 'kuduy:write', 'kuduy:admin' ), $data['scopes_supported'] );
+		$expected = array( 'kuduy:read', 'kuduy:write', 'kuduy:admin' );
+		if ( defined( 'KUDUY_MCP_ALLOW_CODE_EXEC' ) && true === constant( 'KUDUY_MCP_ALLOW_CODE_EXEC' ) ) {
+			// D4: offered only while the constant is set.
+			$expected[] = 'kuduy:code';
+		}
+		$this->assertSame( $expected, $data['scopes_supported'] );
 		$this->assertSame( array( 'header' ), $data['bearer_methods_supported'] );
 		$this->assertStringStartsWith( home_url(), Urls::resource() );
 		$this->assertStringEndsWith( '/wp-json/kuduy-mcp/v1/mcp', Urls::resource() );

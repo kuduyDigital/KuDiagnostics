@@ -22,6 +22,10 @@ Process: test first (red), then code (green); every new security fix gets a regr
 
 See `CLAUDE.md` → Commands. Integration: `KUDUY_WP=<6.9|7.1> KUDUY_PHP=<8.1|8.3> node scripts/test-integration.mjs`. Smoke: `node scripts/smoke-mcp.mjs`.
 
+## 3a. Phase 7 round (2026-11-10, 0.7.0 + Phase 7 work)
+
+PHPCS and PHPStan level 6: no errors. Smoke over real HTTP: **26 / 26**. Integration (each run = full suite): base, forms, LiteSpeed Cache, Polylang, ACF 6.8.11 and WooCommerce (11.2.2 on 7.1, 11.0.1 on 6.9, HPOS on and off) on WP 7.1.4 / PHP 8.3.36 and WP 6.9.11 / PHP 8.1.34 (Elementor 4.3.6), plus the code-tools run (D4 constant on, WP 7.1.4): 174–223 tests per run. The first round had the same three test-side failures everywhere (a test expecting a refusal where a hidden tool answers "Unknown tool"; the widget test reading a stale per-request global; the OAuth metadata test not expecting `kuduy:code` with the constant on); after the test fixes the affected tests pass on both pairs and in the code run.
+
 ## 3. Latest results (2026-11-05, v0.4.0)
 
 | Check | Result |
@@ -234,17 +238,56 @@ Ids from `docs/plans/phase-7-acf.md`. Field groups registered in the test with `
 | A5 | Raw meta writes to ACF fields refused | I, E — E: **pass 2026-11-09** on Hostinger staging (claude.ai). I — **pass 2026-11-09** on WP 7.1.4 and 6.9.11 + ACF 6.8.11 (`AcfTest`: `kuduy-post-meta-set` names `kuduy-acf-update`; non-ACF meta still works. ACF 6.8.11 itself also denies `edit_post_meta` on its field keys) |
 | A6 | Bulk update as a job; password kept out of audit rows | I — **pass 2026-11-09** on WP 7.1.4 and 6.9.11 + ACF 6.8.11 (`AcfTest`) |
 
-## Advanced + Developer mode
+## Forms
+
+Ids from `docs/plans/phase-7-forms.md`. Runs: `contact-form-7@6.2.4.1` (7.1) / `6.1.7` (6.9), `flamingo@2.6.4`, `fluentform@6.2.17`, `wpforms-lite@2.0.4`.
 
 | # | Feature | Type |
 |---|---|---|
-| A1 | ACF field groups/values, CPT UI, forms (each plugin) detected or clear "not installed" | I |
-| A2 | Blocks / site editor / global styles read + update | I |
-| A3 | Cron list/run, cache + perf diagnostics | I |
-| D1 | File read blocked for `wp-config.php` and outside allowed roots, incl. `../` and symlinks | U, I |
-| D2 | DB read-only, prepared, capped; secret columns masked | I |
-| D3 | Code exec unavailable without constant + scope; available and audited with both | I |
-| D4 | Sandbox fatal → crash marker → safe mode next request | I |
+| F1 | Status and list across plugins; unreadable forms left out | I — **pass 2026-11-10** on WP 7.1.4 and 6.9.11 (`FormsCf7Test`, `FormsFluentTest`, `FormsWpformsTest`) |
+| F2 | Form details (CF7 tags, Fluent fields in containers, WPForms fields/notifications); no integration keys | I — **pass 2026-11-10** on WP 7.1.4 and 6.9.11 |
+| F3 | Entries masked by field kind; full data with `include_pii` + permission; password fields never shown | I — **pass 2026-11-10** on WP 7.1.4 and 6.9.11 (Flamingo, Fluent) |
+| F4 | Read / starred / spam / trash with undo; Flamingo → Akismet confirm-first, undo sends nothing | I — **pass 2026-11-10** on WP 7.1.4 and 6.9.11 (Akismet stand-in counts calls) |
+| F5 | Notes with undo; note text not in audit rows | I — **pass 2026-11-10** on WP 7.1.4 and 6.9.11 (Fluent) |
+| F6 | CF7 save + undo; markup filtered without `unfiltered_html`; mail routing confirm-first, admin scope, addresses not in audit rows | I — **pass 2026-11-10** on WP 7.1.4 and 6.9.11 |
+| F7 | Refusals (editor/author/subscriber without the plugin's permission, unknown plugin/form/entry, no permanent delete) | I — **pass 2026-11-10** on WP 7.1.4 and 6.9.11. Fluent per-form manager scope: not tested (Fluent's own ACL) |
+
+## Site Editor, Global Styles, widgets
+
+| # | Feature | Type |
+|---|---|---|
+| S1 | Block types; a post's block tree | I — **pass 2026-11-10** on WP 7.1.4 and 6.9.11 (`SiteEditorTest`) |
+| S2 | Template update (theme copy), undo removes the copy; custom copy undo; revert + undo | I — **pass 2026-11-10** on WP 7.1.4 and 6.9.11 (Twenty Twenty-Five) |
+| S3 | Global Styles patch + undo; custom CSS refused without `edit_css` (core's route does not check it) | I — **pass 2026-11-10** on WP 7.1.4 and 6.9.11 |
+| S4 | Block widget add / change / move to inactive, each undone | I — **pass 2026-11-10** on WP 7.1.4 and 6.9.11 (test simulates a fresh request for the widget list: core's `$sidebars_widgets` global is per request) |
+| S5 | Editor refused (`edit_theme_options`); unknown template | I — **pass 2026-11-10** on WP 7.1.4 and 6.9.11 |
+
+## Cache
+
+| # | Feature | Type |
+|---|---|---|
+| C1 | Status; object-cache flush | I — **pass 2026-11-10** on WP 7.1.4 and 6.9.11 (`CacheTest`) |
+| C2 | Author: no whole-site purge or object flush, own post allowed; URL outside the site refused; no plugin → clear message | I — **pass 2026-11-10** on WP 7.1.4 and 6.9.11 |
+| C3 | LiteSpeed Cache 7.9.3 purges through its own actions (all, post, URL) | I — **pass 2026-11-10** on WP 7.1.4 and 6.9.11. W3TC, WP Super Cache, WP Fastest Cache: API read only; WP Rocket: docs only (UNVERIFIED) |
+
+## Multilingual (Polylang 3.9.2)
+
+| # | Feature | Type |
+|---|---|---|
+| L1 | Languages and translated types | I — **pass 2026-11-10** on WP 7.1.4 and 6.9.11 (`MultilingualTest`) |
+| L2 | Set language + undo; unknown language refused | I — **pass 2026-11-10** on WP 7.1.4 and 6.9.11 |
+| L3 | Link + get + undo; mismatched languages, duplicate post, another user's post refused | I — **pass 2026-11-10** on WP 7.1.4 and 6.9.11 |
+| L4 | Translation draft created and linked; duplicate language refused | I — **pass 2026-11-10** on WP 7.1.4 and 6.9.11. WPML: not supported (needs a licensed copy) |
+
+## Developer mode and content types
+
+| # | Feature | Type |
+|---|---|---|
+| D1 | Files: list/read inside the roots; `wp-config.php`, `.env`, `../`, absolute paths, binary files refused; credentials masked | I — **pass 2026-11-10** on WP 7.1.4 and 6.9.11 (`DeveloperTest`) |
+| D2 | Search skips secret files | I — **pass 2026-11-10** on WP 7.1.4 and 6.9.11 |
+| D3 | DB schema; queries mask `user_pass`, activation keys, secret options and serialized secrets; writes, two statements, `INTO OUTFILE`, `SLEEP`, comments refused; 200-row cap | I — **pass 2026-11-10** on WP 7.1.4 and 6.9.11 |
+| D4 | Code tools hidden without the constant; with it (`KUDUY_CODE_EXEC=1`): sandbox write + undo, parse check, KUDUY / mu-plugins / uploads / loose / secret / traversal / binary refused, active plugin confirm-first, PHP result/output/exception captured, editor refused | I — **pass 2026-11-10** on WP 7.1.4 (code run) and both pairs (constant off) |
+| T1–T3 | Content types: define post type + taxonomy, use with `kuduy-post-create`, remove keeps content, undo; reserved/core/long keys and editors refused | I — **pass 2026-11-10** on WP 7.1.4 and 6.9.11 (`ContentTypesTest`) |
 
 ## Hidden mode, updater, lifecycle
 

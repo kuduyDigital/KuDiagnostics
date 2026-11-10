@@ -46,7 +46,10 @@ final class SiteEditorTest extends TestCase {
 				'array_version'       => 3,
 			)
 		);
+		remove_theme_mod( 'sidebars_widgets' );
 		unset( $GLOBALS['_wp_sidebars_widgets'] );
+		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- test setup: core's widget state after the option change.
+		$GLOBALS['sidebars_widgets'] = wp_get_sidebars_widgets();
 	}
 
 	protected function setUp(): void {
@@ -173,7 +176,7 @@ final class SiteEditorTest extends TestCase {
 		);
 		$this->assertTrue( $added['created'] );
 		$wid   = $added['widget']['id'];
-		$areas = array_column( $this->ok( 'kuduy-widgets' )['sidebars'], null, 'id' );
+		$areas = array_column( $this->widgets()['sidebars'], null, 'id' );
 		$this->assertContains( $wid, array_column( $areas['kuduy-test-area']['widgets'] ?? array(), 'id' ), (string) wp_json_encode( array( $areas, wp_get_sidebars_widgets() ) ) );
 
 		$changed = $this->ok(
@@ -191,7 +194,7 @@ final class SiteEditorTest extends TestCase {
 		$removed = $this->ok( 'kuduy-widget-remove', array( 'widget_id' => $wid ) );
 		$this->assertSame( 'wp_inactive_widgets', $removed['widget']['sidebar'] );
 		$this->ok( 'kuduy-snapshot-restore', array( 'snapshot_id' => $removed['_snapshot_id'] ) );
-		$areas = array_column( $this->ok( 'kuduy-widgets' )['sidebars'], null, 'id' );
+		$areas = array_column( $this->widgets()['sidebars'], null, 'id' );
 		$this->assertContains( $wid, array_column( $areas['kuduy-test-area']['widgets'], 'id' ), 'Undo puts it back in its area.' );
 
 		$this->fails( 'kuduy-widget-save', array( 'sidebar' => 'kuduy-test-area' ), 'no content for a new widget' );
@@ -200,12 +203,25 @@ final class SiteEditorTest extends TestCase {
 	}
 
 	/**
+	 * The widgets list as a new request sees it. All tool calls of a test share one PHP request, so core's
+	 * $sidebars_widgets global still holds the state before the widget was added; retrieve_widgets() would then treat
+	 * the new widget as lost and move it to inactive. Each real MCP call is its own request.
+	 *
+	 * @return array<string, mixed>
+	 */
+	private function widgets(): array {
+		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- simulate a fresh request.
+		$GLOBALS['sidebars_widgets'] = get_option( 'sidebars_widgets' );
+		return $this->ok( 'kuduy-widgets' );
+	}
+
+	/**
 	 * Content of a block widget, from the widgets list.
 	 *
 	 * @param string $id Widget id.
 	 */
 	private function content( string $id ): string {
-		foreach ( $this->ok( 'kuduy-widgets' )['sidebars'] as $area ) {
+		foreach ( $this->widgets()['sidebars'] as $area ) {
 			foreach ( $area['widgets'] as $widget ) {
 				if ( $widget['id'] === $id ) {
 					return (string) ( $widget['content'] ?? '' );
