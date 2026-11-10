@@ -4,6 +4,11 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 ## Unreleased
 
+## 0.8.1 — 2026-11-10
+
+- Fixed: undoing `kuduy-lang-set` on a post or term that had no language now removes the language again (it used to leave the new language in place). Found on staging with claude.ai.
+- Changed: `kuduy-block-types` also returns the number of block types (`count`).
+
 ## 0.8.0 — 2026-11-10
 
 **Phase 7: forms, Site Editor and widgets, cache, Polylang, custom content types and developer tools (36 new tools).** Each appears only when the plugin or theme feature it needs is there.
