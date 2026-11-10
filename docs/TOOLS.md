@@ -755,7 +755,7 @@ Scope `kuduy:admin` · changes data (undo where noted)
 
 ### `kuduy-seo-status` — SEO plugin status
 
-Which SEO plugin the site uses (Rank Math, Yoast SEO, All in One SEO, SEOPress), its version, whether several are active (then SEO changes are refused) and which SEO fields KUDUY can change through it.
+Which SEO plugin the site uses (Rank Math, Yoast SEO, All in One SEO, SEOPress), its version, whether several are active (then SEO changes are refused) and which SEO fields KuDiagnostics can change through it.
 
 Scope `kuduy:read` · read only
 
@@ -1293,7 +1293,7 @@ Scope `kuduy:write` · changes data (undo where noted) · reaches outside the si
 
 ### `kuduy-woo-order-note` — Add an order note
 
-Adds a note to a WooCommerce order. Private notes (default) are for store staff only. customer_note: true emails the note to the customer, so it is confirm-first: the first call only reports it (done: false) — ask the user, then call again with confirm: true. Notes cannot be undone through KUDUY.
+Adds a note to a WooCommerce order. Private notes (default) are for store staff only. customer_note: true emails the note to the customer, so it is confirm-first: the first call only reports it (done: false) — ask the user, then call again with confirm: true. Notes cannot be undone through KuDiagnostics.
 
 Scope `kuduy:write` · reaches outside the site
 
@@ -1493,7 +1493,7 @@ No input.
 
 ### `kuduy-woo-shipping-zone-save` — Save a shipping zone
 
-Creates a WooCommerce shipping zone (no id) or changes one: name, order, locations (list of {code, type}: type country, state, postcode or continent, e.g. {"code": "US:CA", "type": "state"}; given locations replace the old ones). Snapshot first for changes; undo with kuduy-snapshot-restore. Zones are not deleted through KUDUY.
+Creates a WooCommerce shipping zone (no id) or changes one: name, order, locations (list of {code, type}: type country, state, postcode or continent, e.g. {"code": "US:CA", "type": "state"}; given locations replace the old ones). Snapshot first for changes; undo with kuduy-snapshot-restore. Zones are not deleted through KuDiagnostics.
 
 Scope `kuduy:admin` · changes data (undo where noted)
 
@@ -1698,7 +1698,7 @@ Scope `kuduy:write` · changes data (undo where noted)
 
 ### `kuduy-forms-cf7-save` — Save a Contact Form 7 form
 
-Creates a Contact Form 7 form (no form_id) or patches one: title, form (form-tag markup such as [text* your-name] [email* your-email] [submit "Send"]), messages (keys as in kuduy-forms-get), additional_settings. Fields left out stay as they are. A new form starts from CF7's default template, including its mail to the site admin; change mail with kuduy-forms-cf7-mail. Returns CF7's configuration errors. Snapshot first for changes; undo with kuduy-snapshot-restore. Forms are not deleted through KUDUY.
+Creates a Contact Form 7 form (no form_id) or patches one: title, form (form-tag markup such as [text* your-name] [email* your-email] [submit "Send"]), messages (keys as in kuduy-forms-get), additional_settings. Fields left out stay as they are. A new form starts from CF7's default template, including its mail to the site admin; change mail with kuduy-forms-cf7-mail. Returns CF7's configuration errors. Snapshot first for changes; undo with kuduy-snapshot-restore. Forms are not deleted through KuDiagnostics.
 
 Scope `kuduy:write` · changes data (undo where noted)
 
@@ -2035,7 +2035,7 @@ Scope `kuduy:admin` · read only
 
 ### `kuduy-dev-file-write` — Write a file
 
-Creates or replaces a text file in a plugin folder, a theme folder or wp-content/kuduy-sandbox (root "content", path e.g. "plugins/my-plugin/my-plugin.php"). PHP files must parse. KUDUY itself, must-use plugins, WordPress core and secret files are never changed. Changing a file of an active plugin or theme can break the site, so the first call only reports it (done: false): ask the user, then call again with confirm: true. Snapshot first; undo with kuduy-snapshot-restore.
+Creates or replaces a text file in a plugin folder, a theme folder or wp-content/kuduy-sandbox (root "content", path e.g. "plugins/my-plugin/my-plugin.php"). PHP files must parse. KuDiagnostics itself, must-use plugins, WordPress core and secret files are never changed. Changing a file of an active plugin or theme can break the site, so the first call only reports it (done: false): ask the user, then call again with confirm: true. Snapshot first; undo with kuduy-snapshot-restore.
 
 Scope `kuduy:code` · changes data (undo where noted)
 
@@ -2048,7 +2048,7 @@ Scope `kuduy:code` · changes data (undo where noted)
 
 ### `kuduy-dev-php` — Run PHP
 
-Runs a PHP snippet inside WordPress as your user (no opening <?php tag; use return to give back a value, echo output is captured). Time limit 30 seconds. Changes the code makes are not undone by KUDUY. Every run is in the audit log, including fatal errors.
+Runs a PHP snippet inside WordPress as your user (no opening <?php tag; use return to give back a value, echo output is captured). Time limit 30 seconds. Changes the code makes are not undone by KuDiagnostics. Every run is in the audit log, including fatal errors.
 
 Scope `kuduy:code` · changes data (undo where noted) · reaches outside the site
 
@@ -2060,7 +2060,7 @@ Scope `kuduy:code` · changes data (undo where noted) · reaches outside the sit
 
 ### `kuduy-content-types` — Custom content types
 
-Lists the custom post types and taxonomies defined through KUDUY (with their settings and number of items). Types from the theme or other plugins are listed by kuduy-post-types.
+Lists the custom post types and taxonomies defined through KuDiagnostics (with their settings and number of items). Types from the theme or other plugins are listed by kuduy-post-types.
 
 Scope `kuduy:read` · read only
 
@@ -2068,7 +2068,7 @@ No input.
 
 ### `kuduy-content-type-save` — Define a content type
 
-Defines or changes a custom post type (kind "post_type": key up to 20 characters, singular, plural, public, hierarchical, has_archive, supports, menu_icon, rewrite_slug, taxonomies) or taxonomy (kind "taxonomy": key up to 32 characters, singular, plural, object_type = post types it applies to, public, hierarchical, rewrite_slug). Shown in the editor and REST API; access works like posts. KUDUY must stay active for the type to exist. Snapshot first; undo with kuduy-snapshot-restore.
+Defines or changes a custom post type (kind "post_type": key up to 20 characters, singular, plural, public, hierarchical, has_archive, supports, menu_icon, rewrite_slug, taxonomies) or taxonomy (kind "taxonomy": key up to 32 characters, singular, plural, object_type = post types it applies to, public, hierarchical, rewrite_slug). Shown in the editor and REST API; access works like posts. KuDiagnostics must stay active for the type to exist. Snapshot first; undo with kuduy-snapshot-restore.
 
 Scope `kuduy:admin` · changes data (undo where noted)
 
@@ -2089,7 +2089,7 @@ Scope `kuduy:admin` · changes data (undo where noted)
 
 ### `kuduy-content-type-remove` — Remove a content type
 
-Removes a content type defined through KUDUY. Its posts or terms are not deleted: they stay in the database and return if the type is defined again. Snapshot first; undo with kuduy-snapshot-restore.
+Removes a content type defined through KuDiagnostics. Its posts or terms are not deleted: they stay in the database and return if the type is defined again. Snapshot first; undo with kuduy-snapshot-restore.
 
 Scope `kuduy:admin` · changes data (undo where noted)
 
