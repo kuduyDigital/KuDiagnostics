@@ -127,6 +127,19 @@ final class Polylang {
 	}
 
 	/**
+	 * Take an object out of its translation group and remove its language (Polylang's own model methods), so it is
+	 * back to "no language" (used by undo when the object had none).
+	 *
+	 * @param string $kind post | term.
+	 * @param int    $id   Id.
+	 */
+	public static function clear_language( string $kind, int $id ): void {
+		$model = 'post' === $kind ? PLL()->model->post : PLL()->model->term;
+		$model->delete_translation( $id );
+		$model->delete_language( $id );
+	}
+
+	/**
 	 * Save a translation group.
 	 *
 	 * @param string             $kind post | term.

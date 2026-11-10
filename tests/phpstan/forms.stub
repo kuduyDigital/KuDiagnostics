@@ -275,9 +275,17 @@ namespace {
 		 */
 		public function add( $args ) {}
 	}
+	class PLL_Translated_Object_Model {
+		public function delete_translation( int $id ): void {}
+		public function delete_language( int $id ): void {}
+	}
 	class PLL_Model {
 		/** @var PLL_Languages_Model */
 		public $languages;
+		/** @var PLL_Translated_Object_Model */
+		public $post;
+		/** @var PLL_Translated_Object_Model */
+		public $term;
 	}
 	class PLL_Base {
 		/** @var PLL_Model */

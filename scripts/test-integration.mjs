@@ -52,6 +52,15 @@ for (const entry of (process.env.KUDUY_PLUGINS ?? '').split(',').map((s) => s.tr
     // Rank Math stays inert until its account is connected or its setup wizard is skipped; do what "Skip" does.
     steps.push({ step: 'setSiteOptions', options: { rank_math_registration_skip: '1' } });
   }
+  if (slug === 'polylang') {
+    // Polylang loads its pll_* API only in a context (admin, REST, or front end with languages). The test request is
+    // none of these until a language exists, so add English and German through Polylang's model first (found
+    // 2026-11-10: without this MultilingualTest skipped silently).
+    steps.push({
+      step: 'runPHP',
+      code: "<?php require '/wordpress/wp-load.php'; $m = new PLL_Model( new WP_Syntex\\Polylang\\Options\\Options() ); foreach ( array( 'en_US', 'de_DE' ) as $l ) { $m->languages->add( array( 'locale' => $l ) ); }",
+    });
+  }
   if (slug === 'woocommerce') {
     // KUDUY_HPOS=on|off picks the order storage (fresh shop, no orders yet, so WooCommerce accepts the switch).
     // kuduy_test_hpos tells the tests which mode was asked for, so a silent fallback fails them.

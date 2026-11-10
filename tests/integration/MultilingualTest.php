@@ -23,8 +23,12 @@ final class MultilingualTest extends TestCase {
 	private static int $author;
 
 	public static function setUpBeforeClass(): void {
-		if ( ! function_exists( 'pll_languages_list' ) ) {
+		if ( ! defined( 'POLYLANG_VERSION' ) ) {
 			self::markTestSkipped( 'Polylang is not active in this run (KUDUY_PLUGINS).' );
+		}
+		if ( ! function_exists( 'pll_languages_list' ) ) {
+			// Active but without its API (no context yet): a broken run, not a skip.
+			self::fail( 'Polylang is active but its pll_* API is not loaded (the runner adds languages first).' );
 		}
 		if ( ! is_plugin_active( 'kuduy-mcp/kuduy-mcp.php' ) ) {
 			activate_plugin( 'kuduy-mcp/kuduy-mcp.php' );
@@ -90,6 +94,26 @@ final class MultilingualTest extends TestCase {
 			),
 			'unknown language'
 		);
+
+		// A post with no language: undo must bring back "no language" (found on staging 2026-11-10).
+		$none = (int) wp_insert_post(
+			array(
+				'post_title'  => 'Kuduy no language',
+				'post_status' => 'publish',
+			)
+		);
+		PLL()->model->post->delete_language( $none );
+		$this->assertFalse( pll_get_post_language( $none ) );
+		$set = $this->ok(
+			'kuduy-lang-set',
+			array(
+				'id'       => $none,
+				'language' => 'en',
+			)
+		);
+		$this->ok( 'kuduy-snapshot-restore', array( 'snapshot_id' => $set['_snapshot_id'] ) );
+		$this->assertFalse( pll_get_post_language( $none ), 'Undo removes the language again.' );
+		$this->assertSame( array(), pll_get_post_translations( $none ) );
 	}
 
 	public function test_link_and_undo(): void {

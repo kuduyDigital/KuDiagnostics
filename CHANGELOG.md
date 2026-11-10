@@ -478,3 +478,8 @@ Format: user-facing releases first (newest on top), then the dated development h
 ### 2026-11-10 — Phase 7 full test round
 
 - PHPCS, PHPStan level 6: clean. Smoke 26/26. Integration on WP 7.1.4 and 6.9.11: base, forms, LiteSpeed Cache, Polylang, ACF, WooCommerce HPOS on/off, plus the D4 code-tools run. Three test-side issues found and fixed (hidden tools answer "Unknown tool"; the widget test needs a fresh-request view of core's `$sidebars_widgets`; OAuth metadata lists `kuduy:code` with the constant on); the affected tests then pass on both pairs and in the code run. Results in `TESTING.md` §3a, `COMPATIBILITY.md`. Not yet checked on staging with claude.ai.
+
+### 2026-11-10 — Phase 7 on staging (claude.ai)
+
+- Released 0.8.0 (tagged after CI passed, at the user's request); staging updated itself. Test plugins (CF7 + Flamingo, Fluent Forms, Polylang, LiteSpeed Cache) installed with `kuduy-plugin-install`, one submission per form; the user ran the 12-step check in claude.ai: 11/12 pass. Fixed: undoing `kuduy-lang-set` on an object without a language now removes the language again (Polylang's `delete_translation()` / `delete_language()`); `kuduy-block-types` returns `count`. Afterwards the test page was trashed, the Polylang languages deleted and the five test plugins removed.
+- Found while checking the fix: `MultilingualTest` had never run in Playground (Polylang's API loads only in a context; the class skipped silently). The runner now adds English and German before the tests for Polylang runs, and the test fails when Polylang is active without its API. All four Polylang tests pass on WP 7.1.4 and 6.9.11.

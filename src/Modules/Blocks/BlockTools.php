@@ -89,8 +89,11 @@ final class BlockTools implements Tool {
 		return 'types' === $this->mode
 			? array(
 				'type'       => 'object',
-				'properties' => array( 'block_types' => $list ),
-				'required'   => array( 'block_types' ),
+				'properties' => array(
+					'count'       => array( 'type' => 'integer' ),
+					'block_types' => $list,
+				),
+				'required'   => array( 'count', 'block_types' ),
 			)
 			: array(
 				'type'       => 'object',
@@ -172,7 +175,10 @@ final class BlockTools implements Tool {
 					'parent'      => array_values( (array) ( $type['parent'] ?? array() ) ),
 				);
 			}
-			return array( 'block_types' => $out );
+			return array(
+				'count'       => count( $out ),
+				'block_types' => $out,
+			);
 		}//end if
 		$post = Content::post( (int) $input['id'] );
 		if ( null === $post ) {

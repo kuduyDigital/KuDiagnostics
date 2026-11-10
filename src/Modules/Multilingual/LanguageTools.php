@@ -306,17 +306,25 @@ final class LanguageTools implements Tool, Snapshottable {
 	 * @param array<string, mixed> $payload Saved state.
 	 */
 	public function restore( array $payload ): void {
-		$kind = (string) ( $payload['object'] ?? 'post' );
-		foreach ( (array) ( $payload['langs'] ?? array() ) as $id => $lang ) {
-			if ( is_string( $lang ) && '' !== $lang && Polylang::language( $kind, (int) $id ) !== $lang ) {
+		$kind  = (string) ( $payload['object'] ?? 'post' );
+		$langs = (array) ( $payload['langs'] ?? array() );
+		foreach ( $langs as $id => $lang ) {
+			if ( ! is_string( $lang ) || '' === $lang ) {
+				// The object had no language before: take it out of any group and remove its language
+				// (found on staging 2026-11-10: undo used to leave the new language in place).
+				Polylang::clear_language( $kind, (int) $id );
+			} elseif ( Polylang::language( $kind, (int) $id ) !== $lang ) {
 				Polylang::set_language( $kind, (int) $id, $lang );
 			}
 		}
 		foreach ( (array) ( $payload['groups'] ?? array() ) as $id => $group ) {
+			$lang = $langs[ $id ] ?? null;
+			if ( ! is_string( $lang ) || '' === $lang ) {
+				continue;
+			}
 			$group = array_map( 'intval', (array) $group );
-			// A group of one (or none) means the object was not linked: save it alone, which unlinks it.
-			$lang = Polylang::language( $kind, (int) $id );
-			Polylang::save_group( $kind, count( $group ) > 1 ? $group : ( null === $lang ? array() : array( $lang => (int) $id ) ) );
+			// A group of one means the object was not linked: save it alone, which unlinks it.
+			Polylang::save_group( $kind, count( $group ) > 1 ? $group : array( $lang => (int) $id ) );
 		}
 	}
 

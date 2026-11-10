@@ -26,6 +26,21 @@ See `CLAUDE.md` → Commands. Integration: `KUDUY_WP=<6.9|7.1> KUDUY_PHP=<8.1|8.
 
 PHPCS and PHPStan level 6: no errors. Smoke over real HTTP: **26 / 26**. Integration (each run = full suite): base, forms, LiteSpeed Cache, Polylang, ACF 6.8.11 and WooCommerce (11.2.2 on 7.1, 11.0.1 on 6.9, HPOS on and off) on WP 7.1.4 / PHP 8.3.36 and WP 6.9.11 / PHP 8.1.34 (Elementor 4.3.6), plus the code-tools run (D4 constant on, WP 7.1.4): 174–223 tests per run. The first round had the same three test-side failures everywhere (a test expecting a refusal where a hidden tool answers "Unknown tool"; the widget test reading a stale per-request global; the OAuth metadata test not expecting `kuduy:code` with the constant on); after the test fixes the affected tests pass on both pairs and in the code run.
 
+### Phase 7 on Hostinger staging with claude.ai (2026-11-10, KUDUY 0.8.0)
+
+Staging (WP 7.1.4, Hello Elementor theme) with Contact Form 7 6.2.4.1 + Flamingo 2.6.4, Fluent Forms 6.2.17, Polylang 3.9.2 (English, Deutsch) and LiteSpeed Cache 7.9.3 installed for the run and removed afterwards; one test submission per form. The user ran a 12-step prompt in claude.ai web (Kuduy connector, admin scope): **11 / 12 pass**.
+
+| Step | Result |
+|---|---|
+| Forms status/list/get (no secrets), entries masked, `include_pii`, read/starred and trash with undo, note with undo, CF7 mail routing reported only (done: false) | pass (F1–F6 on a real host) |
+| Polylang: status, set, translate, get | pass; **undo of `kuduy-lang-set` on a page that had no language left English set — fixed 2026-11-10 (restore removes the language with Polylang's model), test added to L2** |
+| LiteSpeed status and post purge | pass (C1, C3) |
+| Block types (116 core), post blocks, Global Styles (empty on Hello Elementor) | pass; template and widget tools correctly not listed (classic theme without widget areas) |
+| Content types list; dev DB query (`user_pass` redacted), `wp-config.php` refused, schema (123 tables), log | pass (D1, D3) |
+| Code tools absent without the D4 constant | pass (D4) |
+
+Notes from the run: claude.ai showed the new tools only after its connector tool list refreshed; `kuduy-block-types` now also returns `count`.
+
 ## 3. Latest results (2026-11-05, v0.4.0)
 
 | Check | Result |
@@ -272,12 +287,14 @@ Ids from `docs/plans/phase-7-forms.md`. Runs: `contact-form-7@6.2.4.1` (7.1) / `
 
 ## Multilingual (Polylang 3.9.2)
 
+Correction 2026-11-10: in the first Phase 7 round `MultilingualTest` did not run at all (Polylang loads its API only once a context exists; the class skipped in `setUpBeforeClass()`, which leaves no test case in the report). The runner now adds the languages first, and the test fails instead of skipping when Polylang is active without its API. The results below are from the corrected runs.
+
 | # | Feature | Type |
 |---|---|---|
-| L1 | Languages and translated types | I — **pass 2026-11-10** on WP 7.1.4 and 6.9.11 (`MultilingualTest`) |
-| L2 | Set language + undo; unknown language refused | I — **pass 2026-11-10** on WP 7.1.4 and 6.9.11 |
-| L3 | Link + get + undo; mismatched languages, duplicate post, another user's post refused | I — **pass 2026-11-10** on WP 7.1.4 and 6.9.11 |
-| L4 | Translation draft created and linked; duplicate language refused | I — **pass 2026-11-10** on WP 7.1.4 and 6.9.11. WPML: not supported (needs a licensed copy) |
+| L1 | Languages and translated types | I — **pass 2026-11-10 (corrected run)** on WP 7.1.4 and 6.9.11 (`MultilingualTest`) |
+| L2 | Set language + undo (also back to no language); unknown language refused | I — **pass 2026-11-10 (corrected run)** on WP 7.1.4 and 6.9.11 |
+| L3 | Link + get + undo; mismatched languages, duplicate post, another user's post refused | I — **pass 2026-11-10 (corrected run)** on WP 7.1.4 and 6.9.11 |
+| L4 | Translation draft created and linked; duplicate language refused | I — **pass 2026-11-10 (corrected run)** on WP 7.1.4 and 6.9.11. WPML: not supported (needs a licensed copy) |
 
 ## Developer mode and content types
 
