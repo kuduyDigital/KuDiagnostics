@@ -190,7 +190,7 @@ final class DevDatabase implements Tool {
 			$list = (string) preg_replace( '/^select\s+(distinct\s+)?/i', '', (string) preg_split( '/\bfrom\b/i', $sql )[0] );
 			foreach ( explode( ',', $list ) as $item ) {
 				if ( ! preg_match( '/^\s*[`\w.*]+\s*$/', $item ) ) {
-					throw new ToolError( 'On users, options, user or post meta, sessions, API keys and KUDUY\'s own tables, select plain column names only (no aliases, functions or sub-queries), so secret values can be masked. Nothing was run.' );
+					throw new ToolError( 'On users, options, user or post meta, sessions, API keys and KuDiagnostics\'s own tables, select plain column names only (no aliases, functions or sub-queries), so secret values can be masked. Nothing was run.' );
 				}
 			}
 		}

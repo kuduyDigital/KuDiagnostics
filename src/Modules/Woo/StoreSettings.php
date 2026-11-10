@@ -16,7 +16,7 @@ use Kuduy\Mcp\Modules\Core\Content;
  * Store configuration through WooCommerce's own classes: WC_Shipping_Zones / WC_Shipping_Zone, WC_Tax, and the
  * payment gateway registry. Read only in Phase 7 (writes later, after the reads are checked on a real host). Every
  * settings field of type password, and every field whose name looks like a credential, is returned as
- * `value: null, has_value: true|false`: WooCommerce's own REST API returns gateway secrets in clear text, KUDUY does
+ * `value: null, has_value: true|false`: WooCommerce's own REST API returns gateway secrets in clear text, KuDiagnostics does
  * not (RESEARCH.md §10).
  */
 final class StoreSettings implements Tool {

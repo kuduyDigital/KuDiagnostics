@@ -8,7 +8,7 @@
 namespace Kuduy\Mcp\Admin;
 
 /**
- * Hidden mode changes presentation only (rule 7 of the brief): it removes KUDUY's Tools page and its admin notices
+ * Hidden mode changes presentation only (rule 7 of the brief): it removes KuDiagnostics's Tools page and its admin notices
  * and sends direct visits to the page to the dashboard. Only classes in Admin\ read it; the MCP endpoint, OAuth,
  * tools, jobs, audit log and updater never do. The plugin row stays in Plugins. Recovery needs server or admin
  * access: `wp option update kuduy_mcp_hidden_mode 0`, `wp kuduy ui show`, or
@@ -28,7 +28,7 @@ final class HiddenMode {
 	}
 
 	/**
-	 * Whether KUDUY's admin UI is hidden.
+	 * Whether KuDiagnostics's admin UI is hidden.
 	 */
 	public static function is_hidden(): bool {
 		return ! self::forced_visible() && '1' === (string) get_option( self::OPTION, '0' );
@@ -57,7 +57,7 @@ final class HiddenMode {
 	}
 
 	/**
-	 * Where a request for KUDUY's page should go while hidden, or null.
+	 * Where a request for KuDiagnostics's page should go while hidden, or null.
 	 *
 	 * @param string $page The requested admin page slug.
 	 */
@@ -83,7 +83,7 @@ final class HiddenMode {
 	 */
 	public static function handle_hide(): void {
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'Only site administrators can hide KUDUY MCP.', 'kuduy-mcp' ), '', array( 'response' => 403 ) );
+			wp_die( esc_html__( 'Only site administrators can hide KuDiagnostics.', 'kuduy-mcp' ), '', array( 'response' => 403 ) );
 		}
 		check_admin_referer( self::ACTION );
 		self::hide();
@@ -99,7 +99,7 @@ final class HiddenMode {
 			return;
 		}
 		echo '<h2>' . esc_html__( 'Hide this screen', 'kuduy-mcp' ) . '</h2>'
-			. '<p>' . esc_html__( 'Hides KUDUY MCP\'s page and notices from WP admin for everyone. Claude keeps working exactly as before, and the plugin stays listed under Plugins. To show it again: run "wp kuduy ui show", or "wp option update kuduy_mcp_hidden_mode 0", or add define( \'KUDUY_MCP_SHOW_UI\', true ); to wp-config.php.', 'kuduy-mcp' ) . '</p>';
+			. '<p>' . esc_html__( 'Hides KuDiagnostics\'s page and notices from WP admin for everyone. Claude keeps working exactly as before, and the plugin stays listed under Plugins. To show it again: run "wp kuduy ui show", or "wp option update kuduy_mcp_hidden_mode 0", or add define( \'KUDUY_MCP_SHOW_UI\', true ); to wp-config.php.', 'kuduy-mcp' ) . '</p>';
 		if ( self::forced_visible() ) {
 			echo '<p><em>' . esc_html__( 'KUDUY_MCP_SHOW_UI is set in wp-config.php, so the page stays visible.', 'kuduy-mcp' ) . '</em></p>';
 			return;
@@ -107,6 +107,6 @@ final class HiddenMode {
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">'
 			. '<input type="hidden" name="action" value="' . esc_attr( self::ACTION ) . '">';
 		wp_nonce_field( self::ACTION );
-		echo '<button class="button">' . esc_html__( 'Hide KUDUY MCP from WP admin', 'kuduy-mcp' ) . '</button></form>';
+		echo '<button class="button">' . esc_html__( 'Hide KuDiagnostics from WP admin', 'kuduy-mcp' ) . '</button></form>';
 	}
 }

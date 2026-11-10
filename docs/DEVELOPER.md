@@ -1,4 +1,4 @@
-# KUDUY MCP — developer guide
+# KuDiagnostics — developer guide
 
 How the plugin is built, how to add a tool, and how to test. Design decisions and their reasons: `ARCHITECTURE.md`; threat model: `SECURITY.md`; every tool: `docs/TOOLS.md` (generated).
 
@@ -14,7 +14,7 @@ How the plugin is built, how to add a tool, and how to test. Design decisions an
 | `src/Policy/` | Rate limit |
 | `src/Jobs/` | Background jobs (`kuduy_jobs`, Action Scheduler or WP-Cron) |
 | `src/Modules/<Area>/` | Tools per area: Core, Elementor, Seo, Media, Woo, Acf, Forms, Blocks, Cache, Multilingual, Dev, Types |
-| `src/Admin/` | Tools → KUDUY MCP page, hidden mode, WP-CLI command |
+| `src/Admin/` | Tools → KuDiagnostics page, hidden mode, WP-CLI command |
 | `src/Lifecycle/`, `src/Update/` | Migrations, cleanup, uninstall; GitHub updater |
 | `tests/integration/` | PHPUnit tests that run inside WordPress Playground |
 | `scripts/` | Test runner, smoke test, release build and checks, tool reference |

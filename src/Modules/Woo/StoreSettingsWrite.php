@@ -18,7 +18,7 @@ use Kuduy\Mcp\Mcp\ToolError;
  * current user (decision D24 A): WooCommerce's validation, sanitizing and permission check
  * (wc_rest_check_manager_permissions( 'settings', … ) = manage_woocommerce) apply. Store-wide settings, so the admin
  * scope. Every change is snapshotted; a deleted tax rate is undone by creating it again (it gets a new id). Shipping
- * zones and methods are not deleted through KUDUY (a method can be switched off with enabled: false).
+ * zones and methods are not deleted through KuDiagnostics (a method can be switched off with enabled: false).
  */
 final class StoreSettingsWrite implements Tool, Snapshottable {
 
@@ -63,7 +63,7 @@ final class StoreSettingsWrite implements Tool, Snapshottable {
 	 */
 	public function description(): string {
 		return match ( $this->mode ) {
-			'zone'   => 'Creates a WooCommerce shipping zone (no id) or changes one: name, order, locations (list of {code, type}: type country, state, postcode or continent, e.g. {"code": "US:CA", "type": "state"}; given locations replace the old ones). Snapshot first for changes; undo with kuduy-snapshot-restore. Zones are not deleted through KUDUY.',
+			'zone'   => 'Creates a WooCommerce shipping zone (no id) or changes one: name, order, locations (list of {code, type}: type country, state, postcode or continent, e.g. {"code": "US:CA", "type": "state"}; given locations replace the old ones). Snapshot first for changes; undo with kuduy-snapshot-restore. Zones are not deleted through KuDiagnostics.',
 			'method' => 'Adds a shipping method to a zone (zone_id + method_id such as flat_rate, free_shipping, local_pickup) or changes one (zone_id + instance_id): enabled, order and settings (e.g. {"title": "Standard", "cost": "5"}; keys as in kuduy-woo-shipping). Switch a method off with enabled: false. Snapshot first for changes; undo with kuduy-snapshot-restore.',
 			'tax'    => 'Creates a WooCommerce tax rate (no id) or changes one: country, state, postcodes, cities, rate (percent, e.g. "20.0000"), name, priority, compound, shipping, order, class ("standard" or a tax class slug). Snapshot first for changes; undo with kuduy-snapshot-restore.',
 			default  => 'Deletes a WooCommerce tax rate. Snapshot first: undo with kuduy-snapshot-restore creates the same rate again (with a new id).',

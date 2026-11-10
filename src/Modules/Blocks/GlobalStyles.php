@@ -16,7 +16,7 @@ use Kuduy\Mcp\Modules\Core\Content;
 /**
  * The site's Global Styles (the user layer of theme.json, one wp_global_styles post per theme) through core's
  * global-styles controller (D18 A): core checks edit_post on the styles post, and edit_css plus its CSS validation
- * for styles.css. Updates are patches: KUDUY merges them into the current styles and settings, then core saves.
+ * for styles.css. Updates are patches: KuDiagnostics merges them into the current styles and settings, then core saves.
  */
 final class GlobalStyles implements Tool, Snapshottable {
 
@@ -188,7 +188,7 @@ final class GlobalStyles implements Tool, Snapshottable {
 	}
 
 	/**
-	 * Core's REST route validates custom CSS but leaves the edit_css check to the Site Editor screen; KUDUY applies it.
+	 * Core's REST route validates custom CSS but leaves the edit_css check to the Site Editor screen; KuDiagnostics applies it.
 	 *
 	 * @param array<string, mixed> $input Arguments.
 	 * @throws ToolError When CSS is set without edit_css.

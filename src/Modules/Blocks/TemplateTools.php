@@ -17,7 +17,7 @@ use Kuduy\Mcp\Modules\Core\Content;
  * Block theme templates and template parts through core's templates controller (D18 A). Changing a theme template
  * makes a database copy, as in the Site Editor; undo removes that copy again (the theme file is used) or puts the
  * previous content back. Revert moves a customized theme template's copy to the trash (core's non-forced delete), so
- * the theme file is used; undo restores the copy. Nothing is deleted permanently except a copy KUDUY itself created,
+ * the theme file is used; undo restores the copy. Nothing is deleted permanently except a copy KuDiagnostics itself created,
  * on undo.
  */
 final class TemplateTools implements Tool, Snapshottable {
@@ -274,7 +274,7 @@ final class TemplateTools implements Tool, Snapshottable {
 			throw new ToolError( 'This template is the theme file itself; there is nothing to revert.' );
 		}
 		if ( ! $template->has_theme_file ) {
-			throw new ToolError( 'This template was made on the site and has no theme file to go back to; KUDUY does not delete templates.' );
+			throw new ToolError( 'This template was made on the site and has no theme file to go back to; KuDiagnostics does not delete templates.' );
 		}
 	}
 

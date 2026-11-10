@@ -33,7 +33,7 @@ final class SiteInfo implements Tool {
 	 * {@inheritDoc}
 	 */
 	public function description(): string {
-		return 'Returns the site name, URL, language, timezone, WordPress and KUDUY MCP versions, active theme, and the connected WordPress user with their roles. Call this first to learn what site you are working on.';
+		return 'Returns the site name, URL, language, timezone, WordPress and KuDiagnostics versions, active theme, and the connected WordPress user with their roles. Call this first to learn what site you are working on.';
 	}
 
 	/**

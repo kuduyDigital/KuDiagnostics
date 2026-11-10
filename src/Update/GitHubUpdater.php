@@ -102,7 +102,7 @@ final class GitHubUpdater {
 			return $result;
 		}
 		return (object) array(
-			'name'          => 'KUDUY MCP',
+			'name'          => 'KuDiagnostics',
 			'slug'          => 'kuduy-mcp',
 			'version'       => $release['version'],
 			'author'        => 'KUDUY Digital',

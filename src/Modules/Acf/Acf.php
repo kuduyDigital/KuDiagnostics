@@ -12,7 +12,7 @@ use Kuduy\Mcp\Mcp\ToolError;
 /**
  * Objects, field resolution, validation and value shapes for the kuduy-acf-* tools. Only fields of groups that ACF
  * shows on the object are accepted (the same location "screen" ACF's own REST API builds, without its show_in_rest
- * filter: KUDUY acts like the edit screen). update_field() is always called with a field key, so ACF never writes a
+ * filter: KuDiagnostics acts like the edit screen). update_field() is always called with a field key, so ACF never writes a
  * "dummy" field under a free name.
  */
 final class Acf {

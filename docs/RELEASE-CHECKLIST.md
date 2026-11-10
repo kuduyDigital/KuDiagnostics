@@ -16,7 +16,7 @@ Use for every release; `v1.0.0` additionally needs the "1.0 only" items. A tag p
 ## Tag and publish
 
 - [ ] Owner's go-ahead for this version.
-- [ ] `git tag -a vX.Y.Z -m "KUDUY MCP X.Y.Z" && git push origin vX.Y.Z`.
+- [ ] `git tag -a vX.Y.Z -m "KuDiagnostics X.Y.Z" && git push origin vX.Y.Z`.
 - [ ] `release.yml` finished: the GitHub release has `kuduy-mcp.zip` and `kuduy-mcp.zip.sha256`.
 
 ## After publishing

@@ -138,7 +138,7 @@ final class TokenAuth {
 		if ( self::ROUTE === untrailingslashit( $request->get_route() ) ) {
 			return $result;
 		}
-		return new \WP_Error( 'kuduy_mcp_token_route', 'This access token only works on the KUDUY MCP endpoint.', array( 'status' => 401 ) );
+		return new \WP_Error( 'kuduy_mcp_token_route', 'This access token only works on the KuDiagnostics endpoint.', array( 'status' => 401 ) );
 	}
 
 	/**

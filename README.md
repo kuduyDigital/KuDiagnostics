@@ -1,4 +1,4 @@
-# KUDUY MCP
+# KuDiagnostics
 
 WordPress plugin that lets Claude manage a WordPress site through the Model Context Protocol, always as a real WordPress user and within that user's permissions. GPL-2.0-or-later.
 

@@ -43,7 +43,7 @@ final class Content {
 	}
 
 	/**
-	 * WooCommerce post types and the KUDUY tools that write them through WooCommerce's CRUD API.
+	 * WooCommerce post types and the KuDiagnostics tools that write them through WooCommerce's CRUD API.
 	 */
 	private const WOO_TYPES = array(
 		'product'              => 'kuduy-woo-product-*',

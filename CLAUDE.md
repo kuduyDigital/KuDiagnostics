@@ -1,6 +1,6 @@
-# KUDUY MCP — project instructions
+# KuDiagnostics (KUDUY MCP) — project instructions
 
-KUDUY MCP is an original, native-PHP WordPress plugin (GPL-2.0-or-later) that lets an authorized Claude client manage a WordPress site through the Model Context Protocol, always as a real WordPress user and within that user's capabilities. Repo: `github.com/kuduyDigital/KuDiagnostics`. The repo root is the plugin root.
+KuDiagnostics (display name; formerly "KUDUY MCP", internal slug `kuduy-mcp` unchanged) is an original, native-PHP WordPress plugin (GPL-2.0-or-later) that lets an authorized Claude client manage a WordPress site through the Model Context Protocol, always as a real WordPress user and within that user's capabilities. Repo: `github.com/kuduyDigital/KuDiagnostics`. The repo root is the plugin root.
 
 The product brief lives outside the repo (KUDUY MCP Master Development Prompt). These project files are its working form; keep them true:
 

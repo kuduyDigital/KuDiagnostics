@@ -9,6 +9,10 @@ namespace RankMath {
 		public static function is_invalid_registration(): bool {}
 		public static function is_module_active( string $id ): bool {}
 	}
+	class Installer {
+		/** @param array<int, string> $modules */
+		public static function create_tables( $modules = array() ): void {}
+	}
 	class Metadata {}
 }
 

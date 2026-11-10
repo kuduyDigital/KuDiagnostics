@@ -8,7 +8,7 @@
 namespace Kuduy\Mcp\Modules\Seo;
 
 /**
- * AIOSEO 5.0.5 (RESEARCH.md §9). Its data lives in its own `aioseo_posts` table, so KUDUY reads and writes only
+ * AIOSEO 5.0.5 (RESEARCH.md §9). Its data lives in its own `aioseo_posts` table, so KuDiagnostics reads and writes only
  * through AIOSEO's abilities `aioseo-posts/seo-data-get` and `aioseo-posts/seo-data-update` (patch semantics,
  * permission `aioseo_page_general_settings` + edit_post, saved by Models\Post::savePost()). Rendered title and
  * description come from AIOSEO's meta classes. Robots: AIOSEO keeps "use the default" as its own flag, so

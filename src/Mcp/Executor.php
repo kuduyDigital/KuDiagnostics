@@ -73,7 +73,7 @@ final class Executor {
 			return self::error( $e->getMessage(), 'error', 'tool_error' );
 		} catch ( \Throwable $e ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- operator diagnostics; arguments are never logged.
-			error_log( sprintf( 'KUDUY MCP: tool %s failed with %s in %s:%d', $tool->name(), get_class( $e ), $e->getFile(), $e->getLine() ) );
+			error_log( sprintf( 'KuDiagnostics: tool %s failed with %s in %s:%d', $tool->name(), get_class( $e ), $e->getFile(), $e->getLine() ) );
 			return self::error( __( 'The tool failed unexpectedly. Details are in the site error log.', 'kuduy-mcp' ), 'error', 'exception' );
 		}
 

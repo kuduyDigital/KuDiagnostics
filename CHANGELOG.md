@@ -502,3 +502,4 @@ Format: user-facing releases first (newest on top), then the dated development h
 ### 2026-11-10 — O11 revoke checked with claude.ai
 
 - On staging (0.8.0) the user revoked the claude.ai connection on Tools → KUDUY MCP: the next `kuduy-site-info` call from the same chat failed with "needs you to sign in again" and claude.ai offered Reconnect; after reconnecting the call worked. Desktop, Claude Code's own sign-in and refresh after one hour remain open.
+- Renamed (display name, user's decision D27): the plugin is now called **KuDiagnostics** in Plugins, Tools → KuDiagnostics, notices, the MCP server title, the OAuth resource name, the updater details and the docs. The internal slug `kuduy-mcp`, tool names, connector URL, options and constants are unchanged, so installed sites keep updating and Claude connections keep working.

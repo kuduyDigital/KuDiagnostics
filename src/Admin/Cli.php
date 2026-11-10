@@ -22,7 +22,7 @@ final class Cli {
 	}
 
 	/**
-	 * Show KUDUY MCP's admin page and notices again.
+	 * Show KuDiagnostics's admin page and notices again.
 	 *
 	 * ## EXAMPLES
 	 *
@@ -30,11 +30,11 @@ final class Cli {
 	 */
 	public function show(): void {
 		HiddenMode::show();
-		self::say( 'KUDUY MCP admin UI is visible (Tools → KUDUY MCP).' );
+		self::say( 'KuDiagnostics admin UI is visible (Tools → KuDiagnostics).' );
 	}
 
 	/**
-	 * Hide KUDUY MCP's admin page and notices (Claude keeps working).
+	 * Hide KuDiagnostics's admin page and notices (Claude keeps working).
 	 *
 	 * ## EXAMPLES
 	 *
@@ -42,7 +42,7 @@ final class Cli {
 	 */
 	public function hide(): void {
 		HiddenMode::hide();
-		self::say( HiddenMode::forced_visible() ? 'Hidden mode is set, but KUDUY_MCP_SHOW_UI in wp-config.php keeps the UI visible.' : 'KUDUY MCP admin UI is hidden. Show it again with: wp kuduy ui show' );
+		self::say( HiddenMode::forced_visible() ? 'Hidden mode is set, but KUDUY_MCP_SHOW_UI in wp-config.php keeps the UI visible.' : 'KuDiagnostics admin UI is hidden. Show it again with: wp kuduy ui show' );
 	}
 
 	/**

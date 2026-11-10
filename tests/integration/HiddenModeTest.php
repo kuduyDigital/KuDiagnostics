@@ -96,6 +96,7 @@ final class HiddenModeTest extends TestCase {
 		$this->assertSame( $before, $this->tool_names(), 'Same tools while hidden.' );
 		$this->assertArrayHasKey( 'name', $this->ok( 'kuduy-site-info' ), 'Tool calls work while hidden.' );
 
+		\Kuduy\Mcp\OAuth\TokenAuth::reset();
 		$metadata = rest_get_server()->dispatch( new \WP_REST_Request( 'GET', '/kuduy-mcp/v1/oauth-authorization-server' ) );
 		$this->assertSame( 200, $metadata->get_status(), 'OAuth metadata still served.' );
 

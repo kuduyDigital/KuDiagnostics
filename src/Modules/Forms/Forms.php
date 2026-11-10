@@ -1,6 +1,6 @@
 <?php
 /**
- * Forms plugins: the adapters KUDUY ships and lookups shared by the forms tools.
+ * Forms plugins: the adapters KuDiagnostics ships and lookups shared by the forms tools.
  *
  * @package Kuduy\Mcp
  */

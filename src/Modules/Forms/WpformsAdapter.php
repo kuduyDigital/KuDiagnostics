@@ -191,7 +191,7 @@ final class WpformsAdapter implements FormsAdapter {
 	 */
 	private function no_entries(): never {
 		if ( self::pro() ) {
-			throw new ToolError( 'WPForms Pro entries are not supported by KUDUY yet. Nothing was read or changed.' );
+			throw new ToolError( 'WPForms Pro entries are not supported by KuDiagnostics yet. Nothing was read or changed.' );
 		}
 		Forms::no_entries( $this, 'WPForms Lite does not save submissions on the site (it only emails them).' );
 	}

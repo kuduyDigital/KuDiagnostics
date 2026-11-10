@@ -75,7 +75,7 @@ final class Endpoints {
 			// offline_access is an AS concern, not a resource requirement (MCP authorization §Refresh Tokens).
 			'scopes_supported'         => Scopes::supported(),
 			'bearer_methods_supported' => array( 'header' ),
-			'resource_name'            => get_bloginfo( 'name' ) . ' (KUDUY MCP)',
+			'resource_name'            => get_bloginfo( 'name' ) . ' (KuDiagnostics)',
 		);
 	}
 

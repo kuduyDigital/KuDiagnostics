@@ -59,7 +59,7 @@ final class Cf7Save implements Tool, Snapshottable, MasksAuditArgs {
 	 */
 	public function description(): string {
 		return 'save' === $this->mode
-			? 'Creates a Contact Form 7 form (no form_id) or patches one: title, form (form-tag markup such as [text* your-name] [email* your-email] [submit "Send"]), messages (keys as in kuduy-forms-get), additional_settings. Fields left out stay as they are. A new form starts from CF7\'s default template, including its mail to the site admin; change mail with kuduy-forms-cf7-mail. Returns CF7\'s configuration errors. Snapshot first for changes; undo with kuduy-snapshot-restore. Forms are not deleted through KUDUY.'
+			? 'Creates a Contact Form 7 form (no form_id) or patches one: title, form (form-tag markup such as [text* your-name] [email* your-email] [submit "Send"]), messages (keys as in kuduy-forms-get), additional_settings. Fields left out stay as they are. A new form starts from CF7\'s default template, including its mail to the site admin; change mail with kuduy-forms-cf7-mail. Returns CF7\'s configuration errors. Snapshot first for changes; undo with kuduy-snapshot-restore. Forms are not deleted through KuDiagnostics.'
 			: 'Changes the mails of a Contact Form 7 form: mail (always sent) and mail_2 (optional second mail, active true/false), each with subject, sender, recipient, body, additional_headers (Cc/Bcc/Reply-To lines), attachments, use_html, exclude_blank. These decide where every future submission is emailed: when recipient, sender, headers or mail_2 on/off change, the first call only reports the old and new routing (done: false). Ask the user, then call again with confirm: true. Needs the admin scope. Undo with kuduy-snapshot-restore.';
 	}
 
@@ -263,7 +263,7 @@ final class Cf7Save implements Tool, Snapshottable, MasksAuditArgs {
 	public function snapshot( array $input ): ?array {
 		$id = (int) ( $input['form_id'] ?? 0 );
 		if ( $id <= 0 ) {
-			// A new form; CF7 forms are not deleted through KUDUY.
+			// A new form; CF7 forms are not deleted through KuDiagnostics.
 			return null;
 		}
 		$form = Cf7Adapter::find( $id );

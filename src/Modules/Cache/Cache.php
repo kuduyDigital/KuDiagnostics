@@ -1,6 +1,6 @@
 <?php
 /**
- * Cache plugins KUDUY can purge, through each plugin's documented purge API (decision D19 A).
+ * Cache plugins KuDiagnostics can purge, through each plugin's documented purge API (decision D19 A).
  *
  * @package Kuduy\Mcp
  */
@@ -85,7 +85,7 @@ final class Cache {
 		switch ( $id . ':' . $target ) {
 			case 'litespeed:all':
 				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- LiteSpeed Cache's public purge API.
-				do_action( 'litespeed_purge_all', 'KUDUY MCP' );
+				do_action( 'litespeed_purge_all', 'KuDiagnostics' );
 				break;
 			case 'litespeed:post':
 				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- LiteSpeed Cache's public purge API.

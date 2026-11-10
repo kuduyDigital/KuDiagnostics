@@ -12,7 +12,7 @@ namespace Kuduy\Mcp\Modules\Seo;
  * (Yoast's sanitize callbacks run through register_meta); rendered values through the Surfaces API
  * `YoastSEO()->meta->for_post()`. Yoast's own post SEO abilities are not used: they exist only on production-mode
  * sites and cannot set the focus keyphrase. Yoast rebuilds its indexable (what it prints) from the meta at shutdown;
- * KUDUY asks its post watcher to do that right away so the result shows the new values.
+ * KuDiagnostics asks its post watcher to do that right away so the result shows the new values.
  */
 final class YoastAdapter implements SeoAdapter {
 

@@ -15,7 +15,7 @@ use Kuduy\Mcp\Modules\Core\Content;
 
 /**
  * Elementor's abilities are called in-process through its ability registry (Elementor's public MCP stays off unless
- * the site owner turns it on). KUDUY adds its own scope check, Elementor's permission check, schema validation,
+ * the site owner turns it on). KuDiagnostics adds its own scope check, Elementor's permission check, schema validation,
  * snapshots and the audit log. These are Elementor internals: if they are missing or change shape, the tools report
  * themselves unavailable instead of guessing.
  */
@@ -149,7 +149,7 @@ final class ElementorAbilities implements Tool, Snapshottable {
 				return 'Elementor says: ' . $ready->get_error_message();
 			}
 			if ( 'globals' !== $this->mode && null === self::schema( $id ) ) {
-				return 'This Elementor version changed how ' . $id . ' describes its input; update KUDUY MCP.';
+				return 'This Elementor version changed how ' . $id . ' describes its input; update KuDiagnostics.';
 			}
 		}
 		return true;

@@ -90,6 +90,6 @@ final class Plugin {
 		if ( HiddenMode::is_hidden() || '' !== (string) get_option( 'permalink_structure' ) || ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
-		echo '<div class="notice notice-error"><p>' . esc_html__( 'KUDUY MCP needs pretty permalinks so Claude can sign in. Go to Settings → Permalinks and choose any option except "Plain".', 'kuduy-mcp' ) . '</p></div>';
+		echo '<div class="notice notice-error"><p>' . esc_html__( 'KuDiagnostics needs pretty permalinks so Claude can sign in. Go to Settings → Permalinks and choose any option except "Plain".', 'kuduy-mcp' ) . '</p></div>';
 	}
 }

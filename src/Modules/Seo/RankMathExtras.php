@@ -560,13 +560,13 @@ final class RankMathExtras implements Tool, Snapshottable {
 			return array(
 				'plugin'  => (string) array_key_first( $plugins ),
 				'enabled' => null,
-				'note'    => 'This SEO plugin\'s sitemap settings are not read by KUDUY; check its sitemap screen.',
+				'note'    => 'This SEO plugin\'s sitemap settings are not read by KuDiagnostics; check its sitemap screen.',
 			);
 		}
 		$server = function_exists( 'wp_sitemaps_get_server' ) ? wp_sitemaps_get_server() : null;
 		$on     = $server && $server->sitemaps_enabled();
 		return array(
-			'plugin'  => 'wordpress',
+			'plugin'  => 'core',
 			'enabled' => $on,
 			'url'     => $on ? home_url( '/wp-sitemap.xml' ) : null,
 		);

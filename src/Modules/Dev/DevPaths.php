@@ -12,8 +12,8 @@ use Kuduy\Mcp\Mcp\ToolError;
 /**
  * Files are addressed relative to a root ("WordPress" = ABSPATH, "content" = WP_CONTENT_DIR) and resolved with
  * realpath(), so "../" and symbolic links cannot leave the root. Secret files are refused by name and folder
- * wherever they are. Writes are allowed only inside plugin folders, theme folders and the KUDUY sandbox, never in
- * KUDUY's own folder or in must-use plugins.
+ * wherever they are. Writes are allowed only inside plugin folders, theme folders and the KuDiagnostics sandbox, never in
+ * KuDiagnostics's own folder or in must-use plugins.
  */
 final class DevPaths {
 
@@ -127,7 +127,7 @@ final class DevPaths {
 			throw new ToolError( 'No such file or folder inside ' . esc_html( $root ) . ': ' . esc_html( $rel ) );
 		}
 		if ( self::is_secret( $path ) ) {
-			throw new ToolError( 'This file holds secrets (configuration, keys or credentials) and is never read or changed by KUDUY.' );
+			throw new ToolError( 'This file holds secrets (configuration, keys or credentials) and is never read or changed by KuDiagnostics.' );
 		}
 		return $path;
 	}
@@ -148,7 +148,7 @@ final class DevPaths {
 	}
 
 	/**
-	 * Folder of the KUDUY sandbox.
+	 * Folder of the KuDiagnostics sandbox.
 	 */
 	public static function sandbox(): string {
 		return self::roots()['content'] . '/kuduy-sandbox';
@@ -177,7 +177,7 @@ final class DevPaths {
 			throw new ToolError( 'The path leaves the ' . esc_html( $root ) . ' folder.' );
 		}
 		if ( self::is_secret( $path ) ) {
-			throw new ToolError( 'This file holds secrets (configuration, keys or credentials) and is never read or changed by KUDUY.' );
+			throw new ToolError( 'This file holds secrets (configuration, keys or credentials) and is never read or changed by KuDiagnostics.' );
 		}
 		$ext = strtolower( pathinfo( $path, PATHINFO_EXTENSION ) );
 		if ( ! in_array( $ext, self::WRITABLE, true ) ) {
@@ -185,7 +185,7 @@ final class DevPaths {
 		}
 		$own = untrailingslashit( (string) realpath( dirname( __DIR__, 3 ) ) );
 		if ( self::inside( $path, $own ) || ( '' !== (string) realpath( dirname( $path ) ) && self::inside( (string) realpath( dirname( $path ) ), $own ) ) ) {
-			throw new ToolError( 'KUDUY MCP does not change its own files.' );
+			throw new ToolError( 'KuDiagnostics does not change its own files.' );
 		}
 		$approved = array( self::sandbox() );
 		foreach ( array( WP_PLUGIN_DIR, get_theme_root() ) as $folder ) {

@@ -12,7 +12,7 @@ use Kuduy\Mcp\Plugin;
 use Kuduy\Mcp\Update\GitHubUpdater;
 
 /**
- * Reports whether a newer KUDUY MCP release exists. Installing stays in WordPress (Plugins screen or auto-updates).
+ * Reports whether a newer KuDiagnostics release exists. Installing stays in WordPress (Plugins screen or auto-updates).
  */
 final class CheckUpdate implements Tool {
 
@@ -27,14 +27,14 @@ final class CheckUpdate implements Tool {
 	 * {@inheritDoc}
 	 */
 	public function title(): string {
-		return __( 'Check for a KUDUY MCP update', 'kuduy-mcp' );
+		return __( 'Check for a KuDiagnostics update', 'kuduy-mcp' );
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function description(): string {
-		return 'Compares the installed KUDUY MCP version with the latest GitHub release and returns the release notes. Does not install anything; updates are installed from the WordPress Plugins screen or by WordPress auto-updates.';
+		return 'Compares the installed KuDiagnostics version with the latest GitHub release and returns the release notes. Does not install anything; updates are installed from the WordPress Plugins screen or by WordPress auto-updates.';
 	}
 
 	/**

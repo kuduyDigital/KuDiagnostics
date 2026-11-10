@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name:       KUDUY MCP
+ * Plugin Name:       KuDiagnostics
  * Description:       MCP server for WordPress: connect Claude and manage this site under your own WordPress permissions.
  * Version:           0.8.1
  * Requires at least: 6.9
@@ -20,7 +20,7 @@ if ( ! is_readable( __DIR__ . '/vendor/autoload.php' ) ) {
 	add_action(
 		'admin_notices',
 		static function (): void {
-			echo '<div class="notice notice-error"><p>' . esc_html__( 'KUDUY MCP is missing its vendor/ folder. Install the release ZIP, or run composer install.', 'kuduy-mcp' ) . '</p></div>';
+			echo '<div class="notice notice-error"><p>' . esc_html__( 'KuDiagnostics is missing its vendor/ folder. Install the release ZIP, or run composer install.', 'kuduy-mcp' ) . '</p></div>';
 		}
 	);
 	return;

@@ -1,6 +1,6 @@
 <?php
 /**
- * Post types and taxonomies defined through KUDUY (decision D22 A).
+ * Post types and taxonomies defined through KuDiagnostics (decision D22 A).
  *
  * @package Kuduy\Mcp
  */
@@ -13,7 +13,7 @@ use Kuduy\Mcp\Mcp\ToolError;
  * Definitions are stored in one option and registered with core's register_post_type() / register_taxonomy() on
  * every request (init, priority 5). Only a safe set of arguments is accepted; capabilities follow posts
  * (capability_type post), so access works like for posts. Removing a definition never deletes content: the posts and
- * terms stay in the database and come back if the type is defined again. If KUDUY is deactivated the types are not
+ * terms stay in the database and come back if the type is defined again. If KuDiagnostics is deactivated the types are not
  * registered (their content stays).
  */
 final class ContentTypes {

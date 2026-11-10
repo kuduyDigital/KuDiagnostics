@@ -83,7 +83,7 @@ final class Diagnostics implements Tool {
 		return match ( $this->mode ) {
 			'health'        => 'Runs WordPress Site Health checks that work without HTTP requests (versions, PHP extensions, database, HTTPS, scheduled events, debug mode, uploads, auto-updates, disk space, autoloaded options, registration, search visibility, opcode cache) and returns a short environment summary (versions, memory, upload size, object cache, cron).',
 			'cron'          => 'Lists scheduled tasks (WP-Cron): hook, next run (UTC), schedule, whether it is overdue, and whether WP-Cron is disabled or locked.',
-			'rewrite'       => 'Checks permalinks: structure, whether pretty URLs work, number of rewrite rules, and whether the REST API and the KUDUY MCP route are registered. Use when pages return 404 or sign-in fails.',
+			'rewrite'       => 'Checks permalinks: structure, whether pretty URLs work, number of rewrite rules, and whether the REST API and the KuDiagnostics route are registered. Use when pages return 404 or sign-in fails.',
 			'rewrite-flush' => 'Rebuilds the rewrite rules (like saving Settings > Permalinks). Fixes many 404 errors after adding post types or changing permalinks. Does not change the permalink structure.',
 			default         => 'Lists every callback on one action or filter hook with its priority and where it is defined (function, class method, closure with file and line). Use it to find which plugin changes a behaviour.',
 		};
@@ -344,7 +344,7 @@ final class Diagnostics implements Tool {
 			$problems[] = 'The web server does not report URL rewriting; pretty URLs may return 404 (check .htaccess or the Nginx rules).';
 		}
 		if ( ! isset( $routes['/kuduy-mcp/v1/mcp'] ) ) {
-			$problems[] = 'The KUDUY MCP REST route is not registered.';
+			$problems[] = 'The KuDiagnostics REST route is not registered.';
 		}
 		return array(
 			'permalink_structure' => $structure,

@@ -14,7 +14,7 @@ use Kuduy\Mcp\Mcp\ToolError;
 use Kuduy\Mcp\Modules\Core\Content;
 
 /**
- * Custom post types and taxonomies defined through KUDUY (D22 A). Site administrators with the admin scope; every
+ * Custom post types and taxonomies defined through KuDiagnostics (D22 A). Site administrators with the admin scope; every
  * change has an undo; removing a definition keeps the content. Rewrite rules are flushed after a change so new
  * addresses work at once.
  */
@@ -50,9 +50,9 @@ final class TypeTools implements Tool, Snapshottable {
 	 */
 	public function description(): string {
 		return match ( $this->mode ) {
-			'list'  => 'Lists the custom post types and taxonomies defined through KUDUY (with their settings and number of items). Types from the theme or other plugins are listed by kuduy-post-types.',
-			'save'  => 'Defines or changes a custom post type (kind "post_type": key up to 20 characters, singular, plural, public, hierarchical, has_archive, supports, menu_icon, rewrite_slug, taxonomies) or taxonomy (kind "taxonomy": key up to 32 characters, singular, plural, object_type = post types it applies to, public, hierarchical, rewrite_slug). Shown in the editor and REST API; access works like posts. KUDUY must stay active for the type to exist. Snapshot first; undo with kuduy-snapshot-restore.',
-			default => 'Removes a content type defined through KUDUY. Its posts or terms are not deleted: they stay in the database and return if the type is defined again. Snapshot first; undo with kuduy-snapshot-restore.',
+			'list'  => 'Lists the custom post types and taxonomies defined through KuDiagnostics (with their settings and number of items). Types from the theme or other plugins are listed by kuduy-post-types.',
+			'save'  => 'Defines or changes a custom post type (kind "post_type": key up to 20 characters, singular, plural, public, hierarchical, has_archive, supports, menu_icon, rewrite_slug, taxonomies) or taxonomy (kind "taxonomy": key up to 32 characters, singular, plural, object_type = post types it applies to, public, hierarchical, rewrite_slug). Shown in the editor and REST API; access works like posts. KuDiagnostics must stay active for the type to exist. Snapshot first; undo with kuduy-snapshot-restore.',
+			default => 'Removes a content type defined through KuDiagnostics. Its posts or terms are not deleted: they stay in the database and return if the type is defined again. Snapshot first; undo with kuduy-snapshot-restore.',
 		};
 	}
 
@@ -228,7 +228,7 @@ final class TypeTools implements Tool, Snapshottable {
 	}
 
 	/**
-	 * Re-register KUDUY's types after a change: every key defined before or after is unregistered, then what is
+	 * Re-register KuDiagnostics's types after a change: every key defined before or after is unregistered, then what is
 	 * stored now is registered, and rewrite rules are flushed.
 	 *
 	 * @param array{post_types: array<string, mixed>, taxonomies: array<string, mixed>} $before Definitions before.
@@ -253,7 +253,7 @@ final class TypeTools implements Tool, Snapshottable {
 	 * {@inheritDoc}
 	 *
 	 * @param array<string, mixed> $input Arguments.
-	 * @throws ToolError When the key cannot be used or is not KUDUY's.
+	 * @throws ToolError When the key cannot be used or is not KuDiagnostics's.
 	 */
 	public function execute( array $input ): array {
 		if ( 'list' !== $this->mode ) {
@@ -264,7 +264,7 @@ final class TypeTools implements Tool, Snapshottable {
 			AuditLog::target( 'content_type', $key );
 			if ( 'remove' === $this->mode ) {
 				if ( ! isset( $defs[ $store ][ $key ] ) ) {
-					throw new ToolError( '"' . esc_html( $key ) . '" was not defined through KUDUY, so it cannot be removed here.' );
+					throw new ToolError( '"' . esc_html( $key ) . '" was not defined through KuDiagnostics, so it cannot be removed here.' );
 				}
 				unset( $defs[ $store ][ $key ] );
 			} else {

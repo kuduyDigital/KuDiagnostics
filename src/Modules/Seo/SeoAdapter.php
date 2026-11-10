@@ -1,6 +1,6 @@
 <?php
 /**
- * One SEO plugin behind KUDUY's normalized SEO fields.
+ * One SEO plugin behind KuDiagnostics's normalized SEO fields.
  *
  * @package Kuduy\Mcp
  */

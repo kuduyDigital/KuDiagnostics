@@ -1,6 +1,6 @@
 <?php
 /**
- * Tools → KUDUY MCP: how to connect, active connections, recent activity.
+ * Tools → KuDiagnostics: how to connect, active connections, recent activity.
  *
  * @package Kuduy\Mcp
  */
@@ -24,7 +24,7 @@ final class ConnectionsPage {
 		if ( HiddenMode::is_hidden() ) {
 			return;
 		}
-		add_management_page( 'KUDUY MCP', 'KUDUY MCP', 'read', self::SLUG, array( self::class, 'render' ) );
+		add_management_page( 'KuDiagnostics', 'KuDiagnostics', 'read', self::SLUG, array( self::class, 'render' ) );
 	}
 
 	/**
@@ -42,7 +42,7 @@ final class ConnectionsPage {
 				: __( 'That connection was not found or is not yours.', 'kuduy-mcp' );
 		}
 
-		echo '<div class="wrap"><h1>KUDUY MCP</h1>';
+		echo '<div class="wrap"><h1>KuDiagnostics</h1>';
 		if ( '' !== $notice ) {
 			echo '<div class="notice notice-info"><p>' . esc_html( $notice ) . '</p></div>';
 		}

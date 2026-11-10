@@ -16,7 +16,7 @@ use Kuduy\Mcp\Update\GitHubUpdater;
 
 /**
  * Installs come from wordpress.org by slug only. Deactivating and updating are confirm-first: without
- * confirm: true they report the impact and change nothing. KUDUY never deactivates or updates itself through MCP.
+ * confirm: true they report the impact and change nothing. KuDiagnostics never deactivates or updates itself through MCP.
  * Deleting plugins is not offered.
  */
 final class Plugins implements Tool, Snapshottable {
@@ -71,8 +71,8 @@ final class Plugins implements Tool, Snapshottable {
 			'list'       => 'Lists installed plugins: file, name, version, active, available update, required WordPress/PHP, and plugins they depend on.',
 			'install'    => 'Installs a plugin from wordpress.org by slug (never from other URLs), optionally activating it.',
 			'activate'   => 'Activates an installed plugin (by file, see kuduy-plugin-list). Undo with kuduy-snapshot-restore.',
-			'deactivate' => 'Deactivates a plugin. Confirm-first: without confirm: true it only reports the impact (plugins that depend on it, whether it runs the page builder, shop or SEO). KUDUY MCP itself cannot be deactivated here. Undo re-activates.',
-			default      => 'Updates a plugin to the version WordPress offers. Confirm-first: without confirm: true it only reports current and new version. Not undoable (files are replaced). Update KUDUY MCP itself from Dashboard > Updates.',
+			'deactivate' => 'Deactivates a plugin. Confirm-first: without confirm: true it only reports the impact (plugins that depend on it, whether it runs the page builder, shop or SEO). KuDiagnostics itself cannot be deactivated here. Undo re-activates.',
+			default      => 'Updates a plugin to the version WordPress offers. Confirm-first: without confirm: true it only reports current and new version. Not undoable (files are replaced). Update KuDiagnostics itself from Dashboard > Updates.',
 		};
 	}
 
@@ -277,7 +277,7 @@ final class Plugins implements Tool, Snapshottable {
 
 		if ( 'deactivate' === $this->mode ) {
 			if ( $self ) {
-				throw new ToolError( 'KUDUY MCP cannot deactivate itself through MCP (this connection would stop). Use the Plugins screen.' );
+				throw new ToolError( 'KuDiagnostics cannot deactivate itself through MCP (this connection would stop). Use the Plugins screen.' );
 			}
 			if ( ! is_plugin_active( $file ) ) {
 				return self::shape( $file ) + array(
@@ -301,7 +301,7 @@ final class Plugins implements Tool, Snapshottable {
 
 		// Update.
 		if ( $self ) {
-			throw new ToolError( 'Update KUDUY MCP from Dashboard > Updates (or WordPress auto-updates), not through its own connection.' );
+			throw new ToolError( 'Update KuDiagnostics from Dashboard > Updates (or WordPress auto-updates), not through its own connection.' );
 		}
 		$offer = get_site_transient( 'update_plugins' );
 		$new   = is_object( $offer ) && isset( $offer->response[ $file ] ) ? (string) $offer->response[ $file ]->new_version : '';

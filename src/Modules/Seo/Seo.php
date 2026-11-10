@@ -87,7 +87,7 @@ final class Seo {
 		if ( count( $found ) > 1 ) {
 			$names = array_map( static fn( $p ) => $p['name'] . ' ' . $p['version'], $found );
 			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- returned as JSON text, never HTML.
-			throw new ToolError( 'Several SEO plugins are active: ' . implode( ', ', $names ) . '. Each prints its own tags, so KUDUY does not change SEO data until only one is active. Nothing was changed.' );
+			throw new ToolError( 'Several SEO plugins are active: ' . implode( ', ', $names ) . '. Each prints its own tags, so KuDiagnostics does not change SEO data until only one is active. Nothing was changed.' );
 		}
 		$slug    = (string) array_key_first( $found );
 		$class   = self::PLUGINS[ $slug ][2];

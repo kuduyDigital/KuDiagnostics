@@ -32,6 +32,8 @@ final class RankMathExtrasTest extends TestCase {
 		if ( defined( 'RANK_MATH_VERSION' ) ) {
 			$modules = (array) get_option( 'rank_math_modules', array() );
 			update_option( 'rank_math_modules', array_values( array_unique( array_merge( $modules, array( 'redirections', 'rich-snippet', 'sitemap' ) ) ) ) );
+			// What Rank Math does when the module is switched on in its own screen: create the module's tables.
+			\RankMath\Installer::create_tables( array( 'redirections' ) );
 		}
 	}
 
@@ -50,7 +52,7 @@ final class RankMathExtrasTest extends TestCase {
 
 	public function test_sitemap_status(): void {
 		$status = $this->ok( 'kuduy-seo-sitemap' );
-		$this->assertSame( defined( 'RANK_MATH_VERSION' ) ? 'rank-math' : ( defined( 'WPSEO_VERSION' ) ? 'yoast' : ( defined( 'AIOSEO_VERSION' ) ? 'aioseo' : ( defined( 'SEOPRESS_VERSION' ) ? 'seopress' : 'WordPress' ) ) ), $status['plugin'] );
+		$this->assertSame( defined( 'RANK_MATH_VERSION' ) ? 'rank-math' : ( defined( 'WPSEO_VERSION' ) ? 'yoast' : ( defined( 'AIOSEO_VERSION' ) ? 'aioseo' : ( defined( 'SEOPRESS_VERSION' ) ? 'seopress' : 'core' ) ) ), $status['plugin'] );
 	}
 
 	public function test_redirects_save_undo_trash(): void {

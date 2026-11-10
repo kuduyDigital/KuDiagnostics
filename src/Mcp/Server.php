@@ -317,7 +317,7 @@ final class Server {
 	private static function server_info(): array {
 		return array(
 			'name'    => 'kuduy-mcp',
-			'title'   => 'KUDUY MCP',
+			'title'   => 'KuDiagnostics',
 			'version' => Plugin::VERSION,
 		);
 	}

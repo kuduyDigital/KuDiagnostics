@@ -17,7 +17,7 @@ use Kuduy\Mcp\Modules\Core\Packages;
  * Code tools exist only when wp-config.php defines KUDUY_MCP_ALLOW_CODE_EXEC as true; they need the separate
  * kuduy:code scope (offered only to users with manage_options and unfiltered_html / edit_plugins), and the user must
  * have edit_plugins (so DISALLOW_FILE_EDIT turns them off) and manage_options. File writes go only to plugin and
- * theme folders and the KUDUY sandbox (DevPaths::writable()), PHP must parse, files of an active plugin or theme are
+ * theme folders and the KuDiagnostics sandbox (DevPaths::writable()), PHP must parse, files of an active plugin or theme are
  * confirm-first, and every write has an undo. PHP snippets run with a time limit, output and errors captured; a fatal
  * error is written to the audit log by a shutdown handler.
  */
@@ -62,8 +62,8 @@ final class DevCode implements Tool, Snapshottable {
 	 */
 	public function description(): string {
 		return 'write' === $this->mode
-			? 'Creates or replaces a text file in a plugin folder, a theme folder or wp-content/kuduy-sandbox (root "content", path e.g. "plugins/my-plugin/my-plugin.php"). PHP files must parse. KUDUY itself, must-use plugins, WordPress core and secret files are never changed. Changing a file of an active plugin or theme can break the site, so the first call only reports it (done: false): ask the user, then call again with confirm: true. Snapshot first; undo with kuduy-snapshot-restore.'
-			: 'Runs a PHP snippet inside WordPress as your user (no opening <?php tag; use return to give back a value, echo output is captured). Time limit 30 seconds. Changes the code makes are not undone by KUDUY. Every run is in the audit log, including fatal errors.';
+			? 'Creates or replaces a text file in a plugin folder, a theme folder or wp-content/kuduy-sandbox (root "content", path e.g. "plugins/my-plugin/my-plugin.php"). PHP files must parse. KuDiagnostics itself, must-use plugins, WordPress core and secret files are never changed. Changing a file of an active plugin or theme can break the site, so the first call only reports it (done: false): ask the user, then call again with confirm: true. Snapshot first; undo with kuduy-snapshot-restore.'
+			: 'Runs a PHP snippet inside WordPress as your user (no opening <?php tag; use return to give back a value, echo output is captured). Time limit 30 seconds. Changes the code makes are not undone by KuDiagnostics. Every run is in the audit log, including fatal errors.';
 	}
 
 	/**
@@ -264,7 +264,7 @@ final class DevCode implements Tool, Snapshottable {
 			}
 			return;
 		}
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents, WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- restoring the binary-safe snapshot of a file KUDUY wrote.
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents, WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- restoring the binary-safe snapshot of a file KuDiagnostics wrote.
 		if ( false === file_put_contents( $path, (string) base64_decode( (string) $payload['content'], true ) ) ) {
 			throw new ToolError( 'The previous content could not be written back.' );
 		}

@@ -50,7 +50,7 @@ final class SeoTools implements Tool, Snapshottable {
 	 */
 	public function description(): string {
 		return match ( $this->mode ) {
-			'status' => 'Which SEO plugin the site uses (Rank Math, Yoast SEO, All in One SEO, SEOPress), its version, whether several are active (then SEO changes are refused) and which SEO fields KUDUY can change through it.',
+			'status' => 'Which SEO plugin the site uses (Rank Math, Yoast SEO, All in One SEO, SEOPress), its version, whether several are active (then SEO changes are refused) and which SEO fields KuDiagnostics can change through it.',
 			'get'    => 'Returns a post\'s SEO data through the active SEO plugin: "stored" = what was set for this post (null = not set, the plugin\'s default or template applies) and "rendered" = what the plugin outputs (title, description, canonical, robots, Open Graph, X), when the plugin lets your account read it.',
 			default  => 'Changes a post\'s SEO data through the active SEO plugin\'s own API: title, description, focus_keyword, additional_keywords, canonical, cornerstone, robots (noindex true/false/null = post type default; nofollow, noarchive, nosnippet, noimageindex), og and twitter title/description. Only the fields you send change; null clears a field so the plugin\'s default applies. Refused when several SEO plugins are active. With Rank Math, setting any robots flag replaces the global robots defaults for that post (as in its editor). Snapshot first; undo with kuduy-snapshot-restore. Check the result with kuduy-seo-get.',
 		};

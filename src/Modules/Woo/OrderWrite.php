@@ -50,7 +50,7 @@ final class OrderWrite implements Tool, Snapshottable {
 	public function description(): string {
 		return 'status' === $this->mode
 			? 'Changes a WooCommerce order\'s status (pending, processing, on-hold, completed, cancelled, failed) the way the order screen does, with an optional note. WooCommerce may email the customer and change stock: if a customer email would be sent, the first call only reports it (done: false) — ask the user, then call again with confirm: true. Refunds are not offered ("refunded" is refused). Undo with kuduy-snapshot-restore restores the previous status and sends no email, but an email already sent cannot be taken back.'
-			: 'Adds a note to a WooCommerce order. Private notes (default) are for store staff only. customer_note: true emails the note to the customer, so it is confirm-first: the first call only reports it (done: false) — ask the user, then call again with confirm: true. Notes cannot be undone through KUDUY.';
+			: 'Adds a note to a WooCommerce order. Private notes (default) are for store staff only. customer_note: true emails the note to the customer, so it is confirm-first: the first call only reports it (done: false) — ask the user, then call again with confirm: true. Notes cannot be undone through KuDiagnostics.';
 	}
 
 	/**
@@ -275,7 +275,7 @@ final class OrderWrite implements Tool, Snapshottable {
 			}
 		}
 		try {
-			$order->update_status( $to, __( 'Status put back through KUDUY MCP undo (no customer email sent).', 'kuduy-mcp' ), true );
+			$order->update_status( $to, __( 'Status put back through KuDiagnostics undo (no customer email sent).', 'kuduy-mcp' ), true );
 		} finally {
 			foreach ( $filters as $filter ) {
 				remove_filter( $filter, '__return_false', PHP_INT_MAX );
@@ -310,7 +310,7 @@ final class OrderWrite implements Tool, Snapshottable {
 	private function status( \WC_Order $order, array $input ): array {
 		$to = (string) $input['status'];
 		if ( ! in_array( $to, self::STATUSES, true ) ) {
-			throw new ToolError( 'Refunds are not offered through KUDUY MCP: setting "refunded" makes WooCommerce create a refund. Refund from the order screen in WordPress instead. Nothing was changed.' );
+			throw new ToolError( 'Refunds are not offered through KuDiagnostics: setting "refunded" makes WooCommerce create a refund. Refund from the order screen in WordPress instead. Nothing was changed.' );
 		}
 		$from = $order->get_status();
 		$out  = array(
