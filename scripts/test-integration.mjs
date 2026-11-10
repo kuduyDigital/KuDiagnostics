@@ -9,7 +9,13 @@ import { join } from 'node:path';
 import { cleanPlaygroundTemp } from './playground-temp.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
-const out = join(root, 'build', 'it');
+// KUDUY_RUN=<name> gives a run its own output folder (build/it-<name>), so several runs can go side by side.
+const runName = process.env.KUDUY_RUN ?? '';
+if (runName && !/^[a-z0-9-]{1,40}$/.test(runName)) {
+  console.error('KUDUY_RUN may only contain a-z, 0-9 and -.');
+  process.exit(1);
+}
+const out = join(root, 'build', runName ? `it-${runName}` : 'it');
 const report = join(out, 'junit.xml');
 rmSync(out, { recursive: true, force: true });
 mkdirSync(out, { recursive: true });

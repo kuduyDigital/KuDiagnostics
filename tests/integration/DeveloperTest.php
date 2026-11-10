@@ -108,6 +108,8 @@ final class DeveloperTest extends TestCase {
 		$this->assertSame( '[redacted]', $rows['kuduy_api_key'] );
 		$this->assertSame( '[redacted]', $rows['kuduy_gateway_settings']['secret_key'] );
 		$this->assertSame( 'Card', $rows['kuduy_gateway_settings']['title'] );
+		$bare = $this->ok( 'kuduy-dev-db-query', array( 'sql' => "SELECT option_value FROM {prefix}options WHERE option_name = 'kuduy_api_key'" ) )['rows'];
+		$this->assertSame( '[redacted]', $bare[0]['option_value'], 'A value selected without its name is masked.' );
 
 		for ( $i = 0; $i < 205; $i++ ) {
 			update_option( 'kuduy_cap_' . $i, (string) $i, false );
@@ -123,6 +125,10 @@ final class DeveloperTest extends TestCase {
 			'SELECT SLEEP(1)',
 			'SELECT 1 -- comment',
 			'DELETE FROM {prefix}posts',
+			// Security review 2026-11-10: ways to hide which column a secret comes from.
+			"SELECT option_value AS v FROM {prefix}options WHERE option_name = 'kuduy_api_key'",
+			"SELECT CONCAT(option_value) FROM {prefix}options WHERE option_name = 'kuduy_api_key'",
+			'SELECT ID FROM {prefix}posts UNION SELECT option_value FROM {prefix}options',
 		) as $sql ) {
 			$this->fails( 'kuduy-dev-db-query', array( 'sql' => $sql ), $sql );
 		}

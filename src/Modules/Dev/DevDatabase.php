@@ -149,6 +149,15 @@ final class DevDatabase implements Tool {
 	}
 
 	/**
+	 * Pattern for tables that hold credentials or personal data.
+	 */
+	private static function sensitive_tables(): string {
+		global $wpdb;
+		$p = preg_quote( $wpdb->prefix, '/' );
+		return '/\b' . $p . '(users|usermeta|options|postmeta|termmeta|commentmeta|sitemeta|kuduy_\w+|woocommerce_\w+|wc_\w+)\b/i';
+	}
+
+	/**
 	 * A read-only statement with {prefix} replaced, or a ToolError.
 	 *
 	 * @param string $sql Query.
@@ -170,6 +179,20 @@ final class DevDatabase implements Tool {
 		}
 		if ( preg_match( self::FORBIDDEN, $sql, $m ) ) {
 			throw new ToolError( 'The query uses "' . esc_html( strtoupper( $m[1] ) ) . '", which is not allowed in read-only queries. Nothing was run.' );
+		}
+		// Masking works on column names, so a UNION (values under another query's column names) is refused, and on
+		// tables that hold credentials or personal data the select list must be plain column names: no aliases,
+		// functions or sub-queries that would hide which column a value comes from (security review 2026-11-10).
+		if ( preg_match( '/\bunion\b/i', $sql ) ) {
+			throw new ToolError( 'UNION is not allowed in read-only queries (it hides which column a value comes from). Run the queries one by one. Nothing was run.' );
+		}
+		if ( preg_match( '/^select\b/i', $sql ) && preg_match( self::sensitive_tables(), $sql ) ) {
+			$list = (string) preg_replace( '/^select\s+(distinct\s+)?/i', '', (string) preg_split( '/\bfrom\b/i', $sql )[0] );
+			foreach ( explode( ',', $list ) as $item ) {
+				if ( ! preg_match( '/^\s*[`\w.*]+\s*$/', $item ) ) {
+					throw new ToolError( 'On users, options, user or post meta, sessions, API keys and KUDUY\'s own tables, select plain column names only (no aliases, functions or sub-queries), so secret values can be masked. Nothing was run.' );
+				}
+			}
 		}
 		if ( preg_match( '/^select\b/i', $sql ) ) {
 			$cap = self::MAX_ROWS + 1;
@@ -198,7 +221,8 @@ final class DevDatabase implements Tool {
 			if ( null === $value ) {
 				continue;
 			}
-			$secret_value_column = in_array( $column, array( 'option_value', 'meta_value' ), true ) && '' !== $name && ( Redactor::is_secret_key( $name ) || in_array( $name, array( 'session_tokens', '_application_passwords' ), true ) || str_contains( $name, 'session_tokens' ) );
+			// A value without its option name or meta key cannot be judged, so it is masked (select the name with it).
+			$secret_value_column = in_array( $column, array( 'option_value', 'meta_value' ), true ) && ( '' === $name || Redactor::is_secret_key( $name ) || in_array( $name, array( 'session_tokens', '_application_passwords' ), true ) || str_contains( $name, 'session_tokens' ) );
 			if ( in_array( strtolower( $column ), self::SECRET_COLUMNS, true ) || Redactor::is_secret_key( $column ) || $secret_value_column ) {
 				$row[ $column ] = Redactor::MASK;
 				continue;
@@ -212,7 +236,7 @@ final class DevDatabase implements Tool {
 				}
 			}
 			$row[ $column ] = is_string( $value ) ? DevText::mask( $value ) : $value;
-		}
+		}//end foreach
 		return $row;
 	}
 
