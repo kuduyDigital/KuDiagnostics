@@ -63,6 +63,7 @@ use Kuduy\Mcp\Modules\Woo\ProductWrite;
 use Kuduy\Mcp\Modules\Woo\Report;
 use Kuduy\Mcp\Modules\Woo\ReviewTools;
 use Kuduy\Mcp\Modules\Woo\StoreSettings;
+use Kuduy\Mcp\Modules\Woo\StoreSettingsWrite;
 use Kuduy\Mcp\Modules\Woo\VariationWrite;
 use Kuduy\Mcp\Modules\Woo\WooStatus;
 
@@ -175,6 +176,9 @@ final class ToolRegistry {
 		}
 		foreach ( array( 'shipping', 'tax', 'gateways' ) as $mode ) {
 			$registry->register( new StoreSettings( $mode ) );
+		}
+		foreach ( array( 'zone', 'method', 'tax', 'tax-delete' ) as $mode ) {
+			$registry->register( new StoreSettingsWrite( $mode ) );
 		}
 		$registry->register( new Report() );
 		foreach ( array( 'status', 'field-groups', 'get', 'update' ) as $mode ) {

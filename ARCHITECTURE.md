@@ -36,6 +36,7 @@ Approved 2026-11-04 (decisions D1–D6); D1 and D2 changed by user decision duri
 | D21 | Developer mode: read-only file, log and database tools for site administrators (admin scope); code tools (file write, PHP) only behind D4 (A); read tools only (B); everything behind D4 (C) (see `docs/plans/phase-7-developer.md`) | **A — built 2026-11-10 under the standing instruction; for review (please review before enabling D4 on any site)** |
 | D22 | Custom post types and taxonomies: definitions stored by KUDUY and registered on `init` (A); ACF post types (B); a generated plugin (C) (see `docs/plans/phase-7-content-types.md`) | **A — built 2026-11-10 under the standing instruction; for review** |
 | D23 | Hidden UI mode: option + Tools-page "Hide" action for administrators, recovery by option, WP-CLI or constant, nothing readable by the MCP runtime (A); also an MCP tool to toggle it (B) | **A — built 2026-11-10 with the recommended option (road-to-1.0 instruction); for review** |
+| D24 | WooCommerce shipping/tax writes: WooCommerce's own wc/v3 controllers in-process (validation + `manage_woocommerce`), admin scope, undo, tax-rate delete undone by re-creating (A); direct CRUD (B) | **A — built 2026-11-10 (road-to-1.0 instruction); for review** |
 | D17 | Visitors' personal data in entries: masked by field type, full with `include_pii` + entry-edit permission, never in audit rows (A); every value masked unless `include_pii` (B) | **Decided 2026-11-09 (user): A** |
 
 ## 3. Components

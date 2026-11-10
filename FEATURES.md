@@ -146,7 +146,7 @@ Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude cli
 | Products, variations, attributes, categories, tags, images, prices, stock | Tested (W3–W5: `kuduy-woo-status`, `kuduy-woo-product-list` / `-get` / `-create` / `-update` / `-stock` / `-trash`, `kuduy-woo-variation-list` / `-create` / `-update`; HPOS on and off, WP 6.9 + 7.1; not yet on a real host) |
 | Orders, items, status, notes (HPOS on/off) | Tested (W6–W8: `kuduy-woo-order-list` / `-get` / `-status` / `-note`; customer data masked by default, customer emails confirm-first, refunds refused; not yet on a real host) |
 | Customers, coupons, reviews | Tested (W9–W11: 5 coupon, 3 customer, 3 review tools; customer data masked, addresses kept out of audit rows; not yet on a real host) |
-| Shipping zones/methods, store settings, tax (read + safe writes) | In progress (read tested, W12: `kuduy-woo-shipping`, `kuduy-woo-tax`; writes later) |
+| Shipping zones/methods, store settings, tax (read + safe writes) | Read tested (W12). Writes implemented 2026-11-10 (D24: `kuduy-woo-shipping-zone-save`, `-shipping-method-save`, `-tax-rate-save`, `-tax-rate-delete`; W15–W17 written, run in the final round). General store settings stay read only |
 | Reports and diagnostics | Tested (W14: `kuduy-woo-report` over WooCommerce Analytics, customer data masked) |
 | Gateway secrets and customer data protected; no refunds/charges without explicit policy | Tested (W2, W6, W10, W13: secrets masked by type and name, customer data masked unless allowed, no refund or charge tool; `kuduy-woo-payment-gateways` read only, admin scope) |
 | Core post tools refuse WooCommerce objects (writes go through WooCommerce CRUD) | Tested (W1, `WooGuardsTest`, HPOS on and off) |

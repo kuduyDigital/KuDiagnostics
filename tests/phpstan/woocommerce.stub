@@ -273,6 +273,8 @@ namespace {
 	abstract class WC_Shipping_Method extends WC_Settings_API {
 		/** @var int */
 		public $instance_id = 0;
+		/** @var string */
+		public $enabled = 'yes';
 		public function get_method_title(): string {}
 		public function get_title(): string {}
 		public function is_enabled(): bool {}
@@ -305,6 +307,13 @@ namespace {
 		public static function get_tax_class_slugs(): array {}
 		/** @return array<int, object{tax_rate_id: int|string, tax_rate_country: string, tax_rate_state: string, tax_rate: string, tax_rate_name: string, tax_rate_priority: int|string, tax_rate_compound: int|string, tax_rate_shipping: int|string, postcode?: array<string>, city?: array<string>}> */
 		public static function get_rates_for_tax_class( string $tax_class ): array {}
+		/** @return array<string, mixed> */
+		public static function _get_tax_rate( int $tax_rate_id, string $output_type = ARRAY_A ): array {}
+		/**
+		 * @param array<string, mixed> $args
+		 * @return array<int, array<string, mixed>>
+		 */
+		public static function find_rates( array $args = array() ): array {}
 		/** @param array<string, mixed> $tax_rate */
 		public static function _insert_tax_rate( array $tax_rate ): int {}
 	}
