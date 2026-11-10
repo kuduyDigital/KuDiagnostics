@@ -10,7 +10,8 @@
     "smoke:mcp": "node scripts/smoke-mcp.mjs",
     "build:release": "php scripts/build-release.php",
     "check:release": "node scripts/check-release.mjs",
-    "check:update": "node scripts/check-update.mjs"
+    "check:update": "node scripts/check-update.mjs",
+    "docs:tools": "node scripts/tool-reference.mjs"
   },
   "devDependencies": {
     "@wp-playground/cli": "3.1.62"
