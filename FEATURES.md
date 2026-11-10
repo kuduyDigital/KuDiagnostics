@@ -88,7 +88,7 @@ Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude cli
 | Featured images: set/remove | Tested (`featured_media`; must be an image attachment) |
 | Post meta (protected keys blocked) | Tested (C4: `kuduy-post-meta-get`, `kuduy-post-meta-set`; `_` keys never read or written; undo) |
 | Menus and navigation (classic menus) | Tested (C8: `kuduy-menu-list`, `-get`, `-create`, `-item-add`, `-item-update`, `-item-delete`, `-assign`; undo) |
-| Block-theme navigation (`wp_navigation`) | Not started — with Site Editor and Global Styles (Phase 7) |
+| Block-theme navigation (`wp_navigation`) | Implemented 2026-11-10 (`kuduy-nav-menus`, `-nav-menu-get`, `-nav-menu-save`, `-nav-menu-trash`; links as a tree or block markup; undo; test in `SiteEditorTest`, run in the final round) |
 | Block Editor content inspect/edit | Implemented (raw block markup via get/update; no block-level tools yet) |
 | Elementor-built pages protected from content overwrite | Tested (update refuses `content` on `_elementor_edit_mode = builder`) |
 | Users and roles: inspect, create, update; capabilities | Tested (C6: `kuduy-user-list`, `kuduy-user-get`, `kuduy-user-create`, `kuduy-user-update`, `kuduy-role-list`; own-role and last-admin guards; undo) |

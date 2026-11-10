@@ -166,6 +166,61 @@ final class SiteEditorTest extends TestCase {
 		$this->assertArrayHasKey( 'theme_styles', $this->ok( 'kuduy-global-styles-get', array( 'include_theme' => true ) ) );
 	}
 
+	public function test_navigation_menus_with_undo(): void {
+		$created = $this->ok(
+			'kuduy-nav-menu-save',
+			array(
+				'title' => 'Kuduy main',
+				'items' => array(
+					array(
+						'label' => 'Home',
+						'url'   => home_url( '/' ),
+					),
+					array(
+						'label'    => 'Shop',
+						'url'      => home_url( '/shop/' ),
+						'children' => array(
+							array(
+								'label' => 'Sale',
+								'url'   => home_url( '/sale/' ),
+							),
+						),
+					),
+				),
+			)
+		);
+		$this->assertTrue( $created['created'] );
+		$this->assertSame( array( 'Home', 'Shop' ), array_column( $created['items'], 'label' ) );
+		$this->assertSame( 'Sale', $created['items'][1]['children'][0]['label'] );
+		$this->assertContains( $created['id'], array_column( $this->ok( 'kuduy-nav-menus' )['menus'], 'id' ) );
+
+		$changed = $this->ok(
+			'kuduy-nav-menu-save',
+			array(
+				'id'    => $created['id'],
+				'items' => array(
+					array(
+						'label' => 'Only',
+						'url'   => home_url( '/' ),
+					),
+				),
+			)
+		);
+		$this->assertSame( array( 'Only' ), array_column( $changed['items'], 'label' ) );
+		$this->ok( 'kuduy-snapshot-restore', array( 'snapshot_id' => $changed['_snapshot_id'] ) );
+		$this->assertSame( array( 'Home', 'Shop' ), array_column( $this->ok( 'kuduy-nav-menu-get', array( 'id' => $created['id'] ) )['items'], 'label' ) );
+
+		$trashed = $this->ok( 'kuduy-nav-menu-trash', array( 'id' => $created['id'] ) );
+		$this->assertSame( 'trash', $trashed['status'] );
+		$this->ok( 'kuduy-snapshot-restore', array( 'snapshot_id' => $trashed['_snapshot_id'] ) );
+		$this->assertSame( 'publish', get_post_status( $created['id'] ) );
+
+		$this->fails( 'kuduy-nav-menu-save', array( 'items' => array( array( 'label' => 'x' ) ) ), 'new menu without title' );
+		$this->fails( 'kuduy-nav-menu-get', array( 'id' => (int) wp_insert_post( array( 'post_title' => 'not a menu' ) ) ), 'a post is not a menu' );
+		wp_set_current_user( self::$editor );
+		$this->fails( 'kuduy-nav-menu-trash', array( 'id' => $created['id'] ), 'editor lacks edit_theme_options' );
+	}
+
 	public function test_widgets_add_change_remove_with_undo(): void {
 		$added = $this->ok(
 			'kuduy-widget-save',

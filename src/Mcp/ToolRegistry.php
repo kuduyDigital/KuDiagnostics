@@ -37,6 +37,7 @@ use Kuduy\Mcp\Jobs\JobTools;
 use Kuduy\Mcp\Modules\Acf\AcfTools;
 use Kuduy\Mcp\Modules\Blocks\BlockTools;
 use Kuduy\Mcp\Modules\Blocks\GlobalStyles;
+use Kuduy\Mcp\Modules\Blocks\NavigationTools;
 use Kuduy\Mcp\Modules\Blocks\TemplateTools;
 use Kuduy\Mcp\Modules\Blocks\WidgetTools;
 use Kuduy\Mcp\Modules\Cache\CacheTools;
@@ -199,6 +200,9 @@ final class ToolRegistry {
 		}
 		foreach ( array( 'list', 'save', 'remove' ) as $mode ) {
 			$registry->register( new WidgetTools( $mode ) );
+		}
+		foreach ( array( 'list', 'get', 'save', 'trash' ) as $mode ) {
+			$registry->register( new NavigationTools( $mode ) );
 		}
 		foreach ( array( 'status', 'purge' ) as $mode ) {
 			$registry->register( new CacheTools( $mode ) );

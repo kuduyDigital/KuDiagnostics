@@ -27,7 +27,9 @@ Exit gate (`ROADMAP.md`, Site Editor part): templates, template parts, Global St
 | 10 | `kuduy-widget-save`: add a block widget or change a widget's content/settings or area (raw instances only, as core allows) | write | `edit_theme_options` | previous instance and area restored; an added widget is moved to inactive widgets |
 | 11 | `kuduy-widget-remove`: move a widget to "Inactive widgets" (never deleted) | write | `edit_theme_options` | moved back to its area and position |
 
-Not offered: permanent deletes (`force`), theme file edits, block navigation menus (`wp_navigation`; classic menus already have tools), style variations, font library.
+Added 2026-11-10 (road to 1.0): block navigation menus — `kuduy-nav-menus`, `kuduy-nav-menu-get`, `kuduy-nav-menu-save` (title + a list of links with optional submenus, or block markup), `kuduy-nav-menu-trash`, through core's `wp/v2/navigation` route (`edit_theme_options`), with undo.
+
+Not offered: permanent deletes (`force`), theme file edits, style variations, font library.
 
 Availability: 3–6 need a block theme; 9–11 need registered widget areas; each tool says which when it is not available.
 
