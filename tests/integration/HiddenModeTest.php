@@ -97,8 +97,8 @@ final class HiddenModeTest extends TestCase {
 		$this->assertArrayHasKey( 'name', $this->ok( 'kuduy-site-info' ), 'Tool calls work while hidden.' );
 
 		\Kuduy\Mcp\OAuth\TokenAuth::reset();
-		$metadata = rest_get_server()->dispatch( new \WP_REST_Request( 'GET', '/kuduy-mcp/v1/oauth-authorization-server' ) );
-		$this->assertSame( 200, $metadata->get_status(), 'OAuth metadata still served.' );
+		$metadata = rest_get_server()->dispatch( new \WP_REST_Request( 'GET', '/kuduy-mcp/v1/oauth/protected-resource' ) );
+		$this->assertSame( 200, $metadata->get_status(), 'OAuth metadata still served: ' . wp_json_encode( $metadata->get_data() ) );
 
 		require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		$this->assertArrayHasKey( 'kuduy-mcp/kuduy-mcp.php', get_plugins(), 'The plugin row stays in Plugins.' );
