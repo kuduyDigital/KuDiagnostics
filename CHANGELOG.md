@@ -498,3 +498,7 @@ Format: user-facing releases first (newest on top), then the dated development h
 - Rank Math extras (`Modules/Seo/RankMathExtras`, D25 A): redirects (list, save, trash) through Rank Math's Redirection/DB classes; schema (get, save, delete) through its updateSchemas/updateMeta routes, undo by meta id incl. the rich-snippet flag; `kuduy-seo-sitemap` for Rank Math (ability), Yoast (option) and WordPress core. Test `RankMathExtrasTest`.
 - Media replace and safe rename (`Modules/Media/MediaFiles`, D26 A): `kuduy-media-replace` (same id and file name, same image type, https download, sizes regenerated) and `kuduy-media-rename` (original + sizes, refused while linked by URL); old files backed up to `uploads/kuduy-backups/` for undo and pruned by the cleanup job. Tests added to `MediaLibraryTest`.
 - Phase 10 docs: `docs/INSTALL.md`, `docs/CONNECT-CLAUDE.md` (states which Claude apps are verified), `docs/DEVELOPER.md`, `docs/RELEASE-CHECKLIST.md`, and `docs/TOOLS.md` generated from the registered tools by `npm run docs:tools` (`scripts/tool-reference.mjs`; 165 tools). README links them.
+
+### 2026-11-10 — O11 revoke checked with claude.ai
+
+- On staging (0.8.0) the user revoked the claude.ai connection on Tools → KUDUY MCP: the next `kuduy-site-info` call from the same chat failed with "needs you to sign in again" and claude.ai offered Reconnect; after reconnecting the call worked. Desktop, Claude Code's own sign-in and refresh after one hour remain open.

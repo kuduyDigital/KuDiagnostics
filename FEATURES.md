@@ -21,7 +21,7 @@ Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude cli
 | Output schema per tool (§14) | Tested | F13: every tool declares `outputSchema`; results validated against it |
 | Background processing / jobs | Tested | `kuduy-job-start` / `-status` / `-cancel`; Action Scheduler or WP-Cron (D9); WP-Cron ran a job unforced on Hostinger staging (2026-11-08). Results name each item (`index`, `object_id`) |
 | Real Claude clients: claude.ai | Tested | O11 — claude.ai custom connector on the user's Hostinger staging site (OAuth done by claude.ai), synced into a Claude Code desktop session: tools listed (4 on 0.1.2) and `kuduy-site-info` + `kuduy-check-update` called as user `admin`, on 0.1.2 and again on 0.2.0 (2026-11-05) |
-| Real Claude clients: Claude Desktop, Claude Code's own sign-in (CIMD), refresh after 1 h, revoke | In progress | O11 — need the user's clients and a Revoke click |
+| Real Claude clients: Claude Desktop, Claude Code's own sign-in (CIMD), refresh after 1 h, revoke | In progress | O11 — revoke **Tested** 2026-11-10 with claude.ai on staging (old connection refused, reconnect works); Desktop, Claude Code's own sign-in and refresh after 1 h still need the user's clients |
 
 ## Authentication and authorization (§12)
 
