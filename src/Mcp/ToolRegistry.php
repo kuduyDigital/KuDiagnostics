@@ -50,6 +50,8 @@ use Kuduy\Mcp\Modules\Forms\Cf7Save;
 use Kuduy\Mcp\Modules\Forms\FormEntries;
 use Kuduy\Mcp\Modules\Forms\FormsTools;
 use Kuduy\Mcp\Modules\Media\MediaFiles;
+use Kuduy\Mcp\Modules\WpBakery\WpBakeryRead;
+use Kuduy\Mcp\Modules\WpBakery\WpBakeryWrite;
 use Kuduy\Mcp\Modules\Media\MediaLibrary;
 use Kuduy\Mcp\Modules\Media\MediaTools;
 use Kuduy\Mcp\Modules\Seo\SeoAudit;
@@ -215,6 +217,12 @@ final class ToolRegistry {
 		}
 		foreach ( array( 'list', 'get', 'save', 'trash' ) as $mode ) {
 			$registry->register( new NavigationTools( $mode ) );
+		}
+		foreach ( array( 'tree', 'structure', 'content', 'elements', 'validate' ) as $mode ) {
+			$registry->register( new WpBakeryRead( $mode ) );
+		}
+		foreach ( array( 'create', 'add-row', 'add-column', 'add-element', 'update-element', 'update-row', 'update-column', 'move-element', 'duplicate-element', 'delete-element', 'replace' ) as $mode ) {
+			$registry->register( new WpBakeryWrite( $mode ) );
 		}
 		foreach ( array( 'status', 'purge' ) as $mode ) {
 			$registry->register( new CacheTools( $mode ) );

@@ -56,6 +56,7 @@ Only versions listed as **Tested** have passing evidence (see `TESTING.md`). Eve
 |---|---|---|---|
 | Elementor | 4.3.6 | **Tested** (EL1–EL7, EL11; EL10 with claude.ai on Hostinger staging, WP 7.1.4, 2026-11-05) | CI: WP 7.1 / PHP 8.3 |
 | Elementor | 3.35.9 (latest 3.x) | **Tested** (EL1–EL7; v4 tools report unavailable) | CI: WP 6.9 / PHP 8.1 |
+| WPBakery Page Builder | none (paid; no licensed copy) | **Built, not verified against the plugin** (WB1–WB12 against a stand-in registry, 2026-11-10; WB13 open) | CI: both pairs with `KUDUY_FAKES=wpbakery`; see `docs/WPBAKERY.md` |
 | Essential Addons for Elementor (lite) | 6.8.8 | **Tested** (EL9) | CI: WP 7.1 job |
 | Ultimate Addons for Elementor (header-footer-elementor) | 2.9.6 | **Tested** (EL9) | CI: WP 7.1 job |
 | Premium Addons for Elementor | 4.11.117 | **Tested** (EL9) | CI: WP 7.1 job |

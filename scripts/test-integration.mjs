@@ -46,6 +46,17 @@ const steps = [{ step: 'defineWpConfigConsts', consts: {
   ...(process.env.KUDUY_CODE_EXEC === '1' ? { KUDUY_MCP_ALLOW_CODE_EXEC: true } : {}),
 } }];
 if (elementor !== 'none') steps.push(install('elementor', elementor));
+// KUDUY_FAKES=gravity,… loads test stand-ins for paid plugins (tests/integration/fakes/<name>.php) as must-use
+// plugins, so KuDiagnostics' side of their documented API is tested without a licensed copy.
+const fakes = (process.env.KUDUY_FAKES ?? '').split(',').map((s) => s.trim()).filter(Boolean);
+if (fakes.length) steps.push({ step: 'mkdir', path: '/wordpress/wp-content/mu-plugins' });
+for (const fake of fakes) {
+  if (!/^[a-z0-9-]+$/.test(fake) || !existsSync(join(root, 'tests', 'integration', 'fakes', `${fake}.php`))) {
+    console.error(`KUDUY_FAKES entry "${fake}" must name a file in tests/integration/fakes/.`);
+    process.exit(1);
+  }
+  steps.push({ step: 'writeFile', path: `/wordpress/wp-content/mu-plugins/kuduy-fake-${fake}.php`, data: `<?php require '/wordpress/wp-content/plugins/kuduy-mcp/tests/integration/fakes/${fake}.php';` });
+}
 // KUDUY_PLUGINS=slug@version,… installs more wordpress.org plugins after Elementor (e.g. Elementor add-ons).
 for (const entry of (process.env.KUDUY_PLUGINS ?? '').split(',').map((s) => s.trim()).filter(Boolean)) {
   const [slug, version] = entry.split('@');

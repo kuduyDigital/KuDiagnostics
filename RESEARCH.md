@@ -332,6 +332,16 @@ Source read 2026-11-10 from the wordpress.org ZIP of **Polylang 3.9.2** (WordPre
 
 **Still UNVERIFIED (forms):** everything about Gravity Forms beyond the docs, WPForms Pro entries, Elementor Pro form submissions, Fluent Forms Pro, CF7 add-on properties, Akismet behaviour in tests.
 
+## 10f. WPBakery Page Builder (D29, 2026-11-10)
+
+Paid plugin (CodeCanyon / wpbakery.com); **no source was read**. Facts below come from the public knowledge base (kb.wpbakery.com, read 2026-11-10: `vc_map()` and its params array, the parameter pages for `dropdown`, `css_editor` and `textarea_html`, the hooks `vc_before_mapping` / `vc_after_mapping`, `vc_lean_map()`), from WordPress core's shortcode parser (`wp-includes/shortcodes.php`, 7.1.4) and from long-standing, widely documented behaviour. Everything about the plugin itself is **UNVERIFIED** until tested against a licensed copy.
+
+- **Storage:** the layout is shortcode text in `post_content`: `vc_row` > `vc_column` > elements; a row inside a column is `vc_row_inner` > `vc_column_inner`; `vc_section` can wrap rows. Post meta `_wpb_vc_js_status` = `true` marks a page as edited with WPBakery; `_wpb_shortcodes_custom_css` holds the CSS of all Design Options on the page (UNVERIFIED names; relied on by themes and add-ons for years).
+- **Why `_inner` exists (verified in core):** `get_shortcode_regex()` pairs an opening tag with the first following closing tag of the same name and ends a tag at the first `]`, so a shortcode cannot nest inside itself and an attribute value cannot contain `]`.
+- **Attribute encoding (UNVERIFIED):** WPBakery stores `"` as two backticks and `[` `]` as backtick-brace sequences inside attribute values. Links (`vc_link`) are `url:…|title:…|target:…|rel:…` with URL-encoded parts; repeating groups (`param_group`) are URL-encoded JSON; Raw HTML / Raw JS content is `base64( rawurlencode( html ) )`; Design Options (`css_editor`) are a `css=".vc_custom_<number>{…}"` attribute whose class WPBakery adds to the element; column widths are `width="1/2"`, responsive settings are classes in `offset` (`vc_col-md-6`, `vc_hidden-xs`).
+- **Element registry:** `vc_map( array( 'name', 'base', 'category', 'description', 'params' => array( array( 'type', 'heading', 'param_name', 'value', 'description', 'group', 'dependency', … ) ), 'is_container', 'as_parent', 'as_child', 'content_element' ) )`. The setting whose `param_name` is `content` (type `textarea_html`) holds the shortcode content; only one per element (kb). Dropdown options are the `value` array (label => value). The knowledge base documents no "required" flag. Registered elements are read with `WPBMap::getAllShortCodes()`; mapping can be lazy, and `WPBMap::addAllMappedShortcodes()` is what themes call when shortcodes are missing in AJAX requests (UNVERIFIED signatures; the calls are wrapped so a missing method cannot break a request).
+- **Not used:** WPBakery's own save handler, its frontend editor AJAX, templates and presets.
+
 ## 11. Licensing and dependencies
 
 | Component | License (verified) | Use in KUDUY |
@@ -350,6 +360,7 @@ KUDUY MCP is GPL-2.0-or-later, written from public specifications and documented
 
 | Item | Phase |
 |---|---|
+| WPBakery Page Builder against a licensed copy: `WPBMap` on current versions, attribute encodings, page meta, how its editor opens pages saved by KuDiagnostics | D29 (§10f) |
 | Which MCP revision each Claude surface sends today; real sign-in from claude.ai, Desktop and Claude Code | 3 (O11) |
 | Elementor Pro Theme Builder / custom CSS, add-on schemas, v3 → v4 migration, Elementor 3.x behaviour | 5 |
 | SEO plugin APIs and rendered output | 6 — APIs read (§9); in-process `<head>`, Pro/Premium, schema/redirect writes still to check |

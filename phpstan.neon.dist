@@ -12,8 +12,13 @@ parameters:
     - tests/phpstan/woocommerce.stub
     - tests/phpstan/acf.stub
     - tests/phpstan/forms.stub
+    # Stand-ins for paid plugins (WPBakery): their names, not ours, so they are scanned but not analysed.
+    - tests/integration/fakes/wpbakery.php
   paths:
     - kuduy-mcp.php
     - uninstall.php
     - src
     - tests
+  excludePaths:
+    analyse:
+      - tests/integration/fakes

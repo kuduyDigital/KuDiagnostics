@@ -4,6 +4,16 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 ## Unreleased
 
+## 1.1.0 — 2026-11-10
+
+**WPBakery Page Builder (16 new tools, 181 in all), shown only while WPBakery is active.** WPBakery is a paid plugin and no licensed copy was available: the tools are tested against real WordPress with a stand-in for WPBakery's element list, and are **not yet verified against WPBakery itself**. Try them on a staging site first. Guide: `docs/WPBAKERY.md`.
+
+- Added: reading — `kuduy-wpbakery-tree` (the layout as a tree with ids), `kuduy-wpbakery-structure` (every row, column and element with settings and content), `kuduy-wpbakery-content` (the raw shortcodes), `kuduy-wpbakery-elements` (the elements registered on the site, including the theme's and add-ons', with their settings) and `kuduy-wpbakery-validate` (checks a page or shortcode text without saving).
+- Added: building — `kuduy-wpbakery-create` (a new page from rows or shortcodes, draft by default), `kuduy-wpbakery-add-row` (layouts such as 1/2 + 1/2 or 1/3 + 2/3, inner rows inside columns), `kuduy-wpbakery-add-column`, `kuduy-wpbakery-add-element`.
+- Added: editing — `kuduy-wpbakery-update-element`, `-update-row`, `-update-column`, `-move-element`, `-duplicate-element`, `-delete-element` and `kuduy-wpbakery-replace`. Only the addressed element is rewritten; everything else on the page, including shortcodes of other plugins and unknown ones, keeps its exact text. Backgrounds, padding, margins and borders are set through `design`; column widths per screen size through `responsive`.
+- Every change is checked first (a layout that would break is not saved) and can be undone with `kuduy-snapshot-restore`. Adding a Raw HTML or Raw JS element needs WordPress's unfiltered-HTML permission. A page someone else has open in the editor is not overwritten unless asked.
+- Changed: `kuduy-post-update` no longer overwrites the content of a page built with WPBakery (while WPBakery is active); it points to the WPBakery tools. Pages built with Elementor are refused by the WPBakery tools, and Elementor's tools are unchanged.
+
 ## 1.0.0 — 2026-11-10
 
 **First stable release (21 new tools, 165 in all).** The plugin is now called **KuDiagnostics**; the folder, tool names, connector URL and settings are unchanged, so existing Claude connections keep working.
@@ -521,3 +531,11 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 - Test round: 26 combinations (WP 6.9 + 7.1; base, Elementor 3.x, add-ons, the four SEO plugins and their conflict, WooCommerce HPOS on/off, ACF, forms, cache, Polylang, code tools). Fixed from it: `kuduy-dev-php` left its 30 s time limit on the request (now restored); Rank Math redirect sources read back as empty (DB class returns arrays); tests: Rank Math tables created as its Modules screen does, the sitemap value renamed to `core` (an auto-fixer had changed the expected text), hidden-mode test asked for a non-existent route. Two crashes came from running three Playground sites at once and did not repeat one at a time.
 - Security (Phase 9): read-only DB query hardening (R1), `edit_css` for Global Styles CSS (R2), fuzz and load tests; review in `SECURITY.md` §4a.
+
+### 2026-11-10 — WPBakery Page Builder support (D29)
+
+- User request: full WPBakery support next to Elementor, published as soon as possible. No licensed copy available (the user confirmed paid plugins are tested later), so it was built from WPBakery's public knowledge base and WordPress core's shortcode rules and marked UNVERIFIED against the plugin (RESEARCH.md §10f).
+- `Modules/WpBakery`: `Shortcodes` (tokenizer + range parser that pairs tags like WordPress; nodes keep their original text, so unchanged pages round-trip byte for byte and an edit rewrites one tag), `Layout` (ids by position, structure and tree, building rows/columns/elements from JSON, Design Options CSS, responsive offsets, stored formats for links, lists and repeating groups, validation), `WpBakery` (registry access through `WPBMap`, builder detection, post lock and hash guard, save with page meta), `WpBakeryRead` (5 tools), `WpBakeryWrite` (11 tools, snapshot + undo).
+- `PostWriter::guard_builder` also refuses content writes on WPBakery pages while WPBakery is active.
+- Tests: `WpBakeryParserTest` (every job) and `WpBakeryTest` with a stand-in registry (`tests/integration/fakes/wpbakery.php`, runner option `KUDUY_FAKES`, two new CI jobs with Elementor active). First run: 28 of 29 passed; the one failure was a wrong expectation in the test.
+- Paused, not in this release: Gravity Forms and WPForms Pro entry adapters (started the same day from their documented APIs).

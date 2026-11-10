@@ -4,6 +4,8 @@
   <file>uninstall.php</file>
   <file>src</file>
   <file>tests</file>
+  <!-- Stand-ins for paid plugins use those plugins' own names and signatures. -->
+  <exclude-pattern>tests/integration/fakes/*</exclude-pattern>
 
   <arg name="extensions" value="php"/>
   <arg value="sp"/>

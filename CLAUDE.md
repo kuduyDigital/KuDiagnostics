@@ -41,6 +41,7 @@ PHP is not on the Bash PATH by default; prefix with
 | Integration tests | `KUDUY_WP=6.9 KUDUY_PHP=8.1 node scripts/test-integration.mjs` and `KUDUY_WP=7.1 KUDUY_PHP=8.3 …` |
 | Integration with WooCommerce (HPOS `on`/`off`; 11.0.1 on 6.9, 11.2.2 on 7.1) | `KUDUY_PLUGINS=woocommerce@11.2.2 KUDUY_HPOS=off KUDUY_WP=7.1 KUDUY_PHP=8.3 node scripts/test-integration.mjs` |
 | Integration with Elementor Pro (local only, ZIP git-ignored in repo root) | `KUDUY_LOCAL_PLUGINS=elementor-pro-4.3.2.zip KUDUY_WP=7.1 KUDUY_PHP=8.3 node scripts/test-integration.mjs` (Pro needs Elementor 4.x: add `KUDUY_ELEMENTOR=4.3.6` on the 6.9 pair) |
+| Integration with a stand-in for a paid plugin (`tests/integration/fakes/<name>.php`, e.g. WPBakery) | `KUDUY_FAKES=wpbakery KUDUY_WP=7.1 KUDUY_PHP=8.3 node scripts/test-integration.mjs` |
 | Real-HTTP smoke incl. full OAuth | `node scripts/smoke-mcp.mjs` (port 9401) |
 | Release ZIP | `php scripts/build-release.php --expect-version=X.Y.Z` then `npm run check:release` |
 | Real GitHub update | `node scripts/check-update.mjs <from> <to>` |

@@ -8,6 +8,7 @@
 namespace Kuduy\Mcp\Modules\Core;
 
 use Kuduy\Mcp\Mcp\ToolError;
+use Kuduy\Mcp\Modules\WpBakery\WpBakery;
 
 /**
  * Writes go through wp_insert_post() / wp_update_post(), so core's kses (for users without unfiltered_html),
@@ -197,6 +198,9 @@ final class PostWriter {
 	public static function guard_builder( \WP_Post $post, array $input ): void {
 		if ( array_key_exists( 'content', $input ) && 'builder' === get_post_meta( $post->ID, '_elementor_edit_mode', true ) ) {
 			throw new ToolError( 'This post is built with Elementor; its layout is not stored in the content field. Change other fields here; Elementor editing comes with the Elementor tools.' );
+		}
+		if ( array_key_exists( 'content', $input ) && true === WpBakery::available() && 'wpbakery' === WpBakery::builder( $post ) ) {
+			throw new ToolError( 'This post is built with WPBakery Page Builder; its content is a layout of shortcodes. Change other fields here, and the layout with the kuduy-wpbakery-* tools (kuduy-wpbakery-replace swaps the whole layout and checks it first).' );
 		}
 	}
 

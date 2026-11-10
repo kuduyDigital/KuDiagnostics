@@ -121,6 +121,25 @@ Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude cli
 | Add-on widgets: JetElements | Blocked — paid plugin, not available for testing |
 | Legacy / v3 / v4 / mixed-version matrix | In progress — Elementor 3.35.9 and 4.3.6 tested (all tools; v4-only tools skip on 3.x); legacy sections/columns covered by nesting rules; v3 → v4 migration not tested |
 
+## WPBakery Page Builder — added 2026-11-10 (D29)
+
+WPBakery is a paid plugin and no licensed copy was available: everything below is tested in Playground (WP 6.9.11 + 7.1.4) with a stand-in for WPBakery's element registry, and is **not yet verified against the real plugin**.
+
+| Feature | Status |
+|---|---|
+| Shortcode parser and serializer: nested rows/columns, several levels, self-closing tags, special characters, third-party and unknown shortcodes, byte-identical round trip | Tested (WB1–WB3: `WpBakeryParserTest`, runs in every job) |
+| Element discovery from `WPBMap` (WPBakery's, theme and add-on elements) with settings, types, defaults, options | Tested against the stand-in (WB4: `kuduy-wpbakery-elements`); **UNVERIFIED** against WPBakery |
+| Page structure, tree with ids, raw content | Tested (WB5: `kuduy-wpbakery-structure`, `-tree`, `-content`) |
+| Create a page from rows or shortcodes; Design Options CSS; responsive columns; links, images, repeating groups | Tested (WB6: `kuduy-wpbakery-create`) |
+| Add rows (incl. inner rows), columns and elements | Tested (WB7: `kuduy-wpbakery-add-row`, `-add-column`, `-add-element`) |
+| Update one element, row or column without touching the rest; undo | Tested (WB8: `kuduy-wpbakery-update-element`, `-update-row`, `-update-column`) |
+| Move, duplicate, delete with undo | Tested (WB9: `kuduy-wpbakery-move-element`, `-duplicate-element`, `-delete-element`) |
+| Replace the whole layout; validation of syntax, nesting, unknown elements, attributes, option values | Tested (WB10: `kuduy-wpbakery-replace`, `-validate`) |
+| Raw HTML/JS decoded for reading; writing needs `unfiltered_html`; permissions and invalid ids | Tested (WB11) |
+| Elementor pages refused, Elementor data untouched; `kuduy-post-update` refuses content on WPBakery pages | Tested (WB12; the Elementor suites run in the same jobs) |
+| Behaviour in WPBakery's own editor after a save; real `WPBMap` on WPBakery 7/8 | **UNVERIFIED** — needs a licensed copy or a site that has it (WB13) |
+| WPBakery templates, grid builder, presets, role settings | Not offered |
+
 ## SEO and image SEO (§7) — Phase 6
 
 | Feature | Status |

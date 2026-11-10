@@ -95,6 +95,24 @@ Automated checks (all in the integration suite, both WordPress pairs):
 
 No high findings open.
 
+## 4b. WPBakery tools (2026-11-10, D29)
+
+Reviewed while building; no licensed WPBakery was available, so this covers KuDiagnostics' code only.
+
+| Risk | Control |
+|---|---|
+| Editing someone else's page | `edit_post` per page on every tool (reads included: layouts of drafts are not public); create needs the post type's create / publish capability (`WpBakeryTest`, WB11) |
+| Stored XSS through page content | Saved with `wp_update_post()`, so WordPress's own kses filter applies to accounts without `unfiltered_html` (test: script tag removed for an author) |
+| Stored XSS through Raw HTML / Raw JS elements, whose content is base64 and invisible to kses | New or changed `vc_raw_html` / `vc_raw_js` content needs `unfiltered_html`; existing ones may be moved or kept |
+| Breaking out of an attribute or of the page CSS | Attribute values are encoded the way WPBakery stores them (no `"`, `[`, `]`); attribute names are `[A-Za-z0-9_-]`; Design Options accept only whitelisted properties with pattern-checked values (test: `red; } body {…` refused); stored page CSS has tags stripped |
+| Server-side execution | None: shortcodes are parsed as text and never run; nothing from the input is evaluated |
+| Overwriting another editor's work | WordPress post lock respected unless `ignore_lock`; optional `if_hash` refuses when the content changed |
+| Destroying a layout | Validation before every save (structure errors are never saved); snapshot of content and WPBakery page meta for undo; WordPress revision |
+| Cross-builder damage | Elementor-built pages refused by every WPBakery write; `kuduy-post-update` refuses content on WPBakery pages |
+| Resource use | 1 MB content limit, 2,000 elements and 12 levels per call; closing tags found by binary search (3,200 elements < 2 s in tests) |
+
+Accepted: element ids are positions, so a stale id can address a different element; mitigated by the optional `tag` check, `if_hash`, and undo.
+
 ## 5. Known limitations and accepted risks
 
 - **Update authorship**: SHA-256 from the same release; no signature yet (later: Ed25519 with an embedded public key).
