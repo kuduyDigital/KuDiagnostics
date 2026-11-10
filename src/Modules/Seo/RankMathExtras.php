@@ -259,7 +259,9 @@ final class RankMathExtras implements Tool, Snapshottable {
 	 * @return array<string, mixed>
 	 */
 	private static function redirect( array $row ): array {
-		$sources = maybe_unserialize( (string) ( $row['sources'] ?? '' ) );
+		// Rank Math's DB class may hand back sources already unserialized.
+		$sources = $row['sources'] ?? '';
+		$sources = is_array( $sources ) ? $sources : maybe_unserialize( (string) $sources );
 		return array(
 			'id'          => (int) ( $row['id'] ?? 0 ),
 			'sources'     => is_array( $sources ) ? array_values( $sources ) : array(),

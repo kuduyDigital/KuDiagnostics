@@ -503,3 +503,8 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 - On staging (0.8.0) the user revoked the claude.ai connection on Tools → KUDUY MCP: the next `kuduy-site-info` call from the same chat failed with "needs you to sign in again" and claude.ai offered Reconnect; after reconnecting the call worked. Desktop, Claude Code's own sign-in and refresh after one hour remain open.
 - Renamed (display name, user's decision D27): the plugin is now called **KuDiagnostics** in Plugins, Tools → KuDiagnostics, notices, the MCP server title, the OAuth resource name, the updater details and the docs. The internal slug `kuduy-mcp`, tool names, connector URL, options and constants are unchanged, so installed sites keep updating and Claude connections keep working.
+
+### 2026-11-10 — Road to 1.0: full test round, fixes, security review
+
+- Test round: 26 combinations (WP 6.9 + 7.1; base, Elementor 3.x, add-ons, the four SEO plugins and their conflict, WooCommerce HPOS on/off, ACF, forms, cache, Polylang, code tools). Fixed from it: `kuduy-dev-php` left its 30 s time limit on the request (now restored); Rank Math redirect sources read back as empty (DB class returns arrays); tests: Rank Math tables created as its Modules screen does, the sitemap value renamed to `core` (an auto-fixer had changed the expected text), hidden-mode test asked for a non-existent route. Two crashes came from running three Playground sites at once and did not repeat one at a time.
+- Security (Phase 9): read-only DB query hardening (R1), `edit_css` for Global Styles CSS (R2), fuzz and load tests; review in `SECURITY.md` §4a.

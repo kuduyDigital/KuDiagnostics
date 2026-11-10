@@ -354,6 +354,9 @@ final class DevCode implements Tool, Snapshottable {
 				return true;
 			}
 		);
+		// The snippet gets SECONDS; the request's own limit is put back afterwards (found 2026-11-10: leaving 30 s in
+		// place stopped a longer request — the test suite — that ran a snippet early on).
+		$previous_limit = (int) ini_get( 'max_execution_time' );
 		set_time_limit( self::SECONDS ); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged -- D4 time limit.
 		ob_start();
 		$ok     = true;
@@ -366,6 +369,7 @@ final class DevCode implements Tool, Snapshottable {
 			$errors[] = get_class( $e ) . ': ' . DevText::mask( $e->getMessage() ) . ' (line ' . $e->getLine() . ')';
 		}
 		$output = (string) ob_get_clean();
+		set_time_limit( $previous_limit ); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged -- restore the request's limit (0 = none).
 		restore_error_handler();
 		delete_option( $marker );
 		$encoded = json_decode( (string) wp_json_encode( $result ), true );

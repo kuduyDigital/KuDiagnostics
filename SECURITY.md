@@ -75,6 +75,26 @@ Users of v0.1.0 or v0.1.1 should update to v0.1.2.
 
 Found afterwards, fixed in **v0.2.0**: **HTTPS was not enforced** (now refused over plain HTTP outside local sites, O17), and a **fatal error** when another plugin checks the current user on `plugins_loaded` during an MCP request with a token: `rest_url()` needs `$wp_rewrite`, which does not exist yet (reproduced on WordPress 7.1.4; fixed and tested, O18).
 
+## 4a. Phase 9 review (2026-11-10, everything built after the foundation audit)
+
+Scope: Phases 4–8 and the road-to-1.0 additions — developer mode and D4 code tools, forms personal data, CF7 mail routing, Site Editor, cache, Polylang, content types, hidden mode, WooCommerce shipping/tax writes, Rank Math redirects/schema, media replace/rename. Method: code read of every new module against the threat model (section 2), plus automated checks.
+
+| # | Finding | Severity | Status |
+|---|---|---|---|
+| R1 | Read-only DB queries could hide which column a secret came from: an alias (`SELECT option_value AS v …`), a `UNION` under another query's column names, or a value selected without its `option_name`/`meta_key` — so a stored API key could reach Claude unmasked | Medium | **Fixed**: `UNION` refused; on users, options, all meta tables, sessions/API-key tables and KuDiagnostics's own tables the select list must be plain column names; `option_value`/`meta_value` without its name is masked. Tests in `DeveloperTest` |
+| R2 | Global Styles: core's REST route accepts custom CSS from users without `edit_css` (only the Site Editor screen hides the field) | Medium | **Fixed**: KuDiagnostics checks `edit_css` for any `css` key in a styles patch (`SiteEditorTest`) |
+| R3 | Polylang undo to "no language" left a language in place | Low (integrity) | **Fixed** in 0.8.1 |
+| R4 | Rank Math redirects accept external destinations and regex sources | Low | **Accepted**: Rank Math's own behaviour, admin scope + `rank_math_redirections` |
+| R6 | `kuduy-dev-php` set a 30 s time limit and never put the request's own limit back, so a longer request that ran a snippet early was cut off with a fatal error (found by the test suite crashing) | Low (availability) | **Fixed**: the previous limit is restored after the snippet |
+| R5 | `kuduy-dev-php` can do anything the PHP process can | High by nature | **Accepted with controls**: absent unless `KUDUY_MCP_ALLOW_CODE_EXEC`; `kuduy:code` scope; `edit_plugins` (off under `DISALLOW_FILE_EDIT`) + `manage_options`; time limit; every run and fatal error audited. Intended for development sites |
+
+Automated checks (all in the integration suite, both WordPress pairs):
+- **Fuzzing** (`FuzzTest`): every available tool gets schema-invalid input as an administrator (must be refused before running) and hostile, well-typed values as a subscriber (huge strings, traversal, SQL-like text, extreme numbers, deep nesting): no PHP error, stack trace or database password in any response, no HTTP 5xx.
+- **Load** (`LoadTest`, Playground on a 4-CPU laptop, 50 calls each): `tools/list` avg 6.8 ms (p95 7.9), `kuduy-site-info` avg 27.9 ms (p95 40.7), `kuduy-post-list` avg 35.7 ms (p95 55.9); peak memory 101 MB for the whole suite process.
+- **Recovery**: hidden mode recovery by option and WP-CLI (`HiddenModeTest`), undo of every new destructive tool, jobs stopping on revoke (`JobsTest`), revoke with a real client (O11, claude.ai).
+
+No high findings open.
+
 ## 5. Known limitations and accepted risks
 
 - **Update authorship**: SHA-256 from the same release; no signature yet (later: Ed25519 with an embedded public key).
@@ -88,4 +108,4 @@ Found afterwards, fixed in **v0.2.0**: **HTTPS was not enforced** (now refused o
 
 ## 6. Planned controls (later phases)
 
-Safety policy for disruptive operations (theme switch, deactivating essential plugins, Woo refunds), object-level guards per tool, file-path allow-lists and secret-file deny-list for developer mode, D4 code execution with time limit + crash marker + safe-mode boot, hidden-mode recovery that needs server or admin access, fuzzing of tool inputs (Phase 9).
+Built since: confirm-first for disruptive operations, object-level guards per tool, developer-mode path allow-lists and secret-file deny-list, D4 code execution with time limit and fatal-error audit, hidden-mode recovery, fuzzing (section 4a). Still planned: signed releases (Ed25519), an atomic rate limiter, a crash marker + safe-mode boot for files written with `kuduy-dev-file-write` (today WordPress's own recovery mode covers fatal errors in plugins).
