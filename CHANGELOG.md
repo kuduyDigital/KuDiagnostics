@@ -4,6 +4,10 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 ## Unreleased
 
+## 1.2.0 — 2026-11-13
+
+**Avada Theme and Avada Builder (20 new tools), plus an integration overview tool (202 tools in all).**
+
 - Added: **Avada Theme and Avada Builder** — 20 `kuduy-avada-*` tools, shown while Avada Builder is active. Detect what Avada a site has; list the builder's elements and their settings; read a page as a tree or in full; create pages; add containers, columns, nested columns and elements; change headings, text, images, buttons, links, backgrounds, spacing and responsive settings in place; move, duplicate and remove; replace a whole layout; set a page's custom CSS; read the Library, Layouts and Global Options (design settings only). Every change can be previewed with `dry_run`, is checked before saving, read back after, and can be undone. Library items shown on many pages need an explicit `confirm_shared`. Built from an installed Avada 7.16.4 / Builder 3.16.4, tested against a stand-in, **not yet run on an Avada site**. Guide: `docs/AVADA.md`.
 - Changed: `kuduy-post-update` no longer overwrites the content of a page built with Avada Builder (while it is active).
 - Fixed: `kuduy-dev-search` failed when `path` named a single file; it now searches that file.
