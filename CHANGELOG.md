@@ -4,6 +4,8 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 ## Unreleased
 
+## 1.2.2 — 2026-11-14
+
 - Fixed: the Avada tools no longer write setting values containing double quotes or square brackets. They were stored safely, but Avada's own editor wrote them back unescaped on its next save and broke the element; such values are now refused with a clear message (text with quotes belongs in the element's content).
 
 ## 1.2.1 — 2026-11-13
