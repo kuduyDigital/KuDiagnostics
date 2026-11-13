@@ -4,6 +4,10 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 ## Unreleased
 
+## 1.2.1 — 2026-11-13
+
+Avada tools checked on a real Avada 7.16.4 / Builder 3.16.4 site; two small fixes from that check.
+
 - Fixed: `kuduy-avada-tree` labels showed HTML entities (`&amp;`) instead of the text.
 - Changed: `kuduy-avada-global-options` returns the same first 400 design settings every time (sorted by name) on sites with more.
 
