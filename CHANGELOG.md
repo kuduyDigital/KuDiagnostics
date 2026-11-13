@@ -4,6 +4,8 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 ## Unreleased
 
+- Fixed: the Avada tools no longer write setting values containing double quotes or square brackets. They were stored safely, but Avada's own editor wrote them back unescaped on its next save and broke the element; such values are now refused with a clear message (text with quotes belongs in the element's content).
+
 ## 1.2.1 — 2026-11-13
 
 Avada tools checked on a real Avada 7.16.4 / Builder 3.16.4 site; two small fixes from that check.
@@ -575,3 +577,7 @@ Avada tools checked on a real Avada 7.16.4 / Builder 3.16.4 site; two small fixe
 ### 2026-11-13 — Avada checked on a real site (AV11)
 
 - On the Hostinger staging site with real Avada 7.16.4 / Builder 3.16.4 / Core 5.16.3 and KuDiagnostics 1.2.0, through a local test client signed in with OAuth (the owner approved it): detection, element discovery (181 elements), Global Options, a test page created from the fixture, its rendering and Avada's own builder opening it, every edit tool with verification, undo back to the exact original, and the overwrite guard. The test page was trashed and the sign-in revoked. Avada Builder is now **full** in the integration catalogue. Two small fixes from the run: tree labels decoded, Global Options cap made stable.
+
+### 2026-11-14 — Third Avada check on staging
+
+- WooCommerce Avada elements (40 discovered, product grid rendered by Avada), Layout sections (create, list, shared guard), Avada's front-end Live Builder opening an edited page, and a re-save from Avada's backend builder. The re-save kept the structure but turned `&quot;` / `&#91;` in a setting back into raw characters and broke that element: KuDiagnostics now refuses `"`, `[` and `]` in Avada setting values (`AvadaParserTest::test_quotes_and_brackets_in_settings_are_refused`). Test items trashed, sign-in revoked.

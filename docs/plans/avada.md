@@ -30,7 +30,7 @@ Source: a live site connected to this session, read with KuDiagnostics' own read
 | Some attributes hold base64 JSON (`logics`, `dynamic_params`, `track_tags`, `alternate_post_cards`) | element sources |
 | Global Options: option `fusion_options` | `class-awb-widget-framework.php` |
 
-**UNVERIFIED** (not found in source yet): how Avada's editor escapes `"`, `[` and `]` inside an attribute value (KuDiagnostics writes HTML entities `&quot;`, `&#91;`, `&#93;`); whether Avada's editor opens hand-written minimal shortcodes without rewriting them (it fills defaults when it next saves); which `element_category` terms mark global items.
+**Checked on staging 2026-11-14:** Avada's backend builder writes attribute values back raw on save, so HTML entities for `"`, `[`, `]` do not survive; KuDiagnostics now refuses those characters in settings. Minimal hand-written shortcodes open in both of Avada's editors and are kept on re-save (Avada adds its defaults). **UNVERIFIED:** which `element_category` terms mark global items.
 
 ## 3. Tools (consolidated to the project's naming; the brief's list maps onto them)
 

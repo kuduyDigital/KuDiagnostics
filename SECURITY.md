@@ -119,7 +119,7 @@ Accepted: element ids are positions, so a stale id can address a different eleme
 |---|---|
 | Editing someone else's page | `edit_post` per page on every tool, reads included; Global Options need `edit_theme_options` |
 | One change landing on many pages | Library items (`fusion_element`, `fusion_template`) and Layout sections need `confirm_shared: true`; the refusal counts the pages using a global element. Layout conditions, Global Options and element on/off are not changed |
-| Breaking out of an attribute | Values written with `"`, `[`, `]` as HTML entities; setting names `[A-Za-z0-9_-]`; base64 settings re-encoded from JSON |
+| Breaking out of an attribute | Values with `"`, `[` or `]` are refused (HTML entities did not survive a re-save in Avada's own editor, 2026-11-14); setting names `[A-Za-z0-9_-]`; base64 settings re-encoded from JSON |
 | Stored XSS through content | Saved with `wp_update_post()`, so WordPress's content filter applies to accounts without `unfiltered_html`; the read-back reports when it changed something (`verified: false`). Page CSS has tags and script blocks stripped |
 | Secrets in Global Options | Only design-related keys are returned; keys naming keys, secrets, tokens, passwords, API, captcha, licence or purchase codes are always left out; the redactor runs on top |
 | Overwriting another editor's work | Post lock respected unless `ignore_lock`; `if_hash`; `tag` check on the addressed item |

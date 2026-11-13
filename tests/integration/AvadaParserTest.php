@@ -71,14 +71,26 @@ final class AvadaParserTest extends TestCase {
 		$page  = self::page();
 		$nodes = self::parse( $page );
 		$title = $nodes[0]['children'][0]['children'][0]['children'][0];
-		$nodes[0]['children'][0]['children'][0]['children'][0] = AvadaLayout::with_atts( $title, AvadaLayout::atts_from_input( array( 'attrs' => array( 'size' => '3', 'class' => 'Say "hi" [now]' ) ) ) ); // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound -- two settings.
+		$nodes[0]['children'][0]['children'][0]['children'][0] = AvadaLayout::with_atts( $title, AvadaLayout::atts_from_input( array( 'attrs' => array( 'size' => '3', 'class' => 'Say “hi” it’s' ) ) ) ); // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound -- two settings.
 		$after = Shortcodes::serialize( $nodes );
 		$this->assertStringContainsString( 'size="3"', $after );
-		$this->assertStringContainsString( 'class="Say &quot;hi&quot; &#91;now&#93;"', $after, 'Quotes and brackets cannot break the tag.' );
-		$this->assertSame( strlen( $page ) - strlen( 'size="5"' ) + strlen( 'size="3"' ) + strlen( ' class="Say &quot;hi&quot; &#91;now&#93;"' ), strlen( $after ), 'Nothing else changed.' );
+		$this->assertSame( strlen( $page ) - strlen( 'size="5"' ) + strlen( 'size="3"' ) + strlen( ' class="Say “hi” it’s"' ), strlen( $after ), 'Nothing else changed.' );
 		$column                                 = $nodes[0]['children'][0]['children'][0];
 		$nodes[0]['children'][0]['children'][0] = AvadaLayout::with_atts( $column, AvadaLayout::atts_from_input( array( 'width' => '1/3' ) ) );
 		$this->assertStringContainsString( '[fusion_builder_column type="1_3" type="1_3" layout="1_3" align_self="auto"', Shortcodes::serialize( $nodes ), 'A duplicated attribute changes everywhere, in place.' );
+	}
+
+	public function test_quotes_and_brackets_in_settings_are_refused(): void {
+		// Avada's editor writes attribute values back raw; a quote or bracket would break the page on its next save.
+		foreach ( array( 'Say "hi"', 'list [1]', 'x]' ) as $value ) {
+			try {
+				AvadaLayout::atts_from_input( array( 'attrs' => array( 'class' => $value ) ) );
+				$this->fail( 'Refused: ' . $value );
+			} catch ( \Kuduy\Mcp\Mcp\ToolError $e ) {
+				$this->assertStringContainsString( 'double quotes or square brackets', $e->getMessage() );
+			}
+		}
+		$this->assertSame( array( 'logics' => base64_encode( '[]' ) ), AvadaLayout::atts_from_input( array( 'attrs' => array( 'logics' => array() ) ) ), 'base64 JSON settings may hold brackets.' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- expected value.
 	}
 
 	public function test_widths(): void {

@@ -71,7 +71,7 @@ From the original wish list, `get_element_defaults` is part of `kuduy-avada-elem
 - `attrs` are the element's settings by name, as listed by `kuduy-avada-elements` with `tag`. `null` removes a setting, so Avada uses its default.
 - `responsive`: `{"medium": {"margin_bottom": "20px"}, "small": {"type": "1_1"}}` — stored as `margin_bottom_medium`, `type_small`.
 - `content` is the element's text or HTML (the setting Avada calls `element_content`). For an image frame it is the image URL; set `image_id` too (`"123|full"`).
-- Quotes and square brackets in a value are written as HTML entities, so they cannot break the shortcode.
+- A setting value cannot contain double quotes (`"`) or square brackets: Avada's own editor writes them back unescaped when it next saves the page, which breaks it (seen on Avada 7.16.4). Such values are refused; use single or typographic quotes (“ ”), or put the text in `content`, where quotes and brackets are fine.
 - Settings Avada stores as base64 JSON (`logics`, `dynamic_params`, …) are shown decoded and can be given as objects.
 
 ## Safety
@@ -97,7 +97,8 @@ A good assistant reads the tree, looks up the element's settings, makes the chan
 
 ## Known limitations
 
-- Tested with Avada 7.16.4 / Builder 3.16.4 only (see the note at the top). The entity escaping of quotes and brackets in attribute values is KuDiagnostics' own; Avada's editor may write them differently when it next saves the page.
+- Tested with Avada 7.16.4 / Builder 3.16.4 only (see the note at the top). Also checked there: Avada's front-end Live Builder opens edited pages, and a re-save in Avada's backend builder keeps them (it adds its defaults).
+- No double quotes or square brackets in setting values (see Settings).
 - New elements are written with only the settings given; Avada fills its defaults when the page is next opened and saved in its editor.
 - Ids are positions and change after every edit.
 - Layouts larger than 1 MB are not edited.

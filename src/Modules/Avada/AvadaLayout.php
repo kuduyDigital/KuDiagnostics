@@ -91,13 +91,19 @@ final class AvadaLayout {
 	}
 
 	/**
-	 * A value as Avada stores it in an attribute: no double quotes or square brackets (they would end the
-	 * attribute or the tag), written as HTML entities. UNVERIFIED that Avada's editor uses the same entities.
+	 * A plain value checked for what Avada's editor cannot keep. Avada writes attribute values back raw when its own
+	 * editor saves a page, so a double quote or square bracket in a setting would break the shortcode on that save
+	 * (seen on Avada 7.16.4 / Builder 3.16.4, 2026-11-14: "&quot;" became a raw quote). Such values are refused.
 	 *
 	 * @param string $value Plain value.
+	 * @param string $name  Attribute (for the message).
+	 * @throws ToolError When the value has a double quote or square bracket.
 	 */
-	public static function encode( string $value ): string {
-		return str_replace( array( '"', '[', ']' ), array( '&quot;', '&#91;', '&#93;' ), $value );
+	public static function encode( string $value, string $name = '' ): string {
+		if ( false !== strpbrk( $value, '"[]' ) ) {
+			throw new ToolError( 'Setting "' . esc_html( $name ) . '" cannot contain double quotes or square brackets: Avada\'s own editor writes them back unescaped, which breaks the page the next time it is saved there. Use single quotes or typographic quotes (“ ”), or put the text in the element\'s content. Nothing was changed.' );
+		}
+		return $value;
 	}
 
 	/**
@@ -134,10 +140,10 @@ final class AvadaLayout {
 			return $value ? 'yes' : 'no';
 		}
 		if ( is_scalar( $value ) ) {
-			return self::encode( (string) $value );
+			return self::encode( (string) $value, $name );
 		}
 		if ( is_array( $value ) && array_is_list( $value ) && count( array_filter( $value, 'is_scalar' ) ) === count( $value ) ) {
-			return self::encode( implode( ',', array_map( 'strval', $value ) ) );
+			return self::encode( implode( ',', array_map( 'strval', $value ) ), $name );
 		}
 		throw new ToolError( 'Setting "' . esc_html( $name ) . '" must be text, a number, true/false or a list of values.' );
 	}
