@@ -4,6 +4,9 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 ## Unreleased
 
+- Fixed: `kuduy-avada-tree` labels showed HTML entities (`&amp;`) instead of the text.
+- Changed: `kuduy-avada-global-options` returns the same first 400 design settings every time (sorted by name) on sites with more.
+
 ## 1.2.0 — 2026-11-13
 
 **Avada Theme and Avada Builder (20 new tools), plus an integration overview tool (202 tools in all).**
@@ -564,3 +567,7 @@ Format: user-facing releases first (newest on top), then the dated development h
 - `Modules/Avada`: `Avada` (detection, registry via `awb_maybe_init_element_maps()`, builder detection, shared-item guard, save + verify, change report), `AvadaLayout` (roles, values, responsive split, widths, building containers/columns/nested columns/elements, outline, structure, validation), `AvadaRead` (8 tools), `AvadaWrite` (12 tools). Reuses the WPBakery parser and tree operations (their two id error messages made builder-neutral).
 - Tests: `AvadaParserTest` (every job), `AvadaTest` with a stand-in (`tests/integration/fakes/avada.php`) and two CI jobs. First run 7 of 10; the three failures were test expectations (an existing setting changes in place; WordPress strips whole script blocks; the Global Options tool is hidden without options).
 - Phase B forms work (Gravity Forms, WPForms Pro, Ninja Forms, Formidable) stays paused and uncommitted; its first test run never started (a run name with capitals).
+
+### 2026-11-13 — Avada checked on a real site (AV11)
+
+- On the Hostinger staging site with real Avada 7.16.4 / Builder 3.16.4 / Core 5.16.3 and KuDiagnostics 1.2.0, through a local test client signed in with OAuth (the owner approved it): detection, element discovery (181 elements), Global Options, a test page created from the fixture, its rendering and Avada's own builder opening it, every edit tool with verification, undo back to the exact original, and the overwrite guard. The test page was trashed and the sign-in revoked. Avada Builder is now **full** in the integration catalogue. Two small fixes from the run: tree labels decoded, Global Options cap made stable.

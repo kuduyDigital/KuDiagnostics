@@ -123,7 +123,7 @@ Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude cli
 
 ## Avada Theme and Avada Builder — added 2026-11-13 (D31)
 
-Format and APIs read from an installed Avada 7.16.4 / Avada Builder 3.16.4 / Avada Core 5.16.4. Tested in Playground (WP 6.9.11 + 7.1.4) against a stand-in for Avada Builder's registry; **not yet run on a site with Avada itself**. Guide: `docs/AVADA.md`.
+Format and APIs read from an installed Avada 7.16.4 / Avada Builder 3.16.4 / Avada Core 5.16.4. Tested in Playground (WP 6.9.11 + 7.1.4) against a stand-in for Avada Builder's registry, and on 2026-11-13 on a staging site with real Avada 7.16.4 / Builder 3.16.4 / Core 5.16.3 (AV11). Guide: `docs/AVADA.md`.
 
 | Feature | Status |
 |---|---|
@@ -136,7 +136,7 @@ Format and APIs read from an installed Avada 7.16.4 / Avada Builder 3.16.4 / Ava
 | Move, duplicate, delete with undo; replace with validation; page custom CSS | Tested (AV8: `kuduy-avada-move-element`, `-duplicate-element`, `-delete-element`, `-replace`, `-page-css`) |
 | Global Options (design settings only, secrets never) | Tested (AV9: `kuduy-avada-global-options`, read only) |
 | Shared Library items need `confirm_shared`; permissions; Elementor and WPBakery pages refused; `kuduy-post-update` refuses Avada layouts | Tested (AV10) |
-| Behaviour on a real Avada site (rendering, Avada's editor opening pages saved here) | **UNVERIFIED** — AV11, needs the owner's go-ahead on a staging copy |
+| Behaviour on a real Avada site (rendering, Avada's editor opening pages saved here) | Tested 2026-11-13 on staging with real Avada 7.16.4 / Builder 3.16.4 (AV11) |
 | Changing Global Options, Layout conditions, element on/off, per-page theme options | Not offered |
 
 ## WPBakery Page Builder — added 2026-11-10 (D29)

@@ -472,7 +472,10 @@ final class AvadaRead implements Tool {
 	private static function global_options(): array {
 		$all = get_option( 'fusion_options', array() );
 		$out = array();
-		foreach ( is_array( $all ) ? $all : array() as $key => $value ) {
+		$all = is_array( $all ) ? $all : array();
+		// Sorted first, so a site with more than 400 design settings always gets the same, predictable first 400.
+		ksort( $all );
+		foreach ( $all as $key => $value ) {
 			$key = (string) $key;
 			if ( preg_match( '/key|secret|token|password|passwd|api|captcha|private|license|purchase|mailchimp|hubspot|client_id/i', $key ) ) {
 				continue;

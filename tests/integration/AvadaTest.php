@@ -120,6 +120,7 @@ final class AvadaTest extends TestCase {
 		$this->assertStringContainsString( 'Title: FAQ  [0.0.0.0]', $tree['tree'] );
 		$this->assertStringContainsString( 'Global element #' . self::$global . '  [0.0.0.2]', $tree['tree'] );
 		$this->assertStringContainsString( 'Nested columns  [0.0.1.1]', $tree['tree'] );
+		$this->assertStringContainsString( 'Text Block: Left & "quoted" [1] text.  [0.0.1.1.0.0]', $tree['tree'], 'Labels show text, not HTML entities (found on a real Avada site).' );
 		$this->assertStringContainsString( 'Button: Request Quote  [1.0.0.0]', $tree['tree'] );
 
 		$structure = $this->ok( 'kuduy-avada-structure', array( 'post_id' => $id ) )['structure'];

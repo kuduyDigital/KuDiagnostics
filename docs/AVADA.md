@@ -2,7 +2,7 @@
 
 KuDiagnostics lets Claude read, build and edit pages made with **Avada Builder** (the `fusion-builder` plugin that comes with the Avada theme), next to the Elementor and WPBakery tools. The 20 tools appear only while Avada Builder is active (`kuduy-avada-status` also works with the theme alone).
 
-> **Verification status.** The page format and Avada's functions were read from an installed **Avada 7.16.4 / Avada Builder 3.16.4 / Avada Core 5.16.4** (read only). The parser, the editing tools, permissions, dry runs and undo are tested in real WordPress against a stand-in for Avada Builder's element registry, and the parser against markup with the structure of a real Avada page. **Not yet run on a site with Avada itself.** Try changes on a staging copy first, or use `dry_run: true`.
+> **Verification status.** The page format and Avada's functions were read from an installed **Avada 7.16.4 / Avada Builder 3.16.4 / Avada Core 5.16.4**. Every tool is tested in CI against a stand-in for Avada Builder's registry, and was run on **2026-11-13 on a staging site with real Avada 7.16.4 / Builder 3.16.4 / Core 5.16.3**: detection, element discovery (181 elements), creating a page, every edit, undo; the edited page rendered correctly and opened in Avada's own builder. Other Avada versions are not tested yet; on a live site, preview with `dry_run: true` first.
 
 ## Requirements
 
@@ -97,7 +97,7 @@ A good assistant reads the tree, looks up the element's settings, makes the chan
 
 ## Known limitations
 
-- **Not yet run against a real Avada site** (see the note at the top). The entity escaping of quotes and brackets in attribute values is KuDiagnostics' own; Avada's editor may write them differently when it next saves the page.
+- Tested with Avada 7.16.4 / Builder 3.16.4 only (see the note at the top). The entity escaping of quotes and brackets in attribute values is KuDiagnostics' own; Avada's editor may write them differently when it next saves the page.
 - New elements are written with only the settings given; Avada fills its defaults when the page is next opened and saved in its editor.
 - Ids are positions and change after every edit.
 - Layouts larger than 1 MB are not edited.

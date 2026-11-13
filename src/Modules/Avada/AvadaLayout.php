@@ -393,8 +393,8 @@ final class AvadaLayout {
 	 * @param string $text Text.
 	 */
 	private static function excerpt( string $text ): string {
-		$text = trim( (string) preg_replace( '/\s+/', ' ', wp_strip_all_tags( $text ) ) );
-		return strlen( $text ) > 60 ? substr( $text, 0, 57 ) . '...' : $text;
+		$text = trim( (string) preg_replace( '/\s+/', ' ', html_entity_decode( wp_strip_all_tags( $text ), ENT_QUOTES | ENT_HTML5, 'UTF-8' ) ) );
+		return mb_strlen( $text ) > 60 ? mb_substr( $text, 0, 57 ) . '...' : $text;
 	}
 
 	/**

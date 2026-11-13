@@ -54,7 +54,7 @@ final class IntegrationCatalog {
 		array( 'generatepress', 'GeneratePress', 'theme', 'theme', array( 'generatepress' ), 'detection', array(), 'free', 'D', 'Theme settings are not managed yet.' ),
 		array( 'oceanwp', 'OceanWP', 'theme', 'theme', array( 'oceanwp' ), 'detection', array(), 'free', 'D', 'Theme settings are not managed yet.' ),
 		array( 'avada', 'Avada (theme)', 'theme', 'theme', array( 'Avada' ), 'partial', array( 'kuduy-avada-status', 'kuduy-avada-global-options' ), 'paid', 'L', 'Detected with versions and child theme; Global Options readable (design settings only). Theme options are not changed.' ),
-		array( 'avada-builder', 'Avada Builder', 'builder', 'plugin', array( 'fusion-builder' ), 'partial', array( 'kuduy-avada-' ), 'paid', 'L', 'Pages, containers, columns, elements, Library and Layouts. Format and APIs read from Avada Builder 3.16.4; tested against a stand-in, not yet on a real Avada site.' ),
+		array( 'avada-builder', 'Avada Builder', 'builder', 'plugin', array( 'fusion-builder' ), 'full', array( 'kuduy-avada-' ), 'paid', 'L', 'Pages, containers, columns, elements, Library and Layouts. Tested on real Avada 7.16.4 / Builder 3.16.4 (2026-11-13). Not changed: Global Options, Layout conditions.' ),
 		array( 'voxel', 'Voxel', 'theme', 'theme', array( 'voxel' ), 'detection', array(), 'paid', 'L', 'Theme settings are not managed yet.' ),
 		array( 'mylisting', 'MyListing', 'theme', 'theme', array( 'my-listing' ), 'detection', array(), 'paid', 'L', 'Theme settings are not managed yet.' ),
 
