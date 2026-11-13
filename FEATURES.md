@@ -121,6 +121,24 @@ Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude cli
 | Add-on widgets: JetElements | Blocked — paid plugin, not available for testing |
 | Legacy / v3 / v4 / mixed-version matrix | In progress — Elementor 3.35.9 and 4.3.6 tested (all tools; v4-only tools skip on 3.x); legacy sections/columns covered by nesting rules; v3 → v4 migration not tested |
 
+## Avada Theme and Avada Builder — added 2026-11-13 (D31)
+
+Format and APIs read from an installed Avada 7.16.4 / Avada Builder 3.16.4 / Avada Core 5.16.4. Tested in Playground (WP 6.9.11 + 7.1.4) against a stand-in for Avada Builder's registry; **not yet run on a site with Avada itself**. Guide: `docs/AVADA.md`.
+
+| Feature | Status |
+|---|---|
+| Detection: theme / child theme / builder / core versions, the four combinations, post types, registered and enabled elements, Layouts, Library, Forms, WooCommerce, other builders | Tested (AV4: `kuduy-avada-status`) |
+| Parser round trip on real Avada markup: duplicated attributes, responsive attributes, nested columns, global elements, base64 settings, third-party and unknown shortcodes | Tested (AV1–AV3: `AvadaParserTest`, every job) |
+| Element discovery from `fusion_builder_map()` with settings, options, defaults, dependencies, responsive flags; third-party elements | Tested against the stand-in (AV4: `kuduy-avada-elements`) |
+| Page tree, full structure (parent ids, responsive values, unregistered settings), raw content and page CSS, Library and Layouts | Tested (AV5: `kuduy-avada-tree`, `-structure`, `-content`, `-library`) |
+| Create pages; add containers, columns, nested columns, elements, global elements | Tested (AV6: `kuduy-avada-create`, `-add-container`, `-add-column`, `-add-element`) |
+| Update element / container / column in place with responsive values; dry run with before/after report; post-save verification; undo | Tested (AV7: `kuduy-avada-update-*`) |
+| Move, duplicate, delete with undo; replace with validation; page custom CSS | Tested (AV8: `kuduy-avada-move-element`, `-duplicate-element`, `-delete-element`, `-replace`, `-page-css`) |
+| Global Options (design settings only, secrets never) | Tested (AV9: `kuduy-avada-global-options`, read only) |
+| Shared Library items need `confirm_shared`; permissions; Elementor and WPBakery pages refused; `kuduy-post-update` refuses Avada layouts | Tested (AV10) |
+| Behaviour on a real Avada site (rendering, Avada's editor opening pages saved here) | **UNVERIFIED** — AV11, needs the owner's go-ahead on a staging copy |
+| Changing Global Options, Layout conditions, element on/off, per-page theme options | Not offered |
+
 ## WPBakery Page Builder — added 2026-11-10 (D29)
 
 WPBakery is a paid plugin and no licensed copy was available: everything below is tested in Playground (WP 6.9.11 + 7.1.4) with a stand-in for WPBakery's element registry, and is **not yet verified against the real plugin**.

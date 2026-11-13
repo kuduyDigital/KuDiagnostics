@@ -99,7 +99,7 @@ final class Layout {
 	 */
 	public static function path( array $nodes, string $id ): array {
 		if ( ! preg_match( '/^\d+(\.\d+)*$/', $id ) ) {
-			throw new ToolError( 'Ids look like "0" or "0.1.2" (see kuduy-wpbakery-tree). "' . esc_html( $id ) . '" is not one.' );
+			throw new ToolError( 'Ids look like "0" or "0.1.2" (see the page tree). "' . esc_html( $id ) . '" is not one.' );
 		}
 		$path  = array();
 		$level = $nodes;
@@ -113,7 +113,7 @@ final class Layout {
 				}
 			}
 			if ( null === $found ) {
-				throw new ToolError( 'There is no item "' . esc_html( $id ) . '" in this layout. Ids change after every edit: read kuduy-wpbakery-tree again.' );
+				throw new ToolError( 'There is no item "' . esc_html( $id ) . '" in this layout. Ids change after every edit: read the page tree again.' );
 			}
 			$path[] = $found;
 			$level  = 'element' === $level[ $found ]['type'] ? $level[ $found ]['children'] : array();

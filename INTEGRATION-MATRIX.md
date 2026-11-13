@@ -39,7 +39,7 @@ One row per integration in the upgrade brief (58), plus what KuDiagnostics suppo
 | Blocksy | free 2.1.61 | Detection | same | D |
 | GeneratePress | free 3.6.1 | Detection | same | D |
 | OceanWP | free 4.2.8 | Detection | same | D |
-| Avada (+ Fusion Builder) | paid | Detection | same | L |
+| Avada (+ Avada Builder) | paid (format read from an installed 7.16.4) | **Partial** | 20 `kuduy-avada-*` tools (D31, 2026-11-13); tested against a stand-in, not yet on an Avada site | AV11 |
 | Voxel | paid | Detection | same | L |
 | MyListing | paid | Detection | same | L |
 

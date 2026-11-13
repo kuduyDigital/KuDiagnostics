@@ -309,12 +309,15 @@ final class DevFiles implements Tool {
 		$matches = array();
 		$scanned = 0;
 		$cut     = false;
-		$files   = new \RecursiveIteratorIterator(
-			new \RecursiveCallbackFilterIterator(
-				new \RecursiveDirectoryIterator( $dir, \FilesystemIterator::SKIP_DOTS ),
-				static fn( \SplFileInfo $f ) => ! DevPaths::is_secret( $f->getPathname() ) && ! in_array( $f->getFilename(), array( 'node_modules', 'vendor', 'cache', 'uploads' ), true )
-			)
-		);
+		// A path that names one file searches just that file (it used to fail: a directory iterator cannot open a file).
+		$files = is_file( $dir )
+			? ( DevPaths::is_secret( $dir ) ? array() : array( new \SplFileInfo( $dir ) ) )
+			: new \RecursiveIteratorIterator(
+				new \RecursiveCallbackFilterIterator(
+					new \RecursiveDirectoryIterator( $dir, \FilesystemIterator::SKIP_DOTS ),
+					static fn( \SplFileInfo $f ) => ! DevPaths::is_secret( $f->getPathname() ) && ! in_array( $f->getFilename(), array( 'node_modules', 'vendor', 'cache', 'uploads' ), true )
+				)
+			);
 		foreach ( $files as $file ) {
 			if ( ! $file instanceof \SplFileInfo || ! $file->isFile() || $file->getSize() > 1048576 || ! in_array( strtolower( $file->getExtension() ), self::SEARCHABLE, true ) ) {
 				continue;
@@ -338,11 +341,14 @@ final class DevFiles implements Tool {
 					);
 					if ( count( $matches ) >= self::MAX_HITS ) {
 						$cut = true;
-						break 2;
+						break;
 					}
 				}
 			}
 			fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- read-only, local.
+			if ( $cut ) {
+				break;
+			}
 		}//end foreach
 		return array(
 			'matches'   => $matches,

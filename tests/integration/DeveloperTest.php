@@ -84,6 +84,16 @@ final class DeveloperTest extends TestCase {
 			)
 		)['matches'];
 		$this->assertSame( array( self::DIR . '/sample.php' ), array_values( array_unique( array_column( $matches, 'file' ) ) ) );
+
+		// A path naming one file searches just that file (it crashed before 2026-11-13).
+		$one = $this->ok(
+			'kuduy-dev-search',
+			array(
+				'text' => 'kuduy-needle-4711',
+				'path' => self::DIR . '/sample.php',
+			)
+		)['matches'];
+		$this->assertSame( array( self::DIR . '/sample.php' ), array_values( array_unique( array_column( $one, 'file' ) ) ) );
 	}
 
 	public function test_database_schema_and_masked_queries(): void {

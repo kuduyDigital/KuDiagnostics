@@ -85,6 +85,10 @@ jobs:
           # (tests/integration/fakes/wpbakery.php); Elementor stays active to prove both builders coexist.
           - { wp: '6.9', php: '8.1', elementor: '4.3.6', plugins: '', fakes: 'wpbakery', label: '+ WPBakery (stand-in)' }
           - { wp: '7.1', php: '8.3', elementor: '4.3.6', plugins: '', fakes: 'wpbakery', label: '+ WPBakery (stand-in)' }
+          # Avada Builder (D31): paid, so the tools run against a stand-in built from Builder 3.16.4's API
+          # (tests/integration/fakes/avada.php); Elementor stays active to prove the builders coexist.
+          - { wp: '6.9', php: '8.1', elementor: '3.35.9', plugins: '', fakes: 'avada', label: '+ Avada (stand-in)' }
+          - { wp: '7.1', php: '8.3', elementor: '4.3.6', plugins: '', fakes: 'avada', label: '+ Avada (stand-in)' }
           # Developer mode with D4's constant defined (code tools on).
           - { wp: '7.1', php: '8.3', elementor: '4.3.6', plugins: '', code: '1', label: '+ code tools (D4)' }
     steps:

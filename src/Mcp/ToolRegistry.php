@@ -51,6 +51,8 @@ use Kuduy\Mcp\Modules\Forms\Cf7Save;
 use Kuduy\Mcp\Modules\Forms\FormEntries;
 use Kuduy\Mcp\Modules\Forms\FormsTools;
 use Kuduy\Mcp\Modules\Media\MediaFiles;
+use Kuduy\Mcp\Modules\Avada\AvadaRead;
+use Kuduy\Mcp\Modules\Avada\AvadaWrite;
 use Kuduy\Mcp\Modules\WpBakery\WpBakeryRead;
 use Kuduy\Mcp\Modules\WpBakery\WpBakeryWrite;
 use Kuduy\Mcp\Modules\Media\MediaLibrary;
@@ -219,6 +221,12 @@ final class ToolRegistry {
 		}
 		foreach ( array( 'list', 'get', 'save', 'trash' ) as $mode ) {
 			$registry->register( new NavigationTools( $mode ) );
+		}
+		foreach ( array( 'status', 'elements', 'tree', 'structure', 'content', 'library', 'global-options', 'validate' ) as $mode ) {
+			$registry->register( new AvadaRead( $mode ) );
+		}
+		foreach ( array( 'create', 'add-container', 'add-column', 'add-element', 'update-element', 'update-container', 'update-column', 'move-element', 'duplicate-element', 'delete-element', 'replace', 'page-css' ) as $mode ) {
+			$registry->register( new AvadaWrite( $mode ) );
 		}
 		foreach ( array( 'tree', 'structure', 'content', 'elements', 'validate' ) as $mode ) {
 			$registry->register( new WpBakeryRead( $mode ) );

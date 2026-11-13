@@ -113,6 +113,22 @@ Reviewed while building; no licensed WPBakery was available, so this covers KuDi
 
 Accepted: element ids are positions, so a stale id can address a different element; mitigated by the optional `tag` check, `if_hash`, and undo.
 
+## 4c. Avada tools (2026-11-13, D31)
+
+| Risk | Control |
+|---|---|
+| Editing someone else's page | `edit_post` per page on every tool, reads included; Global Options need `edit_theme_options` |
+| One change landing on many pages | Library items (`fusion_element`, `fusion_template`) and Layout sections need `confirm_shared: true`; the refusal counts the pages using a global element. Layout conditions, Global Options and element on/off are not changed |
+| Breaking out of an attribute | Values written with `"`, `[`, `]` as HTML entities; setting names `[A-Za-z0-9_-]`; base64 settings re-encoded from JSON |
+| Stored XSS through content | Saved with `wp_update_post()`, so WordPress's content filter applies to accounts without `unfiltered_html`; the read-back reports when it changed something (`verified: false`). Page CSS has tags and script blocks stripped |
+| Secrets in Global Options | Only design-related keys are returned; keys naming keys, secrets, tokens, passwords, API, captcha, licence or purchase codes are always left out; the redactor runs on top |
+| Overwriting another editor's work | Post lock respected unless `ignore_lock`; `if_hash`; `tag` check on the addressed item |
+| Destroying a layout | Validation before saving; dry run; snapshot of content, builder status and page CSS; WordPress revision; post-save verification |
+| Cross-builder damage | Elementor and WPBakery pages refused; `kuduy-post-update` refuses Avada layouts; Avada Layouts (`fusion_tb_layout`) refused as page content |
+| Server-side execution | None: shortcodes are parsed as text, never run |
+
+Also fixed while researching: `kuduy-dev-search` crashed when `path` named a single file (now searches that file; secret files still refused).
+
 ## 5. Known limitations and accepted risks
 
 - **Update authorship**: SHA-256 from the same release; no signature yet (later: Ed25519 with an embedded public key).

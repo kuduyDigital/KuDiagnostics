@@ -342,6 +342,10 @@ Paid plugin (CodeCanyon / wpbakery.com); **no source was read**. Facts below com
 - **Element registry:** `vc_map( array( 'name', 'base', 'category', 'description', 'params' => array( array( 'type', 'heading', 'param_name', 'value', 'description', 'group', 'dependency', … ) ), 'is_container', 'as_parent', 'as_child', 'content_element' ) )`. The setting whose `param_name` is `content` (type `textarea_html`) holds the shortcode content; only one per element (kb). Dropdown options are the `value` array (label => value). The knowledge base documents no "required" flag. Registered elements are read with `WPBMap::getAllShortCodes()`; mapping can be lazy, and `WPBMap::addAllMappedShortcodes()` is what themes call when shortcodes are missing in AJAX requests (UNVERIFIED signatures; the calls are wrapped so a missing method cannot break a request).
 - **Not used:** WPBakery's own save handler, its frontend editor AJAX, templates and presets.
 
+## 10g. Avada Theme and Avada Builder (D31, 2026-11-13)
+
+Read from an installed **Avada 7.16.4 / Avada Builder 3.16.4 / Avada Core 5.16.4** (a live site connected to the session, with KuDiagnostics' read-only developer tools; nothing changed there). The verified facts, with the files they come from, and the open UNVERIFIED items are in `docs/plans/avada.md` §2. Avada's public documentation covers the editor only, not the stored format or PHP API.
+
 ## 11. Licensing and dependencies
 
 | Component | License (verified) | Use in KUDUY |
@@ -360,6 +364,7 @@ KUDUY MCP is GPL-2.0-or-later, written from public specifications and documented
 
 | Item | Phase |
 |---|---|
+| Avada on a real site: rendering of pages saved by KuDiagnostics, how Avada's editor escapes quotes and brackets in attribute values, minimal hand-written shortcodes opened in its editor | D31 (§10g) |
 | WPBakery Page Builder against a licensed copy: `WPBMap` on current versions, attribute encodings, page meta, how its editor opens pages saved by KuDiagnostics | D29 (§10f) |
 | Which MCP revision each Claude surface sends today; real sign-in from claude.ai, Desktop and Claude Code | 3 (O11) |
 | Elementor Pro Theme Builder / custom CSS, add-on schemas, v3 → v4 migration, Elementor 3.x behaviour | 5 |

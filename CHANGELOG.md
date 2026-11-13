@@ -4,6 +4,9 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 ## Unreleased
 
+- Added: **Avada Theme and Avada Builder** — 20 `kuduy-avada-*` tools, shown while Avada Builder is active. Detect what Avada a site has; list the builder's elements and their settings; read a page as a tree or in full; create pages; add containers, columns, nested columns and elements; change headings, text, images, buttons, links, backgrounds, spacing and responsive settings in place; move, duplicate and remove; replace a whole layout; set a page's custom CSS; read the Library, Layouts and Global Options (design settings only). Every change can be previewed with `dry_run`, is checked before saving, read back after, and can be undone. Library items shown on many pages need an explicit `confirm_shared`. Built from an installed Avada 7.16.4 / Builder 3.16.4, tested against a stand-in, **not yet run on an Avada site**. Guide: `docs/AVADA.md`.
+- Changed: `kuduy-post-update` no longer overwrites the content of a page built with Avada Builder (while it is active).
+- Fixed: `kuduy-dev-search` failed when `path` named a single file; it now searches that file.
 - Added: `kuduy-integrations` — one place to ask what KuDiagnostics can do with the page builders, themes and plugins on a site: installed, active, how far each is supported (full, partial, detection only, none), which tools manage it and whether they are available now. Support levels reflect what has been tested, not what is installed.
 - Added: upgrade plan documents — `AUDIT.md`, `FEATURE-GAP.md`, `INTEGRATION-MATRIX.md`, `IMPLEMENTATION-PLAN.md`.
 
@@ -550,3 +553,10 @@ Format: user-facing releases first (newest on top), then the dated development h
 - Plan in phases B–L (`IMPLEMENTATION-PLAN.md`); paid products are built only when a licensed copy is provided. Three brief items are not planned as written: raw database updates (rule 6), permanent deletes, PHP 8.0.
 - Built: `Modules/Core/IntegrationCatalog` (67 rows) and `kuduy-integrations`; `IntegrationsTest` (IR1–IR3).
 - Still paused in the working tree: Gravity Forms and WPForms Pro entry adapters (phase B).
+
+### 2026-11-13 — Avada Theme and Avada Builder (D31)
+
+- Owner's priority: Avada before the rest of the upgrade plan. Plan and verified facts: `docs/plans/avada.md`. No Avada copy on the development machine; Avada's code and a real page were read (read only) on a live Avada 7.16.4 site connected to the session.
+- `Modules/Avada`: `Avada` (detection, registry via `awb_maybe_init_element_maps()`, builder detection, shared-item guard, save + verify, change report), `AvadaLayout` (roles, values, responsive split, widths, building containers/columns/nested columns/elements, outline, structure, validation), `AvadaRead` (8 tools), `AvadaWrite` (12 tools). Reuses the WPBakery parser and tree operations (their two id error messages made builder-neutral).
+- Tests: `AvadaParserTest` (every job), `AvadaTest` with a stand-in (`tests/integration/fakes/avada.php`) and two CI jobs. First run 7 of 10; the three failures were test expectations (an existing setting changes in place; WordPress strips whole script blocks; the Global Options tool is hidden without options).
+- Phase B forms work (Gravity Forms, WPForms Pro, Ninja Forms, Formidable) stays paused and uncommitted; its first test run never started (a run name with capitals).

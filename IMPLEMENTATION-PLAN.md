@@ -28,7 +28,7 @@ Goal: close the gaps in `FEATURE-GAP.md` without rebuilding anything that works.
 | **K. Tokens and translation** | Measure `tools/list` and result sizes, calls per task; trim descriptions and add a compact listing if the numbers justify it; Weglot detection | Numbers recorded in `TESTING.md` before and after | Small–medium |
 | **L. Paid products** (each when a copy is provided) | Verify WPBakery, Gravity Forms, WPForms Pro; then Bricks, Oxygen 6, Divi 5, Breakdance, Etch, Mosaic, Avada, Voxel, MyListing, JetEngine, JetElements, Dynamic Content for Elementor, Dynamic Shortcodes, Bricksforge, WPML, ACF Pro, ASE Pro | Tested against the licensed copy | Per product |
 
-Order after A: B (already half written) → C → F → G → E → D → H → I → J → K. L runs alongside whenever a copy arrives.
+**2026-11-13:** the owner moved Avada ahead of everything (built, D31, `docs/plans/avada.md`). Order after Avada: B (already half written) → C → F → G → E → D → H → I → J → K. L runs alongside whenever a copy arrives.
 
 ## Decisions to make along the way (recommended option first, marked for review like D18–D29)
 
