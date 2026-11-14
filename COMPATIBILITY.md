@@ -76,8 +76,10 @@ Only versions listed as **Tested** have passing evidence (see `TESTING.md`). Eve
 | Advanced Custom Fields (free) | 6.8.11 | **Tested** in Playground (A1–A6, WP 6.9.11 + 7.1.4) and 2026-11-09 on Hostinger staging (KUDUY 0.7.0, WP 7.1.4, claude.ai web): 7 / 7 steps | CI: WP 6.9 + 7.1. ACF PRO not tested |
 | Contact Form 7 + Flamingo | 6.2.4.1 (WP 7.1) / 6.1.7 (WP 6.9); Flamingo 2.6.4 | **Tested** in Playground 2026-11-10 (WP 6.9.11 + 7.1.4): F1–F7; Hostinger staging with claude.ai 2026-11-10 | CI: forms job. CF7 6.2 needs WP 7.1 + PHP 8.3 |
 | Fluent Forms (free) | 6.2.17 | **Tested** in Playground 2026-11-10 (WP 6.9.11 + 7.1.4): F1–F5, F7; Hostinger staging with claude.ai 2026-11-10 | Fluent Pro not tested |
-| WPForms Lite | 2.0.4 | **Tested** in Playground 2026-11-10 (WP 6.9.11 + 7.1.4): forms only (Lite stores no entries) | WPForms Pro entries not supported |
-| Gravity Forms | — | **Not supported** (paid; needs a licensed copy to test) | |
+| WPForms Lite | 2.0.4 | **Tested** in Playground 2026-11-10 (WP 6.9.11 + 7.1.4): forms only (Lite stores no entries) | WPForms Pro entries: built, tested 2026-11-14 against a stand-in only (F11); **not verified** against Pro |
+| Gravity Forms | — | **Not verified** — built from the documentation, tested 2026-11-14 against a stand-in only (F10) | Paid; needs a licensed copy |
+| Ninja Forms | 3.16.1 | **Tested** in Playground 2026-11-14 (WP 6.9 + 7.1): F8 | CI: Ninja Forms + Formidable job |
+| Formidable Forms (free) | 7.0 | **Tested** in Playground 2026-11-14 (WP 6.9 + 7.1): F9; entries read only | Formidable Pro not tested |
 | LiteSpeed Cache | 7.9.3 | **Tested** in Playground 2026-11-10 (WP 6.9.11 + 7.1.4): C1–C3; Hostinger staging (LiteSpeed server) 2026-11-10 | W3 Total Cache 2.11.0, WP Super Cache 3.1.5, WP Fastest Cache 1.5.5: API read, not run; WP Rocket: docs only |
 | Polylang (free) | 3.9.2 | **Tested** in Playground 2026-11-10 (WP 6.9.11 + 7.1.4): L1–L4; Hostinger staging 2026-11-10 (undo-to-no-language bug found and fixed) | WPML not supported |
 | Block themes (Site Editor) | Twenty Twenty-Five | **Tested** in Playground 2026-11-10 (WP 6.9.11 + 7.1.4): S1–S5 | Hybrid/classic themes with widget areas: widgets tested with a registered test area |

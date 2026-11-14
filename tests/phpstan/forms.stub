@@ -1,6 +1,6 @@
 <?php
 /**
- * Forms plugins are not dependencies; this declares only the Contact Form 7, Flamingo, Fluent Forms and WPForms API
+ * Forms plugins are not dependencies; this declares only the Contact Form 7, Flamingo, Fluent Forms, WPForms, Ninja Forms and Formidable Forms API
  * KUDUY and its tests call (RESEARCH.md §10b).
  */
 
@@ -193,6 +193,89 @@ namespace FluentForm\App\Services\Submission {
 		 * @return array<string, mixed>
 		 */
 		public function storeNote( int $submissionId, $attributes = array() ): array {}
+	}
+}
+
+namespace {
+	// Ninja Forms 3.16.1 and Formidable Forms 7.0 (RESEARCH.md §10b): only what KUDUY and its tests call.
+	/** @return object Ninja Forms' main instance; form( $id ) returns its model factory. */
+	function Ninja_Forms() {}
+	class Ninja_Forms {
+		const VERSION = '3.16.1';
+	}
+
+	class FrmAppHelper {
+		public static function plugin_version(): string {}
+		/** @param string|array<int, string> $role */
+		public static function current_user_can( $role ): bool {}
+	}
+	class FrmAppController {
+		public static function install(): void {}
+	}
+	class FrmForm {
+		/**
+		 * @param array<string, mixed>|string $where
+		 * @return array<int, object>|object|null
+		 */
+		public static function getAll( $where = array(), string $order_by = '', $limit = '' ) {}
+		/**
+		 * @param int|string $id
+		 * @return object|null
+		 */
+		public static function getOne( $id, $blog_id = false ) {}
+		/**
+		 * @param array<string, mixed> $values
+		 * @return int|false
+		 */
+		public static function create( $values ) {}
+	}
+	class FrmField {
+		/**
+		 * @param int|string $form_id
+		 * @return array<int, mixed>
+		 */
+		public static function get_all_for_form( $form_id, $limit = '', string $inc_embed = 'exclude', string $inc_repeat = 'include' ): array {}
+		/**
+		 * @param array<string, mixed> $values
+		 * @return int|false
+		 */
+		public static function create( $values, bool $return = true ) {}
+	}
+	class FrmFieldsHelper {
+		/**
+		 * @param int|string $form_id
+		 * @return array<string, mixed>
+		 */
+		public static function setup_new_vars( string $type = '', $form_id = '' ): array {}
+	}
+	class FrmEntry {
+		/**
+		 * @param array<string, mixed>|string $where
+		 * @return array<int, mixed>
+		 */
+		public static function getAll( $where, string $order_by = '', string $limit = '', bool $meta = false, bool $inc_form = true ): array {}
+		/**
+		 * @param array<string, mixed>|int|string $where
+		 * @return int|string
+		 */
+		public static function getRecordCount( $where = '' ) {}
+		/**
+		 * @param int|string $id
+		 * @return object|null
+		 */
+		public static function getOne( $id, bool $meta = false ) {}
+		/**
+		 * @param array<string, mixed> $values
+		 * @return int|false
+		 */
+		public static function create( $values ) {}
+	}
+	class FrmFormAction {
+		/**
+		 * @param int|string $form_id
+		 * @return array<int, object>|object
+		 */
+		public static function get_action_for_form( $form_id, string $type = 'all', $atts = array() ) {}
 	}
 }
 

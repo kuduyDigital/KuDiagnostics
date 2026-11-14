@@ -75,6 +75,14 @@ jobs:
           # Forms plugins (Phase 7, D15–D17). CF7 6.2 needs WordPress 7.1, so 6.9 runs 6.1.7.
           - { wp: '6.9', php: '8.1', elementor: '4.3.6', plugins: 'contact-form-7@6.1.7,flamingo@2.6.4,fluentform@6.2.17,wpforms-lite@2.0.4', label: '+ forms' }
           - { wp: '7.1', php: '8.3', elementor: '4.3.6', plugins: 'contact-form-7@6.2.4.1,flamingo@2.6.4,fluentform@6.2.17,wpforms-lite@2.0.4', label: '+ forms' }
+          # More forms plugins (upgrade phase B, D28): Ninja Forms and Formidable are the real plugins; Gravity Forms and
+          # WPForms Pro entries are paid, so they run against stand-ins (tests/integration/fakes/gravity.php, wpforms-pro.php).
+          - { wp: '6.9', php: '8.1', elementor: '4.3.6', plugins: 'ninja-forms@3.16.1,formidable@7.0', label: '+ Ninja Forms + Formidable' }
+          - { wp: '7.1', php: '8.3', elementor: '4.3.6', plugins: 'ninja-forms@3.16.1,formidable@7.0', label: '+ Ninja Forms + Formidable' }
+          - { wp: '6.9', php: '8.1', elementor: '4.3.6', plugins: '', fakes: 'gravity', label: '+ Gravity Forms (stand-in)' }
+          - { wp: '7.1', php: '8.3', elementor: '4.3.6', plugins: '', fakes: 'gravity', label: '+ Gravity Forms (stand-in)' }
+          - { wp: '6.9', php: '8.1', elementor: '4.3.6', plugins: 'wpforms-lite@2.0.4', fakes: 'wpforms-pro', label: '+ WPForms Pro entries (stand-in)' }
+          - { wp: '7.1', php: '8.3', elementor: '4.3.6', plugins: 'wpforms-lite@2.0.4', fakes: 'wpforms-pro', label: '+ WPForms Pro entries (stand-in)' }
           # Cache plugins (Phase 7, D19): LiteSpeed Cache purges through its own actions.
           - { wp: '6.9', php: '8.1', elementor: '4.3.6', plugins: 'litespeed-cache@7.9.3', label: '+ cache' }
           - { wp: '7.1', php: '8.3', elementor: '4.3.6', plugins: 'litespeed-cache@7.9.3', label: '+ cache' }

@@ -57,7 +57,7 @@ final class FormEntries implements Tool, Snapshottable, MasksAuditArgs {
 			'entries'      => 'Lists entries (submissions) of one form, newest first: id, date, status (active, spam, trash), read and starred where the plugin has them, field values. Filter by status (default active) and search text; page and per_page (max 100). Contact Form 7 entries come from Flamingo; WPForms Lite keeps none on the site.' . $pii,
 			'entry-get'    => 'Returns one form entry with every field and its internal notes.' . $pii,
 			'entry-update' => 'Changes one entry like the plugin\'s inbox does: read (true/false), starred (true/false), status (active, spam, trash; active also restores from spam or trash). Permanent delete is not offered. If the plugin would report the change outside the site (Flamingo sends the message to Akismet when Akismet checked it), the first call only reports it (done: false): ask the user, then call again with confirm: true. Snapshot first; undo with kuduy-snapshot-restore (an undo never reports to Akismet).',
-			default        => 'Adds an internal note to one entry (Fluent Forms). Notes are for site staff and are not emailed. Undo with kuduy-snapshot-restore removes the note.',
+			default        => 'Adds an internal note to one entry (Fluent Forms, WPForms Pro, Gravity Forms). Notes are for site staff and are not emailed. Undo with kuduy-snapshot-restore removes the note.',
 		};
 	}
 

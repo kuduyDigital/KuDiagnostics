@@ -325,6 +325,10 @@ Ids from `docs/plans/phase-7-forms.md`. Runs: `contact-form-7@6.2.4.1` (7.1) / `
 | F5 | Notes with undo; note text not in audit rows | I — **pass 2026-11-10** on WP 7.1.4 and 6.9.11 (Fluent) |
 | F6 | CF7 save + undo; markup filtered without `unfiltered_html`; mail routing confirm-first, admin scope, addresses not in audit rows | I — **pass 2026-11-10** on WP 7.1.4 and 6.9.11 |
 | F7 | Refusals (editor/author/subscriber without the plugin's permission, unknown plugin/form/entry, no permanent delete) | I — **pass 2026-11-10** on WP 7.1.4 and 6.9.11. Fluent per-form manager scope: not tested (Fluent's own ACL) |
+| F8 | Ninja Forms 3.16.1 (real plugin): status, list, form; submissions masked, passwords never shown; trash and restore with undo; no read/starred/spam/notes (refused) | I — **pass 2026-11-14** on WP 7.1 and 6.9 (`FormsNinjaTest`; run `ninja-forms@3.16.1,formidable@7.0`) |
+| F9 | Formidable Forms 7.0 (real plugin): status, list, form; entries masked, passwords never shown; entries read only (changes refused) | I — **pass 2026-11-14** on WP 7.1 and 6.9 (`FormsFormidableTest`; same run) |
+| F10 | Gravity Forms: status, list, form; entries masked; read/starred/spam/trash and notes with undo | I — **pass 2026-11-14** on WP 7.1 and 6.9 against a **stand-in** (`FormsGravityTest`, `KUDUY_FAKES=gravity`). Not verified against Gravity Forms itself |
+| F11 | WPForms Pro entries: masked; read/starred/spam/trash and notes with undo | I — **pass 2026-11-14** on WP 7.1 and 6.9 against a **stand-in** on WPForms Lite 2.0.4 (`FormsWpformsProTest`, `KUDUY_FAKES=wpforms-pro`). Not verified against WPForms Pro itself |
 
 ## Site Editor, Global Styles, widgets
 

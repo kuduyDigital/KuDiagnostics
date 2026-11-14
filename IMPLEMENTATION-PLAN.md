@@ -16,7 +16,7 @@ Goal: close the gaps in `FEATURE-GAP.md` without rebuilding anything that works.
 | Phase | Scope | Exit gate | Size |
 |---|---|---|---|
 | **A. Registry** (this round) | Audit documents; `kuduy-integrations`: every target integration with installed/active/version, support class, its tools and whether they are available, test status | Tool tested; matrix and tool agree | Small — **done 2026-11-10** |
-| **B. Forms** | Finish Gravity Forms and WPForms Pro entries (stand-ins); Ninja Forms and Formidable adapters (real plugins); form and field changes where the plugin supports saving | CI job per plugin; entries masked like the others | Medium |
+| **B. Forms** | Finish Gravity Forms and WPForms Pro entries (stand-ins); Ninja Forms and Formidable adapters (real plugins); form and field changes where the plugin supports saving | CI job per plugin; entries masked like the others | Medium — **adapters done 2026-11-14** (Ninja and Formidable tested on the real plugins; Gravity and WPForms Pro on stand-ins, to verify in L). Open: form and field changes (research first) |
 | **C. Blocks** | Block-level add/update/move/duplicate/delete with validation; patterns; duplicate a post; delete media; GenerateBlocks, Kadence Blocks and Spectra in CI | Unchanged posts round-trip byte for byte; three block plugins green | Medium |
 | **D. Themes** | Theme facts tool; settings read/update for Astra, Kadence, Blocksy, GeneratePress, OceanWP through each theme's registered settings; Site Editor tools run on Ollie and Spectra One | One CI job per theme | Large (five themes, each its own storage) |
 | **E. Fields** | Meta Box, Pods, ACPT Lite adapters behind shared field tools; ACF field-group create/update; ASE detection | CI job per plugin; values validated by the plugin's own API | Large |
@@ -29,6 +29,8 @@ Goal: close the gaps in `FEATURE-GAP.md` without rebuilding anything that works.
 | **L. Paid products** (each when a copy is provided) | Verify WPBakery, Gravity Forms, WPForms Pro; then Bricks, Oxygen 6, Divi 5, Breakdance, Etch, Mosaic, Avada, Voxel, MyListing, JetEngine, JetElements, Dynamic Content for Elementor, Dynamic Shortcodes, Bricksforge, WPML, ACF Pro, ASE Pro | Tested against the licensed copy | Per product |
 
 **2026-11-13:** the owner moved Avada ahead of everything (built, D31, `docs/plans/avada.md`). Order after Avada: B (already half written) → C → F → G → E → D → H → I → J → K. L runs alongside whenever a copy arrives.
+
+**2026-11-14:** B's adapters are done. The owner's order from here: **all builders and themes first** — F (Elementor completion), H (free builders), D (themes), and the paid builders and themes of L as copies arrive — then C → G → E → I → J → K.
 
 ## Decisions to make along the way (recommended option first, marked for review like D18–D29)
 

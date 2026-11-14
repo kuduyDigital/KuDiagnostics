@@ -4,6 +4,9 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 ## Unreleased
 
+- Added: **Ninja Forms** and **Formidable Forms** in the forms tools (`kuduy-forms-*`): forms, fields and notifications; entries with personal data masked. Ninja Forms submissions can be trashed and restored (with undo); Formidable entries are read only.
+- Added: **Gravity Forms** and **WPForms Pro entries** in the forms tools: entries, read / starred / spam / trash with undo, notes. Both are paid and no licensed copy was available: they are tested against stand-ins and **not yet verified against the plugins themselves**.
+
 ## 1.2.2 — 2026-11-14
 
 - Fixed: the Avada tools no longer write setting values containing double quotes or square brackets. They were stored safely, but Avada's own editor wrote them back unescaped on its next save and broke the element; such values are now refused with a clear message (text with quotes belongs in the element's content).
@@ -575,6 +578,13 @@ Avada tools checked on a real Avada 7.16.4 / Builder 3.16.4 site; two small fixe
 - `Modules/Avada`: `Avada` (detection, registry via `awb_maybe_init_element_maps()`, builder detection, shared-item guard, save + verify, change report), `AvadaLayout` (roles, values, responsive split, widths, building containers/columns/nested columns/elements, outline, structure, validation), `AvadaRead` (8 tools), `AvadaWrite` (12 tools). Reuses the WPBakery parser and tree operations (their two id error messages made builder-neutral).
 - Tests: `AvadaParserTest` (every job), `AvadaTest` with a stand-in (`tests/integration/fakes/avada.php`) and two CI jobs. First run 7 of 10; the three failures were test expectations (an existing setting changes in place; WordPress strips whole script blocks; the Global Options tool is hidden without options).
 - Phase B forms work (Gravity Forms, WPForms Pro, Ninja Forms, Formidable) stays paused and uncommitted; its first test run never started (a run name with capitals).
+
+### 2026-11-14 — Upgrade round, phase B: forms (D28)
+
+- `Modules/Forms`: `NinjaAdapter` (Ninja Forms 3.16.1 model factory; submissions are `nf_sub` posts), `FormidableAdapter` (Formidable 7.0 `FrmForm` / `FrmField` / `FrmEntry`; entries read only), `GravityAdapter` (GFAPI from the documentation), WPForms Pro entries in `WpformsAdapter`. Six adapters behind the same nine tools; no new tools.
+- Formidable permission check verified against 7.0's source: `FrmAppHelper::current_user_can()` is a plain capability check and administrators get the `frm_*` capabilities only when they open wp-admin (`maybe_add_permissions()`), so the adapter lets administrators through as Formidable does.
+- Tests: `FormsNinjaTest`, `FormsFormidableTest` (real plugins), `FormsGravityTest`, `FormsWpformsProTest` (stand-ins `tests/integration/fakes/gravity.php`, `wpforms-pro.php`); six new CI jobs. PHPStan stubs for Ninja Forms and Formidable. `kuduy-integrations`: the four rows move to partial.
+- Not built: creating or changing forms and fields for Fluent, Ninja and Formidable (needs research). Owner's order after this: builders and themes first.
 
 ### 2026-11-13 — Avada checked on a real site (AV11)
 

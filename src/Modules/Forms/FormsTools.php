@@ -48,7 +48,7 @@ final class FormsTools implements Tool {
 	 */
 	public function description(): string {
 		return match ( $this->mode ) {
-			'status' => 'Forms plugins found on the site (Contact Form 7, Fluent Forms, WPForms), their versions, where entries are stored (Contact Form 7 keeps none itself, Flamingo stores them; WPForms Lite keeps none on the site) and whether the plugin\'s own abilities are on.',
+			'status' => 'Forms plugins found on the site (Contact Form 7, Fluent Forms, WPForms, Gravity Forms, Ninja Forms, Formidable Forms), their versions, where entries are stored (Contact Form 7 keeps none itself, Flamingo stores them; WPForms Lite keeps none on the site; the others store their own) and whether the plugin\'s own abilities are on.',
 			'list'   => 'Lists the forms your account may read in each forms plugin: plugin, id, title, number of stored entries (null when you may not read entries or the site stores none) and shortcode. Filter with plugin.',
 			default  => 'Returns one form: fields (name, label, type, required, choices), messages and confirmations, email notifications (where submissions are emailed: recipient, sender, reply-to, Cc/Bcc) and settings. Integration keys (reCAPTCHA, payment, email services) are never returned.',
 		};

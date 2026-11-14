@@ -166,7 +166,10 @@ Plan and gap analysis for the wider upgrade: `AUDIT.md`, `FEATURE-GAP.md`, `INTE
 |---|---|
 | Central integration registry with capability discovery: installed, active, version, support class, tools and whether they are available now | Tested 2026-11-10 (IR1–IR3: `kuduy-integrations`, `IntegrationsTest`) |
 | Catalogue covers the 58 target integrations and what is supported beyond them (67 rows) | Tested (IR1: consistency test) |
-| Everything else in the upgrade plan (phases B–L) | Not started — see `IMPLEMENTATION-PLAN.md` |
+| Phase B — forms: Ninja Forms and Formidable Forms adapters (real plugins) | Tested 2026-11-14 in Playground, WP 6.9 + 7.1 (F8, F9: Ninja Forms 3.16.1, Formidable 7.0; `FormsNinjaTest`, `FormsFormidableTest`) |
+| Phase B — forms: Gravity Forms; WPForms Pro entries | Implemented — tested 2026-11-14 against stand-ins only (F10, F11: `FormsGravityTest`, `FormsWpformsProTest`); **not verified against the paid plugins** (phase L) |
+| Phase B — forms: create or change forms and fields (Fluent, Ninja, Formidable) | Not started — needs research into each plugin's supported way to save a form |
+| Everything else in the upgrade plan (phases C–L) | Not started — see `IMPLEMENTATION-PLAN.md` |
 
 ## SEO and image SEO (§7) — Phase 6
 
@@ -204,7 +207,7 @@ Plan and gap analysis for the wider upgrade: `AUDIT.md`, `FEATURE-GAP.md`, `INTE
 |---|---|
 | ACF field values (posts, users, terms) and field groups (read) | Tested (A1–A6: `kuduy-acf-status`, `-field-groups`, `-get`, `-update`; ACF 6.8.11 free, WP 6.9 + 7.1; on Hostinger staging with claude.ai 2026-11-09; PRO field types UNVERIFIED) |
 | CPT and taxonomies (registering new ones) | Tested 2026-11-10 in Playground, WP 6.9.11 + 7.1.4 — (`kuduy-content-types`, `-content-type-save`, `-content-type-remove`; D22; tests T1–T3) |
-| Fluent Forms, WPForms, Gravity Forms, Contact Form 7 | Tested 2026-11-10 in Playground (WP 6.9.11 + 7.1.4) for CF7 + Flamingo, Fluent Forms, WPForms Lite (forms only); Gravity Forms Blocked (needs a licensed copy) — (researched 2026-11-09, `RESEARCH.md` §10b; plan `docs/plans/phase-7-forms.md`, D15–D17 decided: A) |
+| Fluent Forms, WPForms, Gravity Forms, Contact Form 7 | Tested 2026-11-10 in Playground (WP 6.9.11 + 7.1.4) for CF7 + Flamingo, Fluent Forms, WPForms Lite (forms only); Ninja Forms and Formidable Forms Tested 2026-11-14; Gravity Forms and WPForms Pro entries Implemented against stand-ins 2026-11-14, verification Blocked (needs licensed copies) — (researched 2026-11-09, `RESEARCH.md` §10b; plan `docs/plans/phase-7-forms.md`, D15–D17 decided: A) |
 | Navigation menus | Tested (classic menus, see §5) |
 | Widgets and sidebars | Tested 2026-11-10 in Playground, WP 6.9.11 + 7.1.4 — (`kuduy-widgets`, `kuduy-widget-save`, `kuduy-widget-remove`; D18; S4) |
 | Block Editor, Site Editor, Global Styles | Tested 2026-11-10 in Playground, WP 6.9.11 + 7.1.4 — (`kuduy-block-types`, `kuduy-post-blocks`, `kuduy-site-templates`, `-template-get`, `-template-update`, `-template-revert`, `kuduy-global-styles-get`, `-update`; D18; S1–S3, S5) |

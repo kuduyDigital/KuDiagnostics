@@ -1628,7 +1628,7 @@ Scope `kuduy:write` · changes data (undo where noted)
 
 ### `kuduy-forms-status` — Forms plugins status
 
-Forms plugins found on the site (Contact Form 7, Fluent Forms, WPForms), their versions, where entries are stored (Contact Form 7 keeps none itself, Flamingo stores them; WPForms Lite keeps none on the site) and whether the plugin's own abilities are on.
+Forms plugins found on the site (Contact Form 7, Fluent Forms, WPForms, Gravity Forms, Ninja Forms, Formidable Forms), their versions, where entries are stored (Contact Form 7 keeps none itself, Flamingo stores them; WPForms Lite keeps none on the site; the others store their own) and whether the plugin's own abilities are on.
 
 Scope `kuduy:read` · read only
 
@@ -1642,7 +1642,7 @@ Scope `kuduy:read` · read only
 
 | Input | Type | Required | Notes |
 |---|---|---|---|
-| `plugin` | string (cf7, fluentform, wpforms) |  | Forms plugin: cf7 (Contact Form 7; entries from Flamingo), fluentform (Fluent Forms), wpforms (WPForms). |
+| `plugin` | string (cf7, fluentform, wpforms, gravityforms, ninjaforms, formidable) |  | Forms plugin: cf7 (Contact Form 7; entries from Flamingo), fluentform (Fluent Forms), wpforms (WPForms; entries with WPForms Pro), gravityforms (Gravity Forms), ninjaforms (Ninja Forms), formidable (Formidable Forms; entries read only). |
 
 ### `kuduy-forms-get` — Read a form
 
@@ -1652,7 +1652,7 @@ Scope `kuduy:read` · read only
 
 | Input | Type | Required | Notes |
 |---|---|---|---|
-| `plugin` | string (cf7, fluentform, wpforms) | yes | Forms plugin: cf7 (Contact Form 7; entries from Flamingo), fluentform (Fluent Forms), wpforms (WPForms). |
+| `plugin` | string (cf7, fluentform, wpforms, gravityforms, ninjaforms, formidable) | yes | Forms plugin: cf7 (Contact Form 7; entries from Flamingo), fluentform (Fluent Forms), wpforms (WPForms; entries with WPForms Pro), gravityforms (Gravity Forms), ninjaforms (Ninja Forms), formidable (Formidable Forms; entries read only). |
 | `form_id` | integer | yes |  |
 
 ### `kuduy-forms-entries` — List form entries
@@ -1663,7 +1663,7 @@ Scope `kuduy:read` · read only
 
 | Input | Type | Required | Notes |
 |---|---|---|---|
-| `plugin` | string (cf7, fluentform, wpforms) | yes | Forms plugin: cf7 (Contact Form 7; entries from Flamingo), fluentform (Fluent Forms), wpforms (WPForms). |
+| `plugin` | string (cf7, fluentform, wpforms, gravityforms, ninjaforms, formidable) | yes | Forms plugin: cf7 (Contact Form 7; entries from Flamingo), fluentform (Fluent Forms), wpforms (WPForms; entries with WPForms Pro), gravityforms (Gravity Forms), ninjaforms (Ninja Forms), formidable (Formidable Forms; entries read only). |
 | `form_id` | integer | yes |  |
 | `status` | string (active, spam, trash, all) |  | default "active" |
 | `search` | string |  |  |
@@ -1679,7 +1679,7 @@ Scope `kuduy:read` · read only
 
 | Input | Type | Required | Notes |
 |---|---|---|---|
-| `plugin` | string (cf7, fluentform, wpforms) | yes | Forms plugin: cf7 (Contact Form 7; entries from Flamingo), fluentform (Fluent Forms), wpforms (WPForms). |
+| `plugin` | string (cf7, fluentform, wpforms, gravityforms, ninjaforms, formidable) | yes | Forms plugin: cf7 (Contact Form 7; entries from Flamingo), fluentform (Fluent Forms), wpforms (WPForms; entries with WPForms Pro), gravityforms (Gravity Forms), ninjaforms (Ninja Forms), formidable (Formidable Forms; entries read only). |
 | `entry_id` | integer | yes |  |
 | `include_pii` | boolean |  | Show visitors' personal data in full (needs permission to edit the entries). |
 
@@ -1691,7 +1691,7 @@ Scope `kuduy:write` · changes data (undo where noted) · reaches outside the si
 
 | Input | Type | Required | Notes |
 |---|---|---|---|
-| `plugin` | string (cf7, fluentform, wpforms) | yes | Forms plugin: cf7 (Contact Form 7; entries from Flamingo), fluentform (Fluent Forms), wpforms (WPForms). |
+| `plugin` | string (cf7, fluentform, wpforms, gravityforms, ninjaforms, formidable) | yes | Forms plugin: cf7 (Contact Form 7; entries from Flamingo), fluentform (Fluent Forms), wpforms (WPForms; entries with WPForms Pro), gravityforms (Gravity Forms), ninjaforms (Ninja Forms), formidable (Formidable Forms; entries read only). |
 | `entry_id` | integer | yes |  |
 | `read` | boolean |  |  |
 | `starred` | boolean |  |  |
@@ -1700,13 +1700,13 @@ Scope `kuduy:write` · changes data (undo where noted) · reaches outside the si
 
 ### `kuduy-forms-entry-note` — Add a note to a form entry
 
-Adds an internal note to one entry (Fluent Forms). Notes are for site staff and are not emailed. Undo with kuduy-snapshot-restore removes the note.
+Adds an internal note to one entry (Fluent Forms, WPForms Pro, Gravity Forms). Notes are for site staff and are not emailed. Undo with kuduy-snapshot-restore removes the note.
 
 Scope `kuduy:write` · changes data (undo where noted)
 
 | Input | Type | Required | Notes |
 |---|---|---|---|
-| `plugin` | string (cf7, fluentform, wpforms) | yes | Forms plugin: cf7 (Contact Form 7; entries from Flamingo), fluentform (Fluent Forms), wpforms (WPForms). |
+| `plugin` | string (cf7, fluentform, wpforms, gravityforms, ninjaforms, formidable) | yes | Forms plugin: cf7 (Contact Form 7; entries from Flamingo), fluentform (Fluent Forms), wpforms (WPForms; entries with WPForms Pro), gravityforms (Gravity Forms), ninjaforms (Ninja Forms), formidable (Formidable Forms; entries read only). |
 | `entry_id` | integer | yes |  |
 | `note` | string | yes |  |
 

@@ -64,10 +64,10 @@ One row per integration in the upgrade brief (58), plus what KuDiagnostics suppo
 |---|---|---|---|---|
 | Contact Form 7 | free 6.2.4.1 (+ Flamingo) | **Full** | Forms read and save, mail routing, entries through Flamingo | — |
 | Fluent Forms | free 6.2.17 | **Partial** | Forms read, entries read/update/notes. Missing: create or change forms and fields | B |
-| WPForms | free Lite 2.0.4 (Pro paid) | **Partial** | Forms read. Pro entries written but unreleased and unverified | B |
-| Gravity Forms | paid | None (adapter written, unreleased, stand-in only) | — | B, L (verify) |
-| Ninja Forms | free 3.16.1 | None | — | B |
-| Formidable Forms | free 7.0 | None | — | B |
+| WPForms | free Lite 2.0.4 (Pro paid) | **Partial** | Forms read (Lite). Pro entries: read, read/starred/spam/trash with undo, notes — tested against a stand-in 2026-11-14, not against Pro | L (verify) |
+| Gravity Forms | paid | **Partial** | Forms read; entries read, read/starred/spam/trash with undo, notes — built from the docs, tested against a stand-in 2026-11-14, not against the plugin | L (verify) |
+| Ninja Forms | free 3.16.1 | **Partial** | Forms read; submissions read, trash and restore with undo (tested 2026-11-14). Missing: create or change forms and fields | B (form changes) |
+| Formidable Forms | free 7.0 | **Partial** | Forms read; entries read only, spam listed (tested 2026-11-14). Missing: create or change forms and fields | B (form changes) |
 
 ## F. Field plugins
 

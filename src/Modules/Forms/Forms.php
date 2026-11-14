@@ -10,14 +10,14 @@ namespace Kuduy\Mcp\Modules\Forms;
 use Kuduy\Mcp\Mcp\ToolError;
 
 /**
- * Registry of forms adapters (D15 A). Gravity Forms is added once a licensed copy has been tested.
+ * Registry of forms adapters (D15 A; Ninja Forms and Formidable D28; Gravity Forms and WPForms Pro entries D28, built from their documented APIs and not verified against the paid plugins).
  */
 final class Forms {
 
 	/**
 	 * Adapter ids accepted in tool input.
 	 */
-	public const PLUGINS = array( 'cf7', 'fluentform', 'wpforms' );
+	public const PLUGINS = array( 'cf7', 'fluentform', 'wpforms', 'gravityforms', 'ninjaforms', 'formidable' );
 
 	/**
 	 * Entry statuses across plugins.
@@ -30,7 +30,7 @@ final class Forms {
 	 * @return list<FormsAdapter>
 	 */
 	public static function all(): array {
-		return array( new Cf7Adapter(), new FluentAdapter(), new WpformsAdapter() );
+		return array( new Cf7Adapter(), new FluentAdapter(), new WpformsAdapter(), new GravityAdapter(), new NinjaAdapter(), new FormidableAdapter() );
 	}
 
 	/**
@@ -46,7 +46,7 @@ final class Forms {
 	 * Availability for the forms tools.
 	 */
 	public static function available(): bool|string {
-		return self::active() ? true : 'No supported forms plugin is active (Contact Form 7, Fluent Forms, WPForms)';
+		return self::active() ? true : 'No supported forms plugin is active (Contact Form 7, Fluent Forms, WPForms, Gravity Forms, Ninja Forms, Formidable Forms)';
 	}
 
 	/**
@@ -76,7 +76,7 @@ final class Forms {
 		return array(
 			'type'        => 'string',
 			'enum'        => self::PLUGINS,
-			'description' => 'Forms plugin: cf7 (Contact Form 7; entries from Flamingo), fluentform (Fluent Forms), wpforms (WPForms).',
+			'description' => 'Forms plugin: cf7 (Contact Form 7; entries from Flamingo), fluentform (Fluent Forms), wpforms (WPForms; entries with WPForms Pro), gravityforms (Gravity Forms), ninjaforms (Ninja Forms), formidable (Formidable Forms; entries read only).',
 		);
 	}
 

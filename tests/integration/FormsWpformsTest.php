@@ -26,6 +26,9 @@ final class FormsWpformsTest extends TestCase {
 		if ( ! function_exists( 'wpforms' ) ) {
 			self::markTestSkipped( 'WPForms is not active in this run (KUDUY_PLUGINS).' );
 		}
+		if ( class_exists( 'Kuduy_Fake_Wpforms_Entry' ) ) {
+			self::markTestSkipped( 'This run has the WPForms Pro entries stand-in; the Lite behaviour is checked in the runs without it.' );
+		}
 		if ( ! is_plugin_active( 'kuduy-mcp/kuduy-mcp.php' ) ) {
 			activate_plugin( 'kuduy-mcp/kuduy-mcp.php' );
 		}
