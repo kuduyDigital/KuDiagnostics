@@ -56,11 +56,15 @@ Only versions listed as **Tested** have passing evidence (see `TESTING.md`). Eve
 |---|---|---|---|
 | Elementor | 4.3.6 | **Tested** (EL1–EL7, EL11; EL10 with claude.ai on Hostinger staging, WP 7.1.4, 2026-11-05) | CI: WP 7.1 / PHP 8.3 |
 | Elementor | 3.35.9 (latest 3.x) | **Tested** (EL1–EL7; v4 tools report unavailable) | CI: WP 6.9 / PHP 8.1 |
+| Beaver Builder Lite | 2.11.1.2 | **Tested** in Playground 2026-11-14 (WP 6.9.11 + 7.1.4): BB1–BB6 | CI: Beaver Builder job on both pairs. Paid versions not tested |
 | WPBakery Page Builder | none (paid; no licensed copy) | **Built, not verified against the plugin** (WB1–WB12 against a stand-in registry, 2026-11-10; WB13 open) | CI: both pairs with `KUDUY_FAKES=wpbakery`; see `docs/WPBAKERY.md` |
 | Avada / Avada Builder / Avada Core | format and API read from 7.16.4 / 3.16.4 / 5.16.4 (2026-11-13) | **Tested** (AV1–AV10 against a stand-in; AV11 on real Avada 7.16.4 / Builder 3.16.4 / Core 5.16.3, staging, 2026-11-13) | CI: both pairs with `KUDUY_FAKES=avada`; see `docs/AVADA.md` |
 | Essential Addons for Elementor (lite) | 6.8.8 | **Tested** (EL9) | CI: WP 7.1 job |
 | Ultimate Addons for Elementor (header-footer-elementor) | 2.9.6 | **Tested** (EL9) | CI: WP 7.1 job |
 | Premium Addons for Elementor | 4.11.117 | **Tested** (EL9) | CI: WP 7.1 job |
+| Happy Addons, HT Mega, PowerPack Lite, Qi Addons | 3.51.3, 3.2.8, 3.1.4, 1.11.2 | **Tested** 2026-11-14 (EL9b) | CI: add-ons B job |
+| Xpro Elementor Addons, Element Pack Lite, Piotnet Addons | 1.7.11, 10.0.5, 2.4.37 | **Tested** 2026-11-14 (EL9b) | CI: add-ons C job. Xpro and Piotnet publish no versioned ZIP, so CI takes their current release |
+| Unlimited Elements for Elementor | 2.0.28 | **Not tested** — a fresh install registers no Elementor widgets | |
 | JetElements | — | Not tested | Paid; not available |
 | Elementor Pro | 4.3.2 | **Tested** 2026-11-05 (EL8, Theme Builder) with Elementor 4.3.6 on WP 7.1.4/PHP 8.3.36 and WP 6.9.11/PHP 8.1.34. Needs Elementor core 4.0+ | Local tests only (licensed ZIP, never in CI or the repo) |
 | Elementor Pro | 4.0.4 | **Tested** on Hostinger staging (EL10, claude.ai connector): 2026-11-05 Pro widgets listed with `plugin`, Theme Builder templates listed, draft header created; 2026-11-09 (KUDUY 0.6.0, `kuduy:admin`) display conditions set, conflict with the live header refused, conditions cleared | Real host, with Elementor 4.3.6 |

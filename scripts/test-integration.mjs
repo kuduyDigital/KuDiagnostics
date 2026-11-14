@@ -34,7 +34,8 @@ const elementor = process.env.KUDUY_ELEMENTOR ?? '4.3.6';
 const blueprint = JSON.parse(readFileSync(join(root, 'tests', 'integration', 'blueprint.json'), 'utf8'));
 const install = (slug, version) => ({
   step: 'installPlugin',
-  pluginData: { resource: 'url', url: `https://downloads.wordpress.org/plugin/${slug}.${version}.zip` },
+  // A few plugins publish no versioned ZIP (no tag for their current release): slug@latest takes the current one.
+  pluginData: { resource: 'url', url: `https://downloads.wordpress.org/plugin/${slug}${version === 'latest' ? '' : `.${version}`}.zip` },
   options: { activate: true },
 });
 // Test sites never update themselves: with an older pinned plugin (WooCommerce 11.0.1 on WordPress 6.9) WordPress
@@ -60,8 +61,8 @@ for (const fake of fakes) {
 // KUDUY_PLUGINS=slug@version,… installs more wordpress.org plugins after Elementor (e.g. Elementor add-ons).
 for (const entry of (process.env.KUDUY_PLUGINS ?? '').split(',').map((s) => s.trim()).filter(Boolean)) {
   const [slug, version] = entry.split('@');
-  if (!/^[a-z0-9-]+$/.test(slug) || !/^[0-9][0-9.]*$/.test(version ?? '')) {
-    console.error(`KUDUY_PLUGINS entry "${entry}" must be slug@version.`);
+  if (!/^[a-z0-9-]+$/.test(slug) || !/^([0-9][0-9.]*|latest)$/.test(version ?? '')) {
+    console.error(`KUDUY_PLUGINS entry "${entry}" must be slug@version (or slug@latest).`);
     process.exit(1);
   }
   steps.push(install(slug, version));

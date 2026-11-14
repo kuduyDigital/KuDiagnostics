@@ -108,7 +108,10 @@ Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude cli
 |---|---|
 | Discover documents and templates; read structure and settings | Tested (EL1: `kuduy-elementor-documents`, `kuduy-elementor-get` incl. outline, subtree and unregistered types; Elementor 4.3.6) |
 | Create and update documents via `Document::save()` | Tested (`kuduy-elementor-create`, `kuduy-elementor-edit`; snapshot + undo; unregistered-widget guard) |
-| Duplicate whole documents | Not started |
+| Duplicate whole documents | Tested 2026-11-14 (EL12: `kuduy-elementor-duplicate`; pages, posts and library templates into a draft; Elementor 4.3.6 and 3.35.9) |
+| Document (page-level) settings: read, patch, undo | Tested 2026-11-14 (EL13: `kuduy-elementor-document-settings`, `-document-settings-update`; post fields refused) |
+| Dynamic tags: list, usage on a page, set, clear, undo | Tested 2026-11-14 (EL14: `kuduy-elementor-dynamic-tags`, `-dynamic-set`, with a tag registered by the test; classic widgets, top-level settings). Elementor Pro's own tags, v4 elements and repeater rows: **UNVERIFIED** (no Pro copy on this machine) |
+| Popups (Elementor Pro) | Blocked — no Elementor Pro ZIP on this machine (the git-ignored `elementor-pro-4.3.2.zip` is missing) |
 | Theme Builder templates (Elementor Pro): create (`kuduy-elementor-create` + `template_type`), list (`kuduy-elementor-theme-templates`), display conditions with conflict check and undo (`kuduy-elementor-theme-conditions`) | Tested (EL8, Elementor Pro 4.3.2, local runs only) |
 | Widget discovery v3 (`get_controls`) and v4 atomic (`get_props_schema`) | Tested (EL2: `kuduy-elementor-widgets`, `kuduy-elementor-widget-schema`; v3 style controls included, responsive keys per active device; v4 JSON Schema per prop) |
 | Add, update, move, duplicate, reorder, remove elements; nested containers; ID/parent validation | Tested (EL3: 1–50 operations per call, all-or-nothing, fresh unique ids, nesting rules, settings checked against the widget schema) |
@@ -117,7 +120,7 @@ Summary: Foundation (brief §4, §12, §13) is built and tested; real Claude cli
 | Kit globals: colors and fonts update | Tested (EL7: `kuduy-elementor-kit-update`, add/update/remove, undo) |
 | v4 global classes and variables | Tested (EL11: `kuduy-elementor-v4-globals`, `-v4-classes`, `-v4-variables` run Elementor's own abilities on 4.3+; variables undoable, classes snapshotted as a copy; unavailable with a clear reason on 3.x) |
 | CSS regeneration, cache clearing, frontend verification | Tested (EL6: `kuduy-elementor-verify` renders with Elementor's front-end renderer and, when published, fetches the live page; CSS is reset by `Document::save()` and rebuilt on the next view). Page-cache purging: Not started |
-| Add-on widgets: Essential Addons 6.8.8, Ultimate Addons (header-footer-elementor) 2.9.6, Premium Addons 4.11.117 | Tested (EL9: discovery with plugin name, schema, create, edit, render through the generic tools; no special code needed) |
+| Add-on widgets: Essential Addons 6.8.8, Ultimate Addons (header-footer-elementor) 2.9.6, Premium Addons 4.11.117; since 2026-11-14 Happy Addons 3.51.3, HT Mega 3.2.8, PowerPack Lite 3.1.4, Qi Addons 1.11.2, Xpro 1.7.11, Element Pack Lite 10.0.5, Piotnet 2.4.37 | Tested (EL9: discovery with plugin name, schema, create, edit, render through the generic tools; no special code needed). Unlimited Elements 2.0.28: a fresh install registers no widgets, not tested |
 | Add-on widgets: JetElements | Blocked — paid plugin, not available for testing |
 | Legacy / v3 / v4 / mixed-version matrix | In progress — Elementor 3.35.9 and 4.3.6 tested (all tools; v4-only tools skip on 3.x); legacy sections/columns covered by nesting rules; v3 → v4 migration not tested |
 
@@ -138,6 +141,17 @@ Format and APIs read from an installed Avada 7.16.4 / Avada Builder 3.16.4 / Ava
 | Shared Library items need `confirm_shared`; permissions; Elementor and WPBakery pages refused; `kuduy-post-update` refuses Avada layouts | Tested (AV10) |
 | Behaviour on a real Avada site (rendering, Avada's editor opening pages saved here) | Tested 2026-11-13 on staging with real Avada 7.16.4 / Builder 3.16.4 (AV11) |
 | Changing Global Options, Layout conditions, element on/off, per-page theme options | Not offered |
+
+## Beaver Builder — added 2026-11-14 (D37)
+
+| Feature | Status |
+|---|---|
+| Status, modules and module settings (`kuduy-beaver-status`, `-modules`, `-module-schema`) | Tested (BB1; Beaver Builder Lite 2.11.1.2, WP 6.9 + 7.1) |
+| List layouts; read a layout as a tree with changed settings (`kuduy-beaver-layouts`, `-get`) | Tested (BB2) |
+| Create a page from rows, columns and modules (`kuduy-beaver-create`) | Tested (BB2: layout, builder flag, text in `post_content`; nothing created when a module is invalid) |
+| Edit: add row / columns / module, update settings, move, duplicate, remove; all-or-nothing; undo (`kuduy-beaver-edit`) | Tested (BB3, BB4) |
+| Refusals: unknown nodes and settings, column widths, unpublished builder changes, other users' pages, markup without `unfiltered_html` | Tested (BB5, BB6) |
+| Shared (global) rows and modules, saved templates, paid-version modules, Themer | Not started — global nodes are refused; the paid version was not available |
 
 ## WPBakery Page Builder — added 2026-11-10 (D29)
 

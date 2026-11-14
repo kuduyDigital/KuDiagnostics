@@ -1,7 +1,7 @@
 <?php
 /**
- * Phase 5 add-ons (test matrix EL9): widgets of Essential Addons, Ultimate Addons (header-footer-elementor) and
- * Premium Addons through the generic Elementor tools — discovery, schema, create, edit, render.
+ * Phase 5 add-ons (test matrix EL9): widgets of Essential Addons, Ultimate Addons (header-footer-elementor),
+ * Premium Addons and (upgrade plan phase F) seven more free add-ons through the generic Elementor tools — discovery, schema, create, edit, render.
  * Runs when the add-ons are installed (KUDUY_PLUGINS); skips otherwise.
  *
  * @package Kuduy\Mcp
@@ -45,6 +45,13 @@ final class ElementorAddonsTest extends TestCase {
 			'Essential Addons' => array( 'essential-addons-for-elementor-lite' ),
 			'Ultimate Addons'  => array( 'header-footer-elementor' ),
 			'Premium Addons'   => array( 'premium-addons-for-elementor' ),
+			'Happy Addons'     => array( 'happy-elementor-addons' ),
+			'HT Mega'          => array( 'ht-mega-for-elementor' ),
+			'PowerPack'        => array( 'powerpack-lite-for-elementor' ),
+			'Qi Addons'        => array( 'qi-addons-for-elementor' ),
+			'Xpro'             => array( 'xpro-elementor-addons' ),
+			'Element Pack'     => array( 'bdthemes-element-pack-lite' ),
+			'Piotnet'          => array( 'piotnet-addons-for-elementor' ),
 		);
 	}
 

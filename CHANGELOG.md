@@ -4,6 +4,14 @@ Format: user-facing releases first (newest on top), then the dated development h
 
 ## Unreleased
 
+- Added: **Elementor — duplicate a page** (`kuduy-elementor-duplicate`): copies a page, post or library template with its elements, page settings and page template into a new draft.
+- Added: **Elementor — page settings** (`kuduy-elementor-document-settings`, `kuduy-elementor-document-settings-update`): read and change the page-level settings of a document (hide title, background, padding, …), with undo.
+- Added: **Elementor — dynamic tags** (`kuduy-elementor-dynamic-tags`, `kuduy-elementor-dynamic-set`): list the registered tags and where a page uses them; connect a widget setting to a tag or clear it, with undo. `kuduy-elementor-widget-schema` marks settings that accept a tag. Classic widgets only; Elementor Pro's own tags were not available to test.
+- Added: **Beaver Builder** — 7 `kuduy-beaver-*` tools, shown while Beaver Builder is active: status, modules and their settings, list and read layouts, create a page from rows, columns and modules, and edit a layout (add rows, columns and modules, change settings, move, duplicate, remove) with undo. Tested with Beaver Builder Lite 2.11.1.2. Shared (global) rows and modules and column widths are left to the builder; the paid version was not tested.
+- Changed: `kuduy-post-update` no longer overwrites the content of a page built with Beaver Builder.
+- Fixed: undoing `kuduy-elementor-kit-update` did nothing when the Kit had no stored settings before (a fresh Elementor 3.x site).
+- Fixed: `kuduy-elementor-widget-schema` could drop a responsive setting when Elementor had already built its per-device copies in the same request.
+- Added: seven more free Elementor add-ons verified through the Elementor tools: Happy Addons, HT Mega, PowerPack Lite, Qi Addons, Xpro, Element Pack Lite, Piotnet (214 tools in all).
 - Added: **Ninja Forms** and **Formidable Forms** in the forms tools (`kuduy-forms-*`): forms, fields and notifications; entries with personal data masked. Ninja Forms submissions can be trashed and restored (with undo); Formidable entries are read only.
 - Added: **Gravity Forms** and **WPForms Pro entries** in the forms tools: entries, read / starred / spam / trash with undo, notes. Both are paid and no licensed copy was available: they are tested against stand-ins and **not yet verified against the plugins themselves**.
 
@@ -578,6 +586,20 @@ Avada tools checked on a real Avada 7.16.4 / Builder 3.16.4 site; two small fixe
 - `Modules/Avada`: `Avada` (detection, registry via `awb_maybe_init_element_maps()`, builder detection, shared-item guard, save + verify, change report), `AvadaLayout` (roles, values, responsive split, widths, building containers/columns/nested columns/elements, outline, structure, validation), `AvadaRead` (8 tools), `AvadaWrite` (12 tools). Reuses the WPBakery parser and tree operations (their two id error messages made builder-neutral).
 - Tests: `AvadaParserTest` (every job), `AvadaTest` with a stand-in (`tests/integration/fakes/avada.php`) and two CI jobs. First run 7 of 10; the three failures were test expectations (an existing setting changes in place; WordPress strips whole script blocks; the Global Options tool is hidden without options).
 - Phase B forms work (Gravity Forms, WPForms Pro, Ninja Forms, Formidable) stays paused and uncommitted; its first test run never started (a run name with capitals).
+
+### 2026-11-14 — Upgrade round, phase F: Elementor completion (D36)
+
+- Owner's order: builders and themes first. Elementor 4.3.6 source read for `Documents_Manager::create()`, `Document::save()`, the page settings manager (special settings are post fields; empty settings are skipped by `save()` and removed by the manager's `save_settings()`), the dynamic tags manager (`get_tags()`, `tag_data_to_tag_text()`, `tag_text_to_tag_data()`) and control `dynamic` options.
+- `Modules/Elementor/ElementorDocs`: five tools (duplicate, document-settings, document-settings-update, dynamic-tags, dynamic-set). `kuduy-elementor-widget-schema` rows gain `dynamic`.
+- Tests: `ElementorDocsTest` (EL12–EL14, with `ElementorTestTag` because free Elementor registers no tags) passed on its first run; `ElementorAddonsTest` extended to seven more add-ons (two CI jobs). Runner: `slug@latest` for plugins without a versioned ZIP (Xpro, Piotnet). Unlimited Elements registers no widgets on a fresh install and was left out.
+- Not built: popups (Elementor Pro) — the Pro ZIP is not on this machine.
+
+### 2026-11-14 — Upgrade round, phase H: Beaver Builder (D37)
+
+- Beaver Builder Lite 2.11.1.2 source read (`RESEARCH.md` §10h). `Modules/Beaver`: `Beaver` (access, defaults, settings check), `BeaverRead` (5 tools), `BeaverWrite` (edit, create; snapshot of layout data, settings and content). `PostWriter::guard_builder` refuses content writes on Beaver pages. Catalogue row: full.
+- Tests: `BeaverTest` (BB1–BB6) on the real plugin, two CI jobs. First run 5 of 6; the failure was in the test (Beaver Builder's in-memory cache and shallow node copies). The failing-first run was not observed (tests written with the code).
+- Found while running the Elementor tests on 3.35.9 next to the new ones: Kit undo with no stored settings, and the schema losing a responsive control after a render in the same process. Both fixed (`ElementorWrite::restore`, `Elementor::is_device_copy()`).
+- Not done: Kirki (research), the themes of phase D, Elementor popups (no Pro ZIP on the machine).
 
 ### 2026-11-14 — Upgrade round, phase B: forms (D28)
 

@@ -295,10 +295,17 @@ final class ElementorWrite implements Tool, Snapshottable {
 		if ( is_array( $elements ) ) {
 			$data['elements'] = $elements;
 		}
-		$settings         = $payload['settings'] ?? array();
-		$data['settings'] = is_array( $settings ) ? $settings : array();
+		$settings = is_array( $payload['settings'] ?? null ) ? $payload['settings'] : array();
+		if ( $settings ) {
+			$data['settings'] = $settings;
+		}
 		if ( ! $doc->save( $data ) ) {
 			throw new ToolError( 'Elementor refused to save the previous version.' );
+		}
+		if ( ! $settings ) {
+			// Document::save() skips empty settings, so a document that had none stored (a fresh Kit on Elementor 3.x)
+			// would keep the new ones; the page settings manager removes them.
+			\Elementor\Core\Settings\Manager::get_settings_managers( 'page' )->save_settings( array(), (int) $doc->get_main_id() );
 		}
 	}
 

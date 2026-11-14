@@ -53,6 +53,11 @@ jobs:
           - { wp: '6.9', php: '8.1', elementor: '3.35.9', plugins: '', label: '' }
           # Free Elementor add-ons (test matrix EL9), pinned.
           - { wp: '7.1', php: '8.3', elementor: '4.3.6', plugins: 'essential-addons-for-elementor-lite@6.8.8,header-footer-elementor@2.9.6,premium-addons-for-elementor@4.11.117', label: '+ add-ons' }
+          # Seven more free add-ons (upgrade phase F), in two jobs to keep each site small. Unlimited Elements is left out:
+          # a fresh install registers no widgets (they are installed from its own catalogue), found 2026-11-14. Xpro and Piotnet publish no
+          # versioned ZIP for their current release, so they cannot be pinned (tested with 1.7.11 and 2.4.37, 2026-11-14).
+          - { wp: '7.1', php: '8.3', elementor: '4.3.6', plugins: 'happy-elementor-addons@3.51.3,ht-mega-for-elementor@3.2.8,powerpack-lite-for-elementor@3.1.4,qi-addons-for-elementor@1.11.2', label: '+ add-ons B' }
+          - { wp: '7.1', php: '8.3', elementor: '4.3.6', plugins: 'xpro-elementor-addons@latest,bdthemes-element-pack-lite@10.0.5,piotnet-addons-for-elementor@latest', label: '+ add-ons C' }
           # SEO (Phase 6): one SEO plugin per job on both WordPress pairs, plus two at once (conflict, S1).
           - { wp: '6.9', php: '8.1', elementor: '4.3.6', plugins: 'seo-by-rank-math@1.0.281', label: '+ Rank Math' }
           - { wp: '7.1', php: '8.3', elementor: '4.3.6', plugins: 'seo-by-rank-math@1.0.281', label: '+ Rank Math' }
@@ -97,6 +102,9 @@ jobs:
           # (tests/integration/fakes/avada.php); Elementor stays active to prove the builders coexist.
           - { wp: '6.9', php: '8.1', elementor: '3.35.9', plugins: '', fakes: 'avada', label: '+ Avada (stand-in)' }
           - { wp: '7.1', php: '8.3', elementor: '4.3.6', plugins: '', fakes: 'avada', label: '+ Avada (stand-in)' }
+          # Beaver Builder Lite (upgrade phase H, D37): the real plugin; Elementor stays active to prove the builders coexist.
+          - { wp: '6.9', php: '8.1', elementor: '4.3.6', plugins: 'beaver-builder-lite-version@2.11.1.2', label: '+ Beaver Builder' }
+          - { wp: '7.1', php: '8.3', elementor: '4.3.6', plugins: 'beaver-builder-lite-version@2.11.1.2', label: '+ Beaver Builder' }
           # Developer mode with D4's constant defined (code tools on).
           - { wp: '7.1', php: '8.3', elementor: '4.3.6', plugins: '', code: '1', label: '+ code tools (D4)' }
     steps:

@@ -17,9 +17,9 @@ One row per integration in the upgrade brief (58), plus what KuDiagnostics suppo
 
 | Integration | Copy | Support today | What exists | Phase |
 |---|---|---|---|---|
-| Elementor | free 4.3.6 (Pro paid; 4.3.2 ZIP local) | **Full** | 14 tools, tested on 3.35.9 and 4.3.6; Theme Builder with Pro. Missing: popups, dynamic tags, duplicate a whole document | F |
+| Elementor | free 4.3.6 (Pro paid; 4.3.2 ZIP local) | **Full** | 19 tools, tested on 3.35.9 and 4.3.6, incl. duplicate a document, page settings, dynamic tags (2026-11-14); Theme Builder with Pro. Missing: popups (Pro), dynamic tags on v4 elements | F |
 | WPBakery Page Builder | paid | **Partial** | 16 tools; tested against a stand-in, not the plugin. Missing: templates | L (verify) |
-| Beaver Builder | free Lite 2.11.1.2 | None | — | H |
+| Beaver Builder | free Lite 2.11.1.2 | **Full** (BB1–BB6, 2026-11-14) | 7 tools: status, modules, schema, list, read, create, edit (rows, columns, modules) with undo. Not changed: global nodes, column widths, saved templates; paid version untested | — |
 | Kirki | free 6.4.2 | None | — (now sold as a page builder; needs research) | H |
 | Bricks | paid (theme) | None | — | L |
 | Oxygen 6 | paid | None | — | L |
@@ -87,14 +87,14 @@ Elementor add-on widgets need no per-add-on code: the generic Elementor tools di
 | Integration | Copy | Support today | Phase |
 |---|---|---|---|
 | Ultimate Addons for Elementor | free Lite 2.9.6 (`header-footer-elementor`) | **Full** (EL9) | — |
-| Happy Addons | free 3.51.3 | Partial (untested) | F |
-| HT Mega | free 3.2.8 | Partial (untested) | F |
-| PowerPack for Elementor | free Lite 3.1.4 | Partial (untested) | F |
-| Qi Addons for Elementor | free 1.11.2 | Partial (untested) | F |
-| Unlimited Elements for Elementor | free 2.0.28 | Partial (untested) | F |
-| Xpro Elementor Addons | free 1.7.11 | Partial (untested) | F |
-| Element Pack | free Lite 10.0.5 | Partial (untested) | F |
-| Piotnet Addons for Elementor | free 2.4.37 | Partial (untested) | F |
+| Happy Addons | free 3.51.3 | **Full** (EL9b, 2026-11-14) | — |
+| HT Mega | free 3.2.8 | **Full** (EL9b, 2026-11-14) | — |
+| PowerPack for Elementor | free Lite 3.1.4 | **Full** (EL9b, 2026-11-14) | — |
+| Qi Addons for Elementor | free 1.11.2 | **Full** (EL9b, 2026-11-14) | — |
+| Unlimited Elements for Elementor | free 2.0.28 | Partial (a fresh install registers no widgets; untested) | F |
+| Xpro Elementor Addons | free 1.7.11 | **Full** (EL9b, 2026-11-14) | — |
+| Element Pack | free Lite 10.0.5 | **Full** (EL9b, 2026-11-14) | — |
+| Piotnet Addons for Elementor | free 2.4.37 | **Full** (EL9b, 2026-11-14) | — |
 | JetElements | paid | Partial (untested) | L |
 | Dynamic Content for Elementor | paid | Partial (untested) | L |
 | Bricksforge | paid, needs Bricks | None | L |

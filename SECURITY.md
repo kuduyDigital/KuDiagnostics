@@ -95,6 +95,19 @@ Automated checks (all in the integration suite, both WordPress pairs):
 
 No high findings open.
 
+## 4d. Beaver Builder tools (2026-11-14, D37)
+
+Reviewed while building, against Beaver Builder Lite 2.11.1.2.
+
+| Risk | Control |
+|---|---|
+| Editing without permission | `edit_post` per page, `create_posts` / `publish_posts` on create, plus Beaver Builder's own per-role `builder_access` |
+| Unsafe markup or code | Beaver Builder's `verify_settings()` (kses) for users without `unfiltered_html`; such settings are refused, not silently changed (BB6) |
+| Destroying a layout | Operations run on the draft and publish once; a failed operation discards the draft (BB4); snapshot of layout data, layout settings and post content, undo with `kuduy-snapshot-restore` (BB3). The snapshot is PHP-serialized node data read back with `allowed_classes` limited to `stdClass` |
+| Overwriting someone's work | Layouts with unpublished changes in the builder are refused (BB5) |
+| Changing other pages | Shared (global) nodes are refused |
+| Cross-builder damage | `kuduy-post-update` refuses content on Beaver Builder pages; the Beaver tools only touch posts Beaver Builder has enabled |
+
 ## 4b. WPBakery tools (2026-11-10, D29)
 
 Reviewed while building; no licensed WPBakery was available, so this covers KuDiagnostics' code only.

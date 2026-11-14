@@ -201,6 +201,27 @@ final class Elementor {
 	}
 
 	/**
+	 * Whether a control is the per-device copy of a responsive control ("align_mobile" next to "align"). Elementor
+	 * registers such copies server-side only in some modes (always while it builds CSS), and stacks are built once
+	 * per request, so both shapes occur: one control flagged is_responsive, or a base control plus copies.
+	 *
+	 * @param string               $name     Control name.
+	 * @param array<string, mixed> $control  Control.
+	 * @param array<string, mixed> $controls All controls of the stack by name.
+	 */
+	public static function is_device_copy( string $name, array $control, array $controls ): bool {
+		if ( empty( $control['responsive']['max'] ) && empty( $control['responsive']['min'] ) ) {
+			return false;
+		}
+		foreach ( (array) \Elementor\Plugin::$instance->breakpoints->get_active_devices_list() as $device ) {
+			if ( 'desktop' !== $device && str_ends_with( $name, '_' . $device ) && isset( $controls[ substr( $name, 0, -strlen( '_' . $device ) ) ] ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Human-readable name of the plugin that provides a type (its "Plugin Name" header), or the source label.
 	 *
 	 * @param object $type Type object.

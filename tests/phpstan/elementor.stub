@@ -25,6 +25,10 @@ namespace Elementor {
 		public $modules_manager;
 		/** @var mixed Core\Files\Manager */
 		public $files_manager;
+		/** @var mixed Core\DynamicTags\Manager */
+		public $dynamic_tags;
+		/** @var mixed Controls_Manager */
+		public $controls_manager;
 	}
 }
 
@@ -60,7 +64,42 @@ namespace Elementor\Core\Base {
 		public function get_settings( $setting = null ) {}
 		/** @return string */
 		public function get_edit_url() {}
+		/** @return array<string, mixed> */
+		public function get_stack() {}
+		/** @return bool */
+		public function is_editable_by_current_user() {}
 	}
+}
+
+namespace Elementor\Core\Settings {
+
+	class Manager {
+		/**
+		 * @param string|null $manager_name
+		 * @return mixed
+		 */
+		public static function get_settings_managers( $manager_name = null ) {}
+	}
+}
+
+namespace Elementor\Core\DynamicTags {
+
+	abstract class Base_Tag {
+		/** @param array<string, mixed> $data */
+		public function __construct( array $data = array() ) {}
+		/**
+		 * @param string|null $setting
+		 * @return mixed
+		 */
+		public function get_settings( $setting = null ) {}
+		/**
+		 * @param string               $id
+		 * @param array<string, mixed> $args
+		 * @return bool
+		 */
+		public function add_control( $id, array $args, $options = array() ) {}
+	}
+	abstract class Tag extends Base_Tag {}
 }
 
 namespace ElementorPro\Modules\ThemeBuilder {

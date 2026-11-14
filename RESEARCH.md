@@ -351,6 +351,17 @@ Paid plugin (CodeCanyon / wpbakery.com); **no source was read**. Facts below com
 
 Read from an installed **Avada 7.16.4 / Avada Builder 3.16.4 / Avada Core 5.16.4** (a live site connected to the session, with KuDiagnostics' read-only developer tools; nothing changed there). The verified facts, with the files they come from, and the open UNVERIFIED items are in `docs/plans/avada.md` §2. Avada's public documentation covers the editor only, not the stored format or PHP API.
 
+## 10h. Beaver Builder (D37, 2026-11-14)
+
+Source read: **Beaver Builder Lite 2.11.1.2** (wordpress.org ZIP, GPL-2.0; ideas and API only).
+
+- A layout is a flat array of node objects keyed by node id: `node`, `type` (`row`, `column-group`, `column`, `module`), `parent`, `position`, `settings` (object; a module's type is `settings->type`). Stored per post as published (`_fl_builder_data`, settings `_fl_builder_data_settings`) and draft (`_fl_builder_draft`, `_fl_builder_draft_settings`); `_fl_builder_enabled` marks a built post. Post types: `FLBuilderModel::get_post_types()`.
+- Model API (`FLBuilderModel`, all static): `set_post_id()` / `reset_post_id()`; `get_layout_data( $status, $post_id )` (clones nodes, not their settings objects) and `update_layout_data()`; `add_row( $cols, $position )`, `add_col_group()`, `add_module( $type, $settings, $parent_id, $position )`, `copy_row()` / `copy_col()` / `copy_module()`, `move_node()`, `reorder_node()`, `delete_node()`, `delete_col()`; `get_row_defaults()`, `get_col_defaults()`, `get_module_defaults( $type )`, `get_settings_form_fields()`; `process_node_settings()`, `verify_settings()` (kses for users without `unfiltered_html`). The node status is `draft` only while the builder is active; the filter `fl_builder_node_status` sets it.
+- `save_layout( $publish )` copies the draft to published, writes the rendered text into `post_content`, clears and re-renders the CSS/JS cache; with `false` the post status stays. `save_settings()` also renders the editor preview (`FLBuilderAJAXLayout::render()`), so KuDiagnostics does its merge / process / verify steps itself.
+- Access: `FLBuilderUserAccess::current_user_can( 'builder_access' )` (per-role setting) on top of `edit_post`.
+- Global (shared) nodes carry `template_id`; changing them changes other posts.
+- **UNVERIFIED:** the paid versions (extra modules, Themer, saved templates UI), global nodes in practice, multisite. Kirki: not researched yet.
+
 ## 11. Licensing and dependencies
 
 | Component | License (verified) | Use in KUDUY |

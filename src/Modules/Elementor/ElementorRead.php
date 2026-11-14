@@ -22,7 +22,7 @@ final class ElementorRead implements Tool {
 	/**
 	 * Control types that only structure the editor panel and hold no value.
 	 */
-	private const UI_ONLY = array( 'section', 'tab', 'tabs', 'heading', 'divider', 'raw_html', 'button', 'deprecated_notice', 'alert', 'notice' );
+	public const UI_ONLY = array( 'section', 'tab', 'tabs', 'heading', 'divider', 'raw_html', 'button', 'deprecated_notice', 'alert', 'notice' );
 
 	/**
 	 * Mode.
@@ -62,7 +62,7 @@ final class ElementorRead implements Tool {
 			'documents' => 'Lists pages, posts and templates built with Elementor: id, title, document type, status, Elementor version, link.',
 			'get'       => 'Returns an Elementor page\'s element tree (id, elType, widgetType, settings, children) and page settings. Optionally only the subtree of one element, or without settings for a compact outline. Also lists element types on the page that are not registered right now (their plugin is inactive): such pages cannot be saved safely.',
 			'widgets'   => 'Lists the element and widget types Elementor can build on this site: name, title, v4 (atomic) or classic, categories, and the plugin that provides it (Elementor, Elementor Pro, an add-on).',
-			'schema'    => 'Returns the settings a widget or element accepts. Classic widgets: every control with type, default and options; responsive controls list their per-device keys (e.g. "align", "align_tablet", "align_mobile"). v4 (atomic) elements: JSON Schema per prop, where values use {"$$type": …, "value": …}.',
+			'schema'    => 'Returns the settings a widget or element accepts. Classic widgets: every control with type, default and options; responsive controls list their per-device keys (e.g. "align", "align_tablet", "align_mobile"); "dynamic": true marks settings that accept a dynamic tag (kuduy-elementor-dynamic-set). v4 (atomic) elements: JSON Schema per prop, where values use {"$$type": …, "value": …}.',
 			default     => 'Returns the active Elementor Kit\'s global colors and fonts (with ids used as global references), breakpoints and content width.',
 		};
 	}
@@ -420,13 +420,14 @@ final class ElementorRead implements Tool {
 		// Controls with CSS selectors live in a separate "style_controls" list that get_controls() only merges inside
 		// the editor (Performance::is_use_style_controls()); read both so style settings such as alignment are listed.
 		$stack = (array) $type->get_stack();
-		foreach ( (array) ( $stack['controls'] ?? array() ) + (array) ( $stack['style_controls'] ?? array() ) as $control ) {
+		$all   = (array) ( $stack['controls'] ?? array() ) + (array) ( $stack['style_controls'] ?? array() );
+		foreach ( $all as $control ) {
 			if ( ! is_array( $control ) || in_array( $control['type'] ?? '', self::UI_ONLY, true ) ) {
 				continue;
 			}
 			$name_key = (string) ( $control['name'] ?? '' );
 			// Per-device copies registered server-side carry a parent; they are listed under their base control.
-			if ( '' === $name_key || ! empty( $control['responsive']['max'] ) || ! empty( $control['responsive']['min'] ) ) {
+			if ( '' === $name_key || Elementor::is_device_copy( $name_key, $control, $all ) ) {
 				continue;
 			}
 			$row = array(
@@ -445,6 +446,9 @@ final class ElementorRead implements Tool {
 			}
 			if ( ! empty( $control['selectors'] ) ) {
 				$row['styles'] = true;
+			}
+			if ( ! empty( $control['dynamic']['active'] ) ) {
+				$row['dynamic'] = true;
 			}
 			$out['controls'][] = $row;
 		}//end foreach

@@ -1,0 +1,144 @@
+<?php
+/**
+ * Beaver Builder is not a dependency; this declares only the FLBuilderModel / FLBuilderUserAccess API KUDUY and its
+ * tests call (verified in Beaver Builder Lite 2.11.1.2 source, RESEARCH.md §11).
+ */
+
+namespace {
+	define( 'FL_BUILDER_VERSION', '2.11.1.2' );
+
+	class FLBuilder {}
+
+	class FLBuilderUserAccess {
+		public static function current_user_can( string $key ): bool {}
+	}
+
+	class FLBuilderModel {
+		/** @var array<string, mixed> */
+		public static $modules = array();
+		/** @return array<int, string> */
+		public static function get_post_types() {}
+		/** @param int|string $post_id */
+		public static function set_post_id( $post_id ): void {}
+		public static function reset_post_id(): void {}
+		/**
+		 * @param int|false $post_id
+		 * @return string
+		 */
+		public static function get_edit_url( $post_id = false, bool $include_ui = true ) {}
+		/**
+		 * @param string|null $status
+		 * @param int|null    $post_id
+		 * @return mixed
+		 */
+		public static function get_layout_data( $status = null, $post_id = null, bool $copy = true ) {}
+		/**
+		 * @param array<string, mixed> $data
+		 * @param string|null          $status
+		 * @param int|null             $post_id
+		 */
+		public static function update_layout_data( $data, $status = null, $post_id = null ): void {}
+		/**
+		 * @param string|null $status
+		 * @param int|null    $post_id
+		 * @return object
+		 */
+		public static function get_layout_settings( $status = null, $post_id = null ) {}
+		/**
+		 * @param object|array<string, mixed> $settings
+		 * @param string|null                 $status
+		 * @param int|null                    $post_id
+		 * @return object
+		 */
+		public static function update_layout_settings( $settings = array(), $status = null, $post_id = null ) {}
+		public static function save_layout( bool $publish = true ): void {}
+		/** @param int|false $post_id */
+		public static function delete_all_asset_cache( $post_id = false ): void {}
+		/**
+		 * @param string|null        $type
+		 * @param string|object|null $parent_id
+		 * @param string|null        $status
+		 * @return array<string, object>
+		 */
+		public static function get_nodes( $type = null, $parent_id = null, $status = null ) {}
+		/**
+		 * @param int|false $position
+		 * @return mixed
+		 */
+		public static function add_row( string $cols = '1-col', $position = false, $module = null ) {}
+		/**
+		 * @param string|null $node_id
+		 * @param int|false   $position
+		 * @return object|null
+		 */
+		public static function add_col_group( $node_id = null, string $cols = '1-col', $position = false, $module = null ) {}
+		/**
+		 * @param string      $type
+		 * @param object      $settings
+		 * @param string|null $parent_id
+		 * @param int|false   $position
+		 * @return object|false
+		 */
+		public static function add_module( $type, $settings, $parent_id = null, $position = false, $version = null ) {}
+		/**
+		 * @param string|null $node_id
+		 * @return object|null
+		 */
+		public static function copy_row( $node_id = null, $settings = null, $settings_id = null, bool $preserve_globals = true ) {}
+		/**
+		 * @param string|null $node_id
+		 * @return object|null
+		 */
+		public static function copy_col( $node_id = null, $settings = null, $settings_id = null, bool $preserve_globals = true ) {}
+		/**
+		 * @param string|null $node_id
+		 * @return object|false
+		 */
+		public static function copy_module( $node_id = null, $settings = null, $parent_id = null, $position = null, bool $preserve_globals = true ) {}
+		/**
+		 * @param string|null $node_id
+		 * @param string|null $new_parent_id
+		 * @return array<string, mixed>
+		 */
+		public static function move_node( $node_id = null, $new_parent_id = null, int $position = 0 ) {}
+		/**
+		 * @param string|null $node_id
+		 * @return array<string, mixed>
+		 */
+		public static function reorder_node( $node_id = null, int $position = 0 ) {}
+		/** @param string|null $node_id */
+		public static function delete_node( $node_id = null ): void {}
+		/** @param string|null $node_id */
+		public static function delete_col( $node_id = null, int $new_width = 100 ): void {}
+		/** @return object */
+		public static function get_row_defaults() {}
+		/** @return object */
+		public static function get_col_defaults() {}
+		/**
+		 * @param string|object|null $type
+		 * @return object|array<string, object>
+		 */
+		public static function get_module_defaults( $type = null ) {}
+		/**
+		 * @param string|array<string, mixed> $form
+		 * @param string|null                 $group
+		 * @return array<string, mixed>
+		 */
+		public static function get_settings_form_fields( $form, $group = null ) {}
+		/** @return array<int, string> */
+		public static function get_enabled_modules() {}
+		/**
+		 * @param object $node
+		 * @param object $new_settings
+		 * @return object
+		 */
+		public static function process_node_settings( $node, $new_settings ) {}
+		/**
+		 * @param object      $settings
+		 * @param string|null $node_id
+		 * @return bool|mixed
+		 */
+		public static function verify_settings( $settings, $node_id = null ) {}
+		public static function user_has_unfiltered_html(): bool {}
+	}
+}

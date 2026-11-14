@@ -29,7 +29,10 @@ use Kuduy\Mcp\Modules\Core\TermList;
 use Kuduy\Mcp\Modules\Core\Themes;
 use Kuduy\Mcp\Modules\Core\TermWrite;
 use Kuduy\Mcp\Modules\Core\Users;
+use Kuduy\Mcp\Modules\Beaver\BeaverRead;
+use Kuduy\Mcp\Modules\Beaver\BeaverWrite;
 use Kuduy\Mcp\Modules\Elementor\ElementorAbilities;
+use Kuduy\Mcp\Modules\Elementor\ElementorDocs;
 use Kuduy\Mcp\Modules\Elementor\ElementorRead;
 use Kuduy\Mcp\Modules\Elementor\ElementorVerify;
 use Kuduy\Mcp\Modules\Elementor\ElementorWrite;
@@ -137,11 +140,20 @@ final class ToolRegistry {
 			$registry->register( new ElementorWrite( $mode ) );
 		}
 		$registry->register( new ElementorVerify() );
+		foreach ( array( 'duplicate', 'document-settings', 'document-settings-update', 'dynamic-tags', 'dynamic-set' ) as $mode ) {
+			$registry->register( new ElementorDocs( $mode ) );
+		}
 		foreach ( array( 'globals', 'classes', 'variables' ) as $mode ) {
 			$registry->register( new ElementorAbilities( $mode ) );
 		}
 		foreach ( array( 'templates', 'conditions' ) as $mode ) {
 			$registry->register( new ThemeBuilder( $mode ) );
+		}
+		foreach ( array( 'status', 'layouts', 'get', 'modules', 'module-schema' ) as $mode ) {
+			$registry->register( new BeaverRead( $mode ) );
+		}
+		foreach ( array( 'edit', 'create' ) as $mode ) {
+			$registry->register( new BeaverWrite( $mode ) );
 		}
 		foreach ( array( 'status', 'get', 'update' ) as $mode ) {
 			$registry->register( new SeoTools( $mode ) );
